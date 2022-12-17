@@ -80,6 +80,7 @@ export class MyApp extends LitElement {
   handleElementSelected(e: CustomEvent) {
     const element = e.detail;
     this.selectedElement = element;
+    this.requestUpdate();
     //console.log("Element selected:");
     //console.dir(element);
   }
@@ -96,6 +97,7 @@ export class MyApp extends LitElement {
             .selectedElement="${this.selectedElement}"
             @init-canvas="${this.handleInitCanvas}"
             @drawing-update="${this.handleDrawingUpdate}"
+            @element-selected="${this.handleElementSelected}"
           ></my-canvas-display>
         </div>
         <div class="flex-auto">
@@ -106,6 +108,7 @@ export class MyApp extends LitElement {
         <div class="flex-auto">
           <my-element-list
             .guiElements="${this.guiElements}"
+            .selectedElement="${this.selectedElement}"
             @element-selected="${this.handleElementSelected}"
           ></my-element-list>
         </div>

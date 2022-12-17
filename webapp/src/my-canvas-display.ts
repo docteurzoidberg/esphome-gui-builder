@@ -70,6 +70,9 @@ export class MyCanvasDisplay extends LitElement {
   typedArray!: Uint8Array;
   lastFrameTs: number = 0;
 
+  isMovingElement: boolean = false;
+  elementStartMoveCoord: pixelcoord = { x: 0, y: 0 };
+
   connectedCallback() {
     super.connectedCallback();
   }
@@ -186,11 +189,15 @@ export class MyCanvasDisplay extends LitElement {
     if (!newctx) return;
     newcanvas.width = this.width;
     newcanvas.height = this.height;
-    this.elements.forEach((element) => {
-      if (element.type == "image") {
-        this._drawImageElementToCanvas(element, newctx);
-      }
-    });
+    this.elements
+      .sort((a, b) => {
+        return a.zorder - b.zorder;
+      })
+      .forEach((element) => {
+        if (element.type == "image") {
+          this._drawImageElementToCanvas(element, newctx);
+        }
+      });
 
     //get back the temp canvas image data
     const elemsImageData = newctx.getImageData(0, 0, this.width, this.height);
@@ -248,6 +255,87 @@ export class MyCanvasDisplay extends LitElement {
       elemWidth,
       elemHeight
     );
+  }
+
+  _isElementAtCoords(element: GuiElement, coords: pixelcoord) {
+    let elemWidth = 0;
+    let elemHeight = 0;
+
+    if (element.type == "image") {
+      const imageElement = element.data as EspHomeImage;
+      elemWidth = imageElement.width;
+      elemHeight = imageElement.height;
+    }
+
+    if (coords.x >= element.x && coords.x < element.x + elemWidth)
+      if (coords.y >= element.y && coords.y < element.y + elemHeight)
+        return true;
+
+    return false;
+  }
+
+  handleMouseDown(e: MouseEvent) {
+    const sorted = this.elements
+      .sort((a, b) => a.zorder - b.zorder)
+      .filter((element) =>
+        this._isElementAtCoords(element, this.mouse_pixel_coord)
+      );
+
+    const selected = sorted.length > 0 ? sorted[0] : undefined;
+    if (selected && e.button === 0 && !this.isMovingElement) {
+      this.isMovingElement = true;
+      console.log(
+        "start moving",
+        this.mouse_pixel_coord.x,
+        this.mouse_pixel_coord.y
+      );
+      this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
+      this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
+    }
+    if (selected?.id != this.selectedElement?.id) {
+      this.dispatchEvent(
+        new CustomEvent("element-selected", {
+          detail: selected,
+        })
+      );
+    }
+  }
+
+  handleMouseUp(e: MouseEvent) {
+    if (this.isMovingElement) {
+      console.log("stop moving");
+      this.isMovingElement = false;
+    }
+  }
+
+  handleMouseLeave(e: MouseEvent) {
+    if (this.isMovingElement) {
+      console.log("stop moving");
+      this.isMovingElement = false;
+    }
+  }
+
+  handleMouseMove(e: MouseEvent) {
+    this.mouse_x = e.offsetX;
+    this.mouse_y = e.offsetY;
+    this.mouse_pixel_coord.x = Math.ceil(this.mouse_x / this.canvasCalcScaleX);
+    this.mouse_pixel_coord.y = Math.ceil(this.mouse_y / this.canvasCalcScaleY);
+    if (this.mouse_pixel_coord.x < 1) this.mouse_pixel_coord.x = 1;
+    if (this.mouse_pixel_coord.y < 1) this.mouse_pixel_coord.y = 1;
+    if (this.mouse_pixel_coord.x > this.width)
+      this.mouse_pixel_coord.x = this.width;
+    if (this.mouse_pixel_coord.y > this.height)
+      this.mouse_pixel_coord.y = this.height;
+
+    if (this.isMovingElement && this.selectedElement) {
+      const movex = this.mouse_pixel_coord.x - this.elementStartMoveCoord.x;
+      const movey = this.mouse_pixel_coord.y - this.elementStartMoveCoord.y;
+      console.log("moving element", movex, movey);
+      this.selectedElement.x += movex;
+      this.selectedElement.y += movey;
+      this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
+      this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
+    }
   }
 
   protected firstUpdated(
@@ -337,7 +425,12 @@ export class MyCanvasDisplay extends LitElement {
             />
           </span>
         </div>
-        <canvas id="display"></canvas>
+        <canvas id="display"
+          @mousemove="${this.handleMouseMove}"
+          @mousedown="${this.handleMouseDown}"
+          @mouseup="${this.handleMouseUp}"
+          @mouseleave="${this.handleMouseLeave}"
+        ></canvas>
       </div>
     `;
   }
