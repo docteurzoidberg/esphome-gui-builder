@@ -42,7 +42,7 @@ export class MyApp extends LitElement {
       type: "image",
       x: 0,
       y: 0,
-      zorder: 0,
+      zorder: 9,
       data: {
         name: "data/images/1.PNG",
         width: 16,
@@ -57,7 +57,7 @@ export class MyApp extends LitElement {
       type: "image",
       x: 0,
       y: 0,
-      zorder: 0,
+      zorder: 1,
       data: {
         name: "data/images/2.PNG",
         width: 16,
@@ -66,6 +66,7 @@ export class MyApp extends LitElement {
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAIlJREFUOE/NkzsSgCAMRE3nUT0CR/AIHpUOZ3HiLIuRgkJpgHzeZEmwI+WyTCz7B2Db11DEkfKrwCoBgFL6pzCzIfgGeCRAmshw9qG65hG9Eg9iWHQOAZ4w2jsAi36SAz/bwzngznAn1P7dIKGS2gVIwsENuusgqL8BeLADcVe4Aitg4jNeEmYAJw3Nh1EDECkvAAAAAElFTkSuQmCC",
       },
     });
+    this.guiElements.sort((a, b) => a.zorder - b.zorder);
     //this.requestUpdate();
   }
 

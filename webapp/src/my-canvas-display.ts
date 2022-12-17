@@ -189,15 +189,12 @@ export class MyCanvasDisplay extends LitElement {
     if (!newctx) return;
     newcanvas.width = this.width;
     newcanvas.height = this.height;
-    this.elements
-      .sort((a, b) => {
-        return a.zorder - b.zorder;
-      })
-      .forEach((element) => {
-        if (element.type == "image") {
-          this._drawImageElementToCanvas(element, newctx);
-        }
-      });
+    this.elements.sort((a, b) => a.zorder - b.zorder);
+    this.elements.forEach((element) => {
+      if (element.type == "image") {
+        this._drawImageElementToCanvas(element, newctx);
+      }
+    });
 
     //get back the temp canvas image data
     const elemsImageData = newctx.getImageData(0, 0, this.width, this.height);
@@ -275,13 +272,15 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   handleMouseDown(e: MouseEvent) {
-    const sorted = this.elements
-      .sort((a, b) => a.zorder - b.zorder)
-      .filter((element) =>
-        this._isElementAtCoords(element, this.mouse_pixel_coord)
-      );
+    const atcoords = this.elements.filter((element) =>
+      this._isElementAtCoords(element, this.mouse_pixel_coord)
+    );
 
-    const selected = sorted.length > 0 ? sorted[0] : undefined;
+    atcoords.sort((a, b) =>
+      a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
+    );
+
+    const selected = atcoords.length > 0 ? atcoords[0] : undefined;
     if (selected && e.button === 0 && !this.isMovingElement) {
       this.isMovingElement = true;
       console.log(
