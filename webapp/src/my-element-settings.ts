@@ -43,7 +43,7 @@ export class MyElementSettings extends LitElement {
         <div>
           <input
             type="number"
-            value="${this.selectedElement.x}"
+            .value="${this.selectedElement.x.toString()}"
             step="1"
             @change="${this.updateElementX}"
           />
@@ -52,7 +52,7 @@ export class MyElementSettings extends LitElement {
         <div>
           <input
             type="number"
-            value="${this.selectedElement.y}"
+            .value="${this.selectedElement.y.toString()}"
             step="1"
             @change="${this.updateElementY}"
           />

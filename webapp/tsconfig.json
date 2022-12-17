@@ -19,6 +19,5 @@
     "skipLibCheck": true,
     "baseUrl": "src"
   },
-  "include": ["src/**/*.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*.ts"]
 }

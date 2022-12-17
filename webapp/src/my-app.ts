@@ -24,6 +24,9 @@ export class MyApp extends LitElement {
   @property({ type: Number })
   screenHeight: number = 64;
 
+  @property({ type: Boolean })
+  showGrid: boolean = true;
+
   @property()
   guiElements: Array<GuiElement> = [];
 
@@ -88,6 +91,7 @@ export class MyApp extends LitElement {
           <my-canvas-display
             displayWidth="${this.screenWidth}"
             displayHeight="${this.screenHeight}"
+            showGrid="${this.showGrid}"
             .elements="${this.guiElements}"
             .selectedElement="${this.selectedElement}"
             @init-canvas="${this.handleInitCanvas}"

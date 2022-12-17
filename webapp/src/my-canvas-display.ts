@@ -53,6 +53,9 @@ export class MyCanvasDisplay extends LitElement {
   @property({ type: Number })
   canvasGridWidth: number = 2;
 
+  @property({ type: Boolean })
+  showGrid: boolean = true;
+
   mouse_pixel_coord: pixelcoord = { x: 0, y: 0 };
   mouse_x: number = 0;
   mouse_y: number = 0;
@@ -107,9 +110,11 @@ export class MyCanvasDisplay extends LitElement {
     this.arrayBuffer = new ArrayBuffer(width * height * 4);
     this.typedArray = new Uint8Array(this.arrayBuffer);
     this.canvasWidth =
-      width * this.canvasScale + this.canvasGridWidth * (width + 1);
+      width * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * (width + 1) : 0);
     this.canvasHeight =
-      height * this.canvasScale + this.canvasGridWidth * (height + 1);
+      height * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * (height + 1) : 0);
     this.canvasCalcScaleX = this.canvasWidth / width;
     this.canvasCalcScaleY = this.canvasHeight / height;
     this.canvas.width = this.canvasWidth;
@@ -170,7 +175,10 @@ export class MyCanvasDisplay extends LitElement {
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     //Draw grid
-    this._drawCanvasGrid(ctx);
+
+    if (this.showGrid) {
+      this._drawCanvasGrid(ctx);
+    }
 
     //Draw everything on a temporary canvas, unscaled
     const newcanvas = document.createElement("canvas");
@@ -197,8 +205,12 @@ export class MyCanvasDisplay extends LitElement {
         const b = elemsImageData.data[pixelIndex + 2];
         //put pixel color but at 0.9 alpha on canvas
         ctx.fillStyle = "rgba(" + r + "," + g + "," + b + ", 0.9)";
-        const canvasX = x * this.canvasScale + this.canvasGridWidth * (x + 1);
-        const canvasY = y * this.canvasScale + this.canvasGridWidth * (y + 1);
+        const canvasX =
+          x * this.canvasScale +
+          (this.showGrid ? this.canvasGridWidth * (x + 1) : 0);
+        const canvasY =
+          y * this.canvasScale +
+          (this.showGrid ? this.canvasGridWidth * (y + 1) : 0);
         //draw scaled pixel rect
         ctx.fillRect(canvasX, canvasY, this.canvasScale, this.canvasScale);
       }
@@ -212,19 +224,19 @@ export class MyCanvasDisplay extends LitElement {
 
     const elemCanvasX =
       this.selectedElement.x * this.canvasScale +
-      this.canvasGridWidth * (this.selectedElement.x + 1);
+      (this.showGrid ? this.canvasGridWidth * (this.selectedElement.x + 1) : 0);
     const elemCanvasY =
       this.selectedElement.y * this.canvasScale +
-      this.canvasGridWidth * (this.selectedElement.y + 1);
+      (this.showGrid ? this.canvasGridWidth * (this.selectedElement.y + 1) : 0);
 
     if (this.selectedElement.type == "image") {
       const imageElement = this.selectedElement.data as EspHomeImage;
       elemWidth =
         imageElement.width * this.canvasScale +
-        this.canvasGridWidth * imageElement.width;
+        (this.showGrid ? this.canvasGridWidth * imageElement.width : 0);
       elemHeight =
         imageElement.height * this.canvasScale +
-        this.canvasGridWidth * imageElement.height;
+        (this.showGrid ? this.canvasGridWidth * imageElement.height : 0);
     }
 
     const selectedLineWidth = 8;
@@ -248,7 +260,83 @@ export class MyCanvasDisplay extends LitElement {
   render() {
     return html`
       <div class="">
-        <h1>Canvas</h1>
+          <span>
+            <label for="screenwidth">Display Width</label>
+            <input
+              id="screenwidth"
+              type="number"
+              min="1"
+              value="${this.displayWidth}"
+              @change="${(e: Event) => {
+                this.displayWidth = parseInt(
+                  (e.target as HTMLInputElement).value,
+                  10
+                );
+                this._initCanvas(this.displayWidth, this.displayHeight);
+              }}"
+            />
+          </span>
+          <span>
+            <label for="screenwidth">Display Height</label>
+            <input
+              id="screenheight"
+              type="number"
+              min="1"
+              value="${this.displayHeight}"
+              @change="${(e: Event) => {
+                this.displayHeight = parseInt(
+                  (e.target as HTMLInputElement).value,
+                  10
+                );
+                this._initCanvas(this.displayWidth, this.displayHeight);
+              }}"
+            />
+          </span>
+        </div>
+        <div class="controls">
+          <span>
+            <label for="showgrid">Show grid</label>
+            <input
+              id="showgrid"
+              type="checkbox"
+              .checked="${this.showGrid}"
+              @change="${(e: Event) =>
+                (this.showGrid = (e.target as HTMLInputElement).checked)}"
+            />
+          </span>
+          <span>
+            <label for="gridwidth">Grid Width</label>
+            <input
+              id="gridwidth"
+              type="number"
+              min="1"
+              value="${this.canvasGridWidth}"
+              @change="${(e: Event) => {
+                this.canvasGridWidth = parseInt(
+                  (e.target as HTMLInputElement).value,
+                  10
+                );
+                this._initCanvas(this.displayWidth, this.displayHeight);
+              }}"
+            />
+          </span>
+          <span>
+            <label for="gridwidth">Pixel Scale</label>
+            <input
+              id="pixelscale"
+              type="number"
+              min="1"
+              value="${this.canvasScale}"
+              @change="${(e: Event) => {
+                this.canvasScale = parseInt(
+                  (e.target as HTMLInputElement).value,
+                  10
+                );
+                this._initCanvas(this.displayWidth, this.displayHeight);
+              }}"
+            />
+          </span>
+        </div>
         <canvas id="display"></canvas>
       </div>
     `;
