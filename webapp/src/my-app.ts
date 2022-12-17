@@ -8,12 +8,52 @@ import "./my-element-settings";
 import "./my-canvas-display";
 import "./my-toolbox";
 
+import { resetStyles } from "./resetCss";
+
 @customElement("my-app")
 export class MyApp extends LitElement {
   static styles = [
+    resetStyles(),
     css`
       :host {
-        background-color: cyan;
+        display: block;
+        height: 100vh;
+      }
+
+      .first-row-container {
+        display: flex;
+        height: 100%;
+      }
+      .col1 {
+        /* flex:0 1 auto; */
+        flex-grow: 0;
+        align-self: auto;
+      }
+
+      .col2 {
+        /* flex:1 1 auto; */
+        flex-grow: 1;
+        align-self: auto;
+      }
+
+      .second-col-container {
+        display: flex;
+
+        /* flex-flow: column; */
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .second-col-container .row1 {
+        /* flex:1 1 auto; */
+        flex-grow: 1;
+        align-self: auto;
+      }
+
+      .second-col-container .row2 {
+        /* flex:0 1 auto; */
+        flex-grow: 0;
+        align-self: stretch;
       }
     `,
   ];
@@ -26,6 +66,12 @@ export class MyApp extends LitElement {
 
   @property({ type: Boolean })
   showGrid: boolean = true;
+
+  @property({ type: Number })
+  canvasGridWidth: number = 2;
+
+  @property({ type: Number })
+  canvasScale: number = 5;
 
   @property()
   guiElements: Array<GuiElement> = [];
@@ -88,33 +134,117 @@ export class MyApp extends LitElement {
 
   render() {
     return html`
-      <div class="container">
-        <div class="flex-auto">
-          <my-canvas-display
-            displayWidth="${this.screenWidth}"
-            displayHeight="${this.screenHeight}"
-            showGrid="${this.showGrid}"
-            .elements="${this.guiElements}"
-            .selectedElement="${this.selectedElement}"
-            @init-canvas="${this.handleInitCanvas}"
-            @drawing-update="${this.handleDrawingUpdate}"
-            @element-selected="${this.handleElementSelected}"
-          ></my-canvas-display>
+      <div class="first-row-container three-cols-row">
+        <div class="col1">
+          <div class="screen-settings-container">
+            <div class="settings">
+              <div>
+                <label for="screenwidth">Display Width</label>
+                <input
+                  id="screenwidth"
+                  type="number"
+                  min="1"
+                  value="${this.screenWidth}"
+                  @change="${(e: Event) => {
+                    this.screenWidth = parseInt(
+                      (e.target as HTMLInputElement).value,
+                      10
+                    );
+                  }}"
+                />
+              </div>
+              <div>
+                <label for="screenwidth">Display Height</label>
+                <input
+                  id="screenheight"
+                  type="number"
+                  min="1"
+                  value="${this.screenHeight}"
+                  @change="${(e: Event) => {
+                    this.screenHeight = parseInt(
+                      (e.target as HTMLInputElement).value,
+                      10
+                    );
+                  }}"
+                />
+              </div>
+            </div>
+            <div class="controls">
+              <div>
+                <label for="showgrid">Show grid</label>
+                <input
+                  id="showgrid"
+                  type="checkbox"
+                  .checked="${this.showGrid}"
+                  @change="${(e: Event) =>
+                    (this.showGrid = (e.target as HTMLInputElement).checked)}"
+                />
+              </div>
+              <div>
+                <label for="gridwidth">Grid Width</label>
+                <input
+                  id="gridwidth"
+                  type="number"
+                  min="1"
+                  value="${this.canvasGridWidth}"
+                  @change="${(e: Event) => {
+                    this.canvasGridWidth = parseInt(
+                      (e.target as HTMLInputElement).value,
+                      10
+                    );
+                  }}"
+                />
+              </div>
+              <div>
+                <label for="gridwidth">Pixel Scale</label>
+                <input
+                  id="pixelscale"
+                  type="number"
+                  min="1"
+                  value="${this.canvasScale}"
+                  @change="${(e: Event) => {
+                    this.canvasScale = parseInt(
+                      (e.target as HTMLInputElement).value,
+                      10
+                    );
+                  }}"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="element-settings-container">
+            <my-element-settings
+              .selectedElement="${this.selectedElement}"
+            ></my-element-settings>
+          </div>
         </div>
-        <div class="flex-auto">
-          <my-element-settings
-            .selectedElement="${this.selectedElement}"
-          ></my-element-settings>
+        <div class="col2 second-col-container two-rows-col">
+          <div class="row1 screen-container">
+            <my-canvas-display
+              .displayWidth="${this.screenWidth}"
+              .displayHeight="${this.screenHeight}"
+              .canvasGridWidth="${this.canvasGridWidth}"
+              .canvasScale="${this.canvasScale}"
+              .showGrid="${this.showGrid}"
+              .elements="${this.guiElements}"
+              .selectedElement="${this.selectedElement}"
+              @init-canvas="${this.handleInitCanvas}"
+              @drawing-update="${this.handleDrawingUpdate}"
+              @element-selected="${this.handleElementSelected}"
+            ></my-canvas-display>
+          </div>
+          <div class="row2 toolbox-container">
+            <my-toolbox></my-toolbox>
+          </div>
         </div>
-        <div class="flex-auto">
-          <my-element-list
-            .guiElements="${this.guiElements}"
-            .selectedElement="${this.selectedElement}"
-            @element-selected="${this.handleElementSelected}"
-          ></my-element-list>
-        </div>
-        <div class="flex-auto">
-          <my-toolbox></my-toolbox>
+        <div class="col3">
+          <div class="element-list-container">
+            <my-element-list
+              .guiElements="${this.guiElements}"
+              .selectedElement="${this.selectedElement}"
+              @element-selected="${this.handleElementSelected}"
+            ></my-element-list>
+          </div>
         </div>
       </div>
     `;
