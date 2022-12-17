@@ -1,0 +1,20 @@
+[
+    {
+        "name": "data/images/1.PNG",
+        "width": 16,
+        "height": 16,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAALJJREFUOE+tk9ENgzAMRG2pA8B23aSMwgh0i27UBSq5uqALxhga2vqLoPjlnLvo1InJD6UAXJ8zYerbSH7/CsB2ExMVLUt8o7j2R+DAAsBPUtnkGzyQAKo9DaCiez8rrIDH8JLxdqkK4xhQ5MfZKAAAlUHYSDpgTQB/idGfjyN4R8qsqmK2OLJ7iVHuXjI2CmhjZpmH0t5DBVloIngFiCGKycsUMPr/eQttTyjfVZP4LeQNrUFugXTpubMAAAAASUVORK5CYII="
+    },
+    {
+        "name": "data/images/2.PNG",
+        "width": 16,
+        "height": 16,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAIlJREFUOE/NkzsSgCAMRE3nUT0CR/AIHpUOZ3HiLIuRgkJpgHzeZEmwI+WyTCz7B2Db11DEkfKrwCoBgFL6pzCzIfgGeCRAmshw9qG65hG9Eg9iWHQOAZ4w2jsAi36SAz/bwzngznAn1P7dIKGS2gVIwsENuusgqL8BeLADcVe4Aitg4jNeEmYAJw3Nh1EDECkvAAAAAElFTkSuQmCC"
+    },
+    {
+        "name": "data/images/3.PNG",
+        "width": 16,
+        "height": 16,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiUlEQVQ4T82TOxKAIAxETedRPYJH8Age1Q5dnGWWYKSgUBognzdZEmxfjzQNLPsHYNnmUMRV4avALAGAlNqnMLMuuAAYCZBPVLj6UF31iKyEQQqLziGACb29AajoJznwqz2cA+2MdsLbvxskVJK7AEk40OB3PwjeXwEYTCDuHu6BGTDwGW8JI4ATDc2HUeXUrMUAAAAASUVORK5CYII="
+    }
+]
