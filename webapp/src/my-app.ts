@@ -128,8 +128,6 @@ export class MyApp extends LitElement {
     const element = e.detail;
     this.selectedElement = element;
     this.requestUpdate();
-    //console.log("Element selected:");
-    //console.dir(element);
   }
 
   render() {

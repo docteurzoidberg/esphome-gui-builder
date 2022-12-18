@@ -76,10 +76,6 @@ export class MyCanvasDisplay extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    //window.addEventListener("screen-changed", (e) => {
-    //  this._initCanvas(e.detail.displaWidth, e.detail.displayHeight);
-    //  this.requestUpdate();
-    //});
   }
 
   _clearBuffer(rgb: rgb = hexToRgb("#000000")) {
@@ -92,6 +88,7 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _draw(ts: number) {
+    //todo: limit fps?
     //if(ts-this.lastFrameTs < (1000/30))
     //  return;
     this.lastFrameTs = ts;
@@ -198,7 +195,6 @@ export class MyCanvasDisplay extends LitElement {
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     //Draw grid
-
     if (this.showGrid) {
       this._drawCanvasGrid(ctx);
     }
