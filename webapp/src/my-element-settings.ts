@@ -2,6 +2,8 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { GuiElement } from "interfaces/GuiElement";
 
+import "./my-section";
+
 @customElement("my-element-settings")
 export class MyElementSettings extends LitElement {
   @property()
@@ -38,47 +40,51 @@ export class MyElementSettings extends LitElement {
   render() {
     if (!this.selectedElement) return html``;
     return html`
-      <h2>Element settings</h2>
-      <div class="elem-settings">
-        <div>id: ${this.selectedElement.id}</div>
-        <div>type: ${this.selectedElement.type}</div>
-        <div>name: ${this.selectedElement.name}</div>
-        <div>
-          <label for="selectedElementX">x: ${this.selectedElement.x}</label>
-          <input
-            type="number"
-            id="selectedElementX"
-            .value="${this.selectedElement.x.toString()}"
-            step="1"
-            @change="${this.updateElementX}"
-          />
+      <my-section>
+        <span slot="title">Element settings</span>
+        <div class="elem-settings">
+          <div>id: ${this.selectedElement.id}</div>
+          <div>type: ${this.selectedElement.type}</div>
+          <div>name: ${this.selectedElement.name}</div>
+          <div>
+            <label for="selectedElementX">x: ${this.selectedElement.x}</label>
+            <input
+              type="number"
+              id="selectedElementX"
+              .value="${this.selectedElement.x.toString()}"
+              step="1"
+              @change="${this.updateElementX}"
+            />
+          </div>
+          <div>
+            <label for="selectedElementY">y: ${this.selectedElement.y}</label>
+            <input
+              type="number"
+              id="selectedElementY"
+              .value="${this.selectedElement.y.toString()}"
+              step="1"
+              @change="${this.updateElementY}"
+            />
+          </div>
+          <div>
+            <label for="zorder">zorder: ${this.selectedElement.zorder}</label>
+            <input
+              type="number"
+              id="zorder"
+              .value="${this.selectedElement.zorder.toString()}"
+              step="1"
+              @change="${this.updateElementZ}"
+            />
+          </div>
         </div>
-        <div>
-          <label for="selectedElementY">y: ${this.selectedElement.y}</label>
-          <input
-            type="number"
-            id="selectedElementY"
-            .value="${this.selectedElement.y.toString()}"
-            step="1"
-            @change="${this.updateElementY}"
-          />
+      </my-section>
+      <my-section>
+        <span slot="title">Element parameters</span>
+        <div class="elem-params">
+          <div>//todo: params depends on element's type</div>
+          <div>params: ${this.selectedElement.params}</div>
         </div>
-        <div>
-          <label for="zorder">zorder: ${this.selectedElement.zorder}</label>
-          <input
-            type="number"
-            id="zorder"
-            .value="${this.selectedElement.zorder.toString()}"
-            step="1"
-            @change="${this.updateElementZ}"
-          />
-        </div>
-      </div>
-      <h2>Element parameters</h2>
-      <div class="elem-params">
-        <div>//todo: params depends on element's type</div>
-        <div>params: ${this.selectedElement.params}</div>
-      </div>
+      </my-section>
     `;
   }
 

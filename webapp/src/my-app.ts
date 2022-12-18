@@ -7,6 +7,7 @@ import "./my-element-list";
 import "./my-element-settings";
 import "./my-canvas-display";
 import "./my-toolbox";
+import "./my-section";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -153,8 +154,8 @@ export class MyApp extends LitElement {
       <div class="first-row-container three-cols-row">
         <div class="col1">
           <div class="screen-settings-container">
-            <div class="settings">
-              <h2>Screen settings</h2>
+            <my-section class="settings">
+              <span slot="title">Screen settings</span>
               <div>
                 <label for="screenwidth">Display Width</label>
                 <input
@@ -185,8 +186,6 @@ export class MyApp extends LitElement {
                   }}"
                 />
               </div>
-            </div>
-            <div class="controls">
               <div>
                 <label for="showgrid">Show grid</label>
                 <input
@@ -227,7 +226,7 @@ export class MyApp extends LitElement {
                   }}"
                 />
               </div>
-            </div>
+            </my-section>
           </div>
           <div class="element-settings-container">
             <my-element-settings
