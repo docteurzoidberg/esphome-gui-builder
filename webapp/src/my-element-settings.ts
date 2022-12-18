@@ -9,6 +9,9 @@ export class MyElementSettings extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    window.addEventListener("element-moved", () => {
+      this.requestUpdate();
+    });
   }
 
   updateElementX(e: Event) {
@@ -16,7 +19,6 @@ export class MyElementSettings extends LitElement {
     const elementInput = e.target as HTMLInputElement;
     this.selectedElement.x = parseInt(elementInput.value, 10);
     this.requestUpdate();
-    this.dispatchElementMoved(this.selectedElement);
   }
 
   updateElementY(e: Event) {
@@ -24,42 +26,55 @@ export class MyElementSettings extends LitElement {
     const elementInput = e.target as HTMLInputElement;
     this.selectedElement.y = parseInt(elementInput.value, 10);
     this.requestUpdate();
-    this.dispatchElementMoved(this.selectedElement);
   }
 
-  dispatchElementMoved(element: GuiElement) {
-    this.dispatchEvent(new CustomEvent("element-moved", { detail: element }));
+  updateElementZ(e: Event) {
+    if (!this.selectedElement) return;
+    const elementInput = e.target as HTMLInputElement;
+    this.selectedElement.zorder = parseInt(elementInput.value, 10);
+    this.requestUpdate();
   }
 
   render() {
     if (!this.selectedElement) return html``;
     return html`
-      <h1>Element settings</h1>
+      <h2>Element settings</h2>
       <div class="elem-settings">
         <div>id: ${this.selectedElement.id}</div>
         <div>type: ${this.selectedElement.type}</div>
         <div>name: ${this.selectedElement.name}</div>
-        <div>x: ${this.selectedElement.x}</div>
         <div>
+          <label for="selectedElementX">x: ${this.selectedElement.x}</label>
           <input
             type="number"
+            id="selectedElementX"
             .value="${this.selectedElement.x.toString()}"
             step="1"
             @change="${this.updateElementX}"
           />
         </div>
-        <div>y: ${this.selectedElement.y}</div>
         <div>
+          <label for="selectedElementY">y: ${this.selectedElement.y}</label>
           <input
             type="number"
+            id="selectedElementY"
             .value="${this.selectedElement.y.toString()}"
             step="1"
             @change="${this.updateElementY}"
           />
         </div>
-        <div>zorder: ${this.selectedElement.zorder}</div>
+        <div>
+          <label for="zorder">zorder: ${this.selectedElement.zorder}</label>
+          <input
+            type="number"
+            id="zorder"
+            .value="${this.selectedElement.zorder.toString()}"
+            step="1"
+            @change="${this.updateElementZ}"
+          />
+        </div>
       </div>
-      <h1>Element params</h1>
+      <h2>Element parameters</h2>
       <div class="elem-params">
         <div>//todo: params depends on element's type</div>
         <div>params: ${this.selectedElement.params}</div>
@@ -70,6 +85,9 @@ export class MyElementSettings extends LitElement {
   static styles = css`
     :host {
       background-color: yellow;
+    }
+    h2 {
+      text-decoration: underline;
     }
   `;
 }

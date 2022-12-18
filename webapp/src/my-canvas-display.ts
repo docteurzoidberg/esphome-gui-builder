@@ -203,8 +203,8 @@ export class MyCanvasDisplay extends LitElement {
     const newcanvas = document.createElement("canvas");
     const newctx = newcanvas.getContext("2d");
     if (!newctx) return;
-    newcanvas.width = this.width;
-    newcanvas.height = this.height;
+    newcanvas.width = this.displayWidth;
+    newcanvas.height = this.displayHeight;
     this.elements.sort((a, b) => a.zorder - b.zorder);
     this.elements.forEach((element) => {
       if (element.type == "image") {
@@ -213,13 +213,18 @@ export class MyCanvasDisplay extends LitElement {
     });
 
     //get back the temp canvas image data
-    const elemsImageData = newctx.getImageData(0, 0, this.width, this.height);
+    const elemsImageData = newctx.getImageData(
+      0,
+      0,
+      this.displayWidth,
+      this.displayHeight
+    );
 
     //drawing to scaled canvas
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
+    for (let x = 0; x < this.displayWidth; x++) {
+      for (let y = 0; y < this.displayHeight; y++) {
         // get color from buffer
-        const pixelIndex = (y * this.width + x) * 4;
+        const pixelIndex = (y * this.displayWidth + x) * 4;
         const r = elemsImageData.data[pixelIndex];
         const g = elemsImageData.data[pixelIndex + 1];
         const b = elemsImageData.data[pixelIndex + 2];
@@ -287,26 +292,41 @@ export class MyCanvasDisplay extends LitElement {
     return false;
   }
 
+  _startMoving() {
+    this.isMovingElement = true;
+    console.log(
+      "start moving",
+      this.mouse_pixel_coord.x,
+      this.mouse_pixel_coord.y
+    );
+    this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
+    this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
+  }
+  _stopMoving() {
+    console.log("stop moving");
+    this.isMovingElement = false;
+    this._elementMoved();
+  }
+
+  _elementMoved() {
+    window.dispatchEvent(
+      new CustomEvent("element-moved", { detail: this.selectedElement })
+    );
+  }
+
   handleMouseDown(e: MouseEvent) {
+    //get elements at mouse coordinates
     const atcoords = this.elements.filter((element) =>
       this._isElementAtCoords(element, this.mouse_pixel_coord)
     );
 
+    //sort elements by z order desc
     atcoords.sort((a, b) =>
       a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
     );
 
+    //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
-    if (selected && e.button === 0 && !this.isMovingElement) {
-      this.isMovingElement = true;
-      console.log(
-        "start moving",
-        this.mouse_pixel_coord.x,
-        this.mouse_pixel_coord.y
-      );
-      this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
-      this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
-    }
     if (selected?.id != this.selectedElement?.id) {
       this.dispatchEvent(
         new CustomEvent("element-selected", {
@@ -314,20 +334,17 @@ export class MyCanvasDisplay extends LitElement {
         })
       );
     }
+    if (selected && e.button === 0 && !this.isMovingElement) {
+      this._startMoving();
+    }
   }
 
   handleMouseUp(e: MouseEvent) {
-    if (this.isMovingElement) {
-      console.log("stop moving");
-      this.isMovingElement = false;
-    }
+    if (this.isMovingElement) this._stopMoving();
   }
 
   handleMouseLeave(e: MouseEvent) {
-    if (this.isMovingElement) {
-      console.log("stop moving");
-      this.isMovingElement = false;
-    }
+    if (this.isMovingElement) this._stopMoving();
   }
 
   handleMouseMove(e: MouseEvent) {
@@ -337,10 +354,10 @@ export class MyCanvasDisplay extends LitElement {
     this.mouse_pixel_coord.y = Math.ceil(this.mouse_y / this.canvasCalcScaleY);
     if (this.mouse_pixel_coord.x < 1) this.mouse_pixel_coord.x = 1;
     if (this.mouse_pixel_coord.y < 1) this.mouse_pixel_coord.y = 1;
-    if (this.mouse_pixel_coord.x > this.width)
-      this.mouse_pixel_coord.x = this.width;
-    if (this.mouse_pixel_coord.y > this.height)
-      this.mouse_pixel_coord.y = this.height;
+    if (this.mouse_pixel_coord.x > this.displayWidth)
+      this.mouse_pixel_coord.x = this.displayWidth;
+    if (this.mouse_pixel_coord.y > this.displayHeight)
+      this.mouse_pixel_coord.y = this.displayHeight;
 
     if (this.isMovingElement && this.selectedElement) {
       const movex = this.mouse_pixel_coord.x - this.elementStartMoveCoord.x;

@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./my-image-list";
 import "./my-animation-list";
 import "./my-font-list";
+import "./my-section";
 
 @customElement("my-toolbox")
 export class MyToolbox extends LitElement {
@@ -14,20 +15,20 @@ export class MyToolbox extends LitElement {
   render() {
     return html`
       <div class="tools">
-        <h1>Toolbox</h1>
+        <h2>Toolbox</h2>
         <div>
-          <h3 slot="tab">Fonts</h3>
-          <section slot="panel">
+          <my-section>
+            <span slot="title">Fonts</span>
             <my-font-list></my-font-list>
-          </section>
-          <h3 slot="tab">Images</h3>
-          <section slot="panel">
+          </my-section>
+          <my-section>
+            <span slot="title">Images</span>
             <my-image-list></my-image-list>
-          </section>
-          <h3 slot="tab">Animations</h3>
-          <section slot="panel">
+          </my-section>
+          <my-section>
+            <span slot="title">Animations</span>
             <my-animation-list></my-animation-list>
-          </section>
+          </my-section>
         </div>
       </div>
     `;
@@ -37,6 +38,11 @@ export class MyToolbox extends LitElement {
     .tools {
       border: 2px solid;
       padding: 10px;
+    }
+
+    h2,
+    h3 {
+      text-decoration: underline;
     }
   `;
 }

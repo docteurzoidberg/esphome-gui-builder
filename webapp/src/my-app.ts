@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "interfaces/GuiElement";
@@ -8,16 +8,17 @@ import "./my-element-settings";
 import "./my-canvas-display";
 import "./my-toolbox";
 
-import { resetStyles } from "./resetCss";
-
 @customElement("my-app")
 export class MyApp extends LitElement {
   static styles = [
-    resetStyles(),
     css`
       :host {
         display: block;
         height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: "Wendy";
+        font-size: 1.5em;
       }
 
       .first-row-container {
@@ -54,6 +55,10 @@ export class MyApp extends LitElement {
         /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: stretch;
+      }
+
+      h2 {
+        text-decoration: underline;
       }
     `,
   ];
@@ -130,12 +135,26 @@ export class MyApp extends LitElement {
     this.requestUpdate();
   }
 
+  handleElementMoved(e: CustomEvent) {
+    console.log("element moved");
+    const element = e.detail;
+    this.selectedElement = element;
+    this.requestUpdate();
+  }
+
+  protected firstUpdated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    document.documentElement.style.setProperty("color-scheme", "dark");
+  }
+
   render() {
     return html`
       <div class="first-row-container three-cols-row">
         <div class="col1">
           <div class="screen-settings-container">
             <div class="settings">
+              <h2>Screen settings</h2>
               <div>
                 <label for="screenwidth">Display Width</label>
                 <input
@@ -229,6 +248,7 @@ export class MyApp extends LitElement {
               @init-canvas="${this.handleInitCanvas}"
               @drawing-update="${this.handleDrawingUpdate}"
               @element-selected="${this.handleElementSelected}"
+              @element-moved="${this.handleElementMoved}"
             ></my-canvas-display>
           </div>
           <div class="row2 toolbox-container">

@@ -29,7 +29,7 @@ export class MyElementList extends LitElement {
           is-selected="${element.id === this.selectedElement?.id}"
           @click="${() => this.selectElement(element)}"
         >
-          <h4>${element.name}</h4>
+          <span>${element.name}</span>
         </div>
       `;
     });
@@ -37,17 +37,17 @@ export class MyElementList extends LitElement {
 
   render() {
     return html`
-      <h1>Elements</h1>
+      <h2>Elements</h2>
       <div class="elements">${this.renderElements()}</div>
     `;
   }
 
   static styles = css`
-    :host {
-      background-color: purple;
-    }
     [is-selected="true"] {
       border: 5px solid red;
+    }
+    h2 {
+      text-decoration: underline;
     }
   `;
 }
