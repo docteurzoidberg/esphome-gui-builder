@@ -1,5 +1,5 @@
-import { LitElement, css, html, PropertyValueMap } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { GuiElement } from "interfaces/GuiElement";
 
 @customElement("my-element-list")

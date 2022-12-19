@@ -4,28 +4,28 @@ import { customElement, property } from "lit/decorators.js";
 import "./my-image-list";
 import "./my-animation-list";
 
-import { EspHomeFont } from "interfaces/EspHomeFont";
-import { Font } from "./classes/Font";
+import { EspHomeFontJSON } from "interfaces/EspHomeFontJSON";
+import { EspHomeFont } from "./classes/EspHomeFont";
 
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
   @property({ type: Array })
-  fonts: Array<Font> = [];
+  fonts: Array<EspHomeFont> = [];
 
   @property({ type: Object })
-  selectedFont?: Font;
+  selectedFont?: EspHomeFont;
 
   connectedCallback() {
     super.connectedCallback();
     fetch("./fonts.json")
       .then((response) => response.json())
-      .then((json: Array<EspHomeFont>) => {
-        this.fonts = json.map((font: EspHomeFont) => new Font(font));
+      .then((json: Array<EspHomeFontJSON>) => {
+        this.fonts = json.map((font: EspHomeFontJSON) => new EspHomeFont(font));
         console.dir(json);
       });
   }
 
-  renderFontSample(font: Font) {
+  renderFontSample(font: EspHomeFont) {
     if (!font.data) return html`no data`;
     const result = font.render(font.data.glyphstr);
     if (!result) return html`no result`;
@@ -38,7 +38,7 @@ export class MyFontList extends LitElement {
   }
 
   renderFonts() {
-    return this.fonts.map((font: Font) => {
+    return this.fonts.map((font: EspHomeFont) => {
       return html`<div
         class="font"
         @click="${() => (this.selectedFont = font)}"

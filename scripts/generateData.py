@@ -173,7 +173,7 @@ def generate_fonts_json():
         print(jsonStr)
     return jsonout
 
-def get_font_json(path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
+def get_font_json(path, size=20, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
     font = load_ttf_font(path, size)
     ascent, descent = font.getmetrics(glyphs)
     glyph_args = {}

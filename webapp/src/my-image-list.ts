@@ -1,6 +1,6 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { EspHomeImage } from "interfaces/EspHomeImage";
+import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
 const imageScale = 5;
 
 @customElement("my-image-list")
@@ -9,7 +9,7 @@ export class MyImageList extends LitElement {
   images = [];
 
   @property({ type: Object })
-  selectedImage?: EspHomeImage;
+  selectedImage?: EspHomeImageJSON;
 
   connectedCallback() {
     super.connectedCallback();
@@ -21,14 +21,14 @@ export class MyImageList extends LitElement {
       });
   }
 
-  selectImage(image: EspHomeImage) {
+  selectImage(image: EspHomeImageJSON) {
     this.selectedImage = image;
     this.dispatchEvent(new CustomEvent("image-selected", { detail: image }));
   }
 
   renderImages() {
     if (!this.images) return;
-    return this.images.map((image: EspHomeImage) => {
+    return this.images.map((image: EspHomeImageJSON) => {
       return html`
         <img
           class="image"

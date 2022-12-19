@@ -1,4 +1,4 @@
-export interface EspHomeImage {
+export interface EspHomeImageJSON {
   width: number;
   height: number;
   name: string;

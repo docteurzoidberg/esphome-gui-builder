@@ -1,3 +1,11 @@
+export interface EspHomeFontJSON {
+  name: string;
+  height: number;
+  glyphstr: string;
+  glyphs: [Glyph];
+  data: [];
+}
+
 export interface Glyph {
   glyph: string;
   offset_x: number;
@@ -5,14 +13,6 @@ export interface Glyph {
   width: number;
   height: number;
   start: number;
-}
-
-export interface EspHomeFont {
-  name: string;
-  height: number;
-  glyphstr: string;
-  glyphs: [Glyph];
-  data: [];
 }
 
 export interface RenderResult {

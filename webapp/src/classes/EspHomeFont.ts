@@ -1,12 +1,12 @@
 import {
-  EspHomeFont,
+  EspHomeFontJSON,
   Glyph,
   RenderResult,
   TextBound,
-} from "interfaces/EspHomeFont";
+} from "interfaces/EspHomeFontJSON";
 
-export class Font {
-  data?: EspHomeFont;
+export class EspHomeFont {
+  data?: EspHomeFontJSON;
   tempCanvas: HTMLCanvasElement;
   getGlyphBitmap(start: number, width: number, height: number) {
     if (!this.data) return;
@@ -81,6 +81,8 @@ export class Font {
       //draw char
       const img = this.getGlyphBitmap(glyph.start, glyph.width, glyph.height);
       if (img) {
+        //x=?
+        //y=?
         ctx.putImageData(img, currentPosX + glyph.offset_x, glyph.offset_y);
       }
       //save next glyph x pos
@@ -94,7 +96,7 @@ export class Font {
     };
   }
 
-  constructor(fontjson: EspHomeFont) {
+  constructor(fontjson: EspHomeFontJSON) {
     this.data = fontjson;
     this.tempCanvas = document.createElement("canvas");
   }

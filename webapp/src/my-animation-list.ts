@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { EspHomeAnimation } from "interfaces/EspHomeAnimation";
+import { EspHomeAnimationJSON } from "interfaces/EspHomeAnimationJSON";
 const imageScale = 5;
 
 @customElement("my-animation-list")
@@ -20,7 +20,7 @@ export class MyAnimationList extends LitElement {
 
   renderImages() {
     if (!this.animations) return;
-    return this.animations.map((image: EspHomeAnimation) => {
+    return this.animations.map((image: EspHomeAnimationJSON) => {
       return html`
         <img
           class="image"

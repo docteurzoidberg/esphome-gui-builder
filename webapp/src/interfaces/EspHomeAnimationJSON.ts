@@ -1,4 +1,4 @@
-export interface EspHomeAnimation {
+export interface EspHomeAnimationJSON {
   width: number;
   height: number;
   name: string;

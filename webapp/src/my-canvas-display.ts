@@ -3,7 +3,7 @@ import { customElement, property, query } from "lit/decorators.js";
 import { pixelcoord } from "interfaces/PixelCoord";
 import { rgb } from "interfaces/rgb";
 import { GuiElement } from "interfaces/GuiElement";
-import { EspHomeImage } from "interfaces/EspHomeImage";
+import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
 
 const imageScale = 5;
 
@@ -145,7 +145,7 @@ export class MyCanvasDisplay extends LitElement {
     element: GuiElement,
     ctx: CanvasRenderingContext2D
   ) {
-    const imageElement = element.data as EspHomeImage;
+    const imageElement = element.data as EspHomeImageJSON;
     let img = new Image();
     img.src = imageElement.dataurl;
     ctx.drawImage(img, element.x, element.y);
@@ -255,7 +255,7 @@ export class MyCanvasDisplay extends LitElement {
       (this.showGrid ? this.canvasGridWidth * (this.selectedElement.y + 1) : 0);
 
     if (this.selectedElement.type == "image") {
-      const imageElement = this.selectedElement.data as EspHomeImage;
+      const imageElement = this.selectedElement.data as EspHomeImageJSON;
       elemWidth =
         imageElement.width * this.canvasScale +
         (this.showGrid ? this.canvasGridWidth * imageElement.width : 0);
@@ -280,7 +280,7 @@ export class MyCanvasDisplay extends LitElement {
     let elemHeight = 0;
 
     if (element.type == "image") {
-      const imageElement = element.data as EspHomeImage;
+      const imageElement = element.data as EspHomeImageJSON;
       elemWidth = imageElement.width;
       elemHeight = imageElement.height;
     }
