@@ -4,6 +4,9 @@ import { pixelcoord } from "interfaces/PixelCoord";
 import { rgb } from "interfaces/rgb";
 import { GuiElement } from "interfaces/GuiElement";
 import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
+import { EspHomeFont } from "classes/EspHomeFont";
+import { EspHomeAnimation } from "classes/EspHomeAnimation";
+import { EspHomeAnimationJSON } from "interfaces/EspHomeAnimationJSON";
 
 const imageScale = 5;
 
@@ -151,6 +154,17 @@ export class MyCanvasDisplay extends LitElement {
     ctx.drawImage(img, element.x, element.y);
   }
 
+  _drawAnimationElementToCanvas(
+    element: GuiElement,
+    context: CanvasRenderingContext2D
+  ) {
+    const animation = element.data as EspHomeAnimation;
+    animation.update();
+    const image = animation.getImageData();
+    if (!image) return;
+    context.putImageData(image, element.x, element.y);
+  }
+
   _drawCanvasGrid(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "black";
     ctx.lineWidth = this.canvasGridWidth;
@@ -209,6 +223,8 @@ export class MyCanvasDisplay extends LitElement {
     this.elements.forEach((element) => {
       if (element.type == "image") {
         this._drawImageElementToCanvas(element, newctx);
+      } else if (element.type == "animation") {
+        this._drawAnimationElementToCanvas(element, newctx);
       }
     });
 
@@ -262,6 +278,14 @@ export class MyCanvasDisplay extends LitElement {
       elemHeight =
         imageElement.height * this.canvasScale +
         (this.showGrid ? this.canvasGridWidth * imageElement.height : 0);
+    } else if (this.selectedElement.type == "animation") {
+      const animation = this.selectedElement.data as EspHomeAnimation;
+      elemWidth =
+        animation.width * this.canvasScale +
+        (this.showGrid ? this.canvasGridWidth * animation.width : 0);
+      elemHeight =
+        animation.height * this.canvasScale +
+        (this.showGrid ? this.canvasGridWidth * animation.height : 0);
     }
 
     const selectedLineWidth = 8;
@@ -283,6 +307,10 @@ export class MyCanvasDisplay extends LitElement {
       const imageElement = element.data as EspHomeImageJSON;
       elemWidth = imageElement.width;
       elemHeight = imageElement.height;
+    } else if (element.type == "animation") {
+      const imageElement = element.data as EspHomeAnimation;
+      elemWidth = imageElement.width;
+      elemHeight = imageElement.height;
     }
 
     if (coords.x >= element.x && coords.x < element.x + elemWidth)
@@ -294,11 +322,13 @@ export class MyCanvasDisplay extends LitElement {
 
   _startMoving() {
     this.isMovingElement = true;
+
     console.log(
       "start moving",
       this.mouse_pixel_coord.x,
       this.mouse_pixel_coord.y
     );
+
     this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
     this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
   }
@@ -362,7 +392,7 @@ export class MyCanvasDisplay extends LitElement {
     if (this.isMovingElement && this.selectedElement) {
       const movex = this.mouse_pixel_coord.x - this.elementStartMoveCoord.x;
       const movey = this.mouse_pixel_coord.y - this.elementStartMoveCoord.y;
-      console.log("moving element", movex, movey);
+      //console.log("moving element", movex, movey);
       this.selectedElement.x += movex;
       this.selectedElement.y += movey;
       this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
