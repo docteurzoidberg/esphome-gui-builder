@@ -41,9 +41,9 @@ export class EspHomeAnimation {
     //fill image data with current frame data
     const animdata = this.data.data;
     const frameIndex = this._currentFrameIndex * this.width * this.height * 3; //3=>rgb24 in esphome
-    console.log("drawing next frame");
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
+    //console.log("drawing next frame");
+    for (let x = 0; x <= this.width; x++) {
+      for (let y = 0; y <= this.height; y++) {
         const pixelDestIndex = (x * this.width + y) * 4; //rgba
         const pixelSrcIndex = frameIndex + (x * this.width + y) * 3; //rgb24
         this._currentFrameData.data[pixelDestIndex + 0] =

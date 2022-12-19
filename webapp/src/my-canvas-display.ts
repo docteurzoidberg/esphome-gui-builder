@@ -260,9 +260,6 @@ export class MyCanvasDisplay extends LitElement {
     //draw rect over selected element
     if (!this.selectedElement) return;
 
-    let elemWidth = 0;
-    let elemHeight = 0;
-
     const elemCanvasX =
       this.selectedElement.x * this.canvasScale +
       (this.showGrid ? this.canvasGridWidth * (this.selectedElement.x + 1) : 0);
@@ -270,23 +267,21 @@ export class MyCanvasDisplay extends LitElement {
       this.selectedElement.y * this.canvasScale +
       (this.showGrid ? this.canvasGridWidth * (this.selectedElement.y + 1) : 0);
 
+    let elem = null;
     if (this.selectedElement.type == "image") {
-      const imageElement = this.selectedElement.data as EspHomeImageJSON;
-      elemWidth =
-        imageElement.width * this.canvasScale +
-        (this.showGrid ? this.canvasGridWidth * imageElement.width : 0);
-      elemHeight =
-        imageElement.height * this.canvasScale +
-        (this.showGrid ? this.canvasGridWidth * imageElement.height : 0);
+      elem = this.selectedElement.data as EspHomeImageJSON;
     } else if (this.selectedElement.type == "animation") {
-      const animation = this.selectedElement.data as EspHomeAnimation;
-      elemWidth =
-        animation.width * this.canvasScale +
-        (this.showGrid ? this.canvasGridWidth * animation.width : 0);
-      elemHeight =
-        animation.height * this.canvasScale +
-        (this.showGrid ? this.canvasGridWidth * animation.height : 0);
+      elem = this.selectedElement.data as EspHomeAnimation;
     }
+
+    if (!elem) return;
+
+    const elemWidth =
+      (elem.width + 1) * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * elem.width : 0);
+    const elemHeight =
+      (elem.height + 1) * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * elem.height : 0);
 
     const selectedLineWidth = 8;
     ctx.strokeStyle = "rgba(" + 255 + "," + 0 + "," + 0 + ", 1)";
