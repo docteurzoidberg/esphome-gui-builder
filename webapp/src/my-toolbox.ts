@@ -35,9 +35,16 @@ export class MyToolbox extends LitElement {
   }
 
   static styles = css`
+    :host {
+      overflow: scroll;
+    }
     .tools {
-      border: 2px solid;
+      //border: 2px solid;
+      background-color: #333;
       padding: 10px;
+    }
+    h2 {
+      margin-top: 0;
     }
 
     h2,

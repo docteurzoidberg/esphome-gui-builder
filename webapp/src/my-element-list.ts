@@ -37,7 +37,7 @@ export class MyElementList extends LitElement {
 
   render() {
     return html`
-      <h2>Elements</h2>
+      <h3>Elements</h3>
       <div class="elements">${this.renderElements()}</div>
     `;
   }
@@ -46,7 +46,7 @@ export class MyElementList extends LitElement {
     [is-selected="true"] {
       border: 5px solid red;
     }
-    h2 {
+    h3 {
       text-decoration: underline;
     }
   `;

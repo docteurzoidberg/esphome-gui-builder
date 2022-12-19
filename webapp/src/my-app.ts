@@ -3,6 +3,8 @@ import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "interfaces/GuiElement";
 
+import "./esphome-logo";
+
 import "./my-element-list";
 import "./my-element-settings";
 import "./my-canvas-display";
@@ -22,7 +24,27 @@ export class MyApp extends LitElement {
         font-size: 1.5em;
       }
 
-      .first-row-container {
+      .screen-container {
+        margin: 20px;
+        text-align: center;
+      }
+
+      .col1 {
+      }
+
+      .container {
+        display: flex;
+        /* flex-flow: column; */
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .second-row {
+        /* flex:1 1 auto; */
+        flex-grow: 1;
+      }
+
+      .second-row-container {
         display: flex;
         height: 100%;
       }
@@ -57,7 +79,33 @@ export class MyApp extends LitElement {
         flex-grow: 0;
         align-self: stretch;
       }
+      .header {
+        text-align: left;
+        font-size: 2em;
+        margin: 0;
+        padding: 0px;
+        line-height: 80px;
+        vertical-align: middle;
+      }
+      .logo,
+      .title {
+        display: inline-block;
+      }
+      .logo {
+        margin-top: auto;
 
+        align-items: center;
+      }
+      @media (prefers-color-scheme: dark) {
+        .header {
+          /* dark mode variables go here */
+          background-color: #555555;
+        }
+        .col1,
+        .col3 {
+          background-color: #222222;
+        }
+      }
       h2 {
         text-decoration: underline;
       }
@@ -151,116 +199,126 @@ export class MyApp extends LitElement {
 
   render() {
     return html`
-      <div class="first-row-container three-cols-row">
-        <div class="col1">
-          <div class="screen-settings-container">
-            <my-section class="settings">
-              <span slot="title">Screen settings</span>
-              <div>
-                <label for="screenwidth">Display Width</label>
-                <input
-                  id="screenwidth"
-                  type="number"
-                  min="1"
-                  value="${this.screenWidth}"
-                  @change="${(e: Event) => {
-                    this.screenWidth = parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10
-                    );
-                  }}"
-                />
-              </div>
-              <div>
-                <label for="screenwidth">Display Height</label>
-                <input
-                  id="screenheight"
-                  type="number"
-                  min="1"
-                  value="${this.screenHeight}"
-                  @change="${(e: Event) => {
-                    this.screenHeight = parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10
-                    );
-                  }}"
-                />
-              </div>
-              <div>
-                <label for="showgrid">Show grid</label>
-                <input
-                  id="showgrid"
-                  type="checkbox"
-                  .checked="${this.showGrid}"
-                  @change="${(e: Event) =>
-                    (this.showGrid = (e.target as HTMLInputElement).checked)}"
-                />
-              </div>
-              <div>
-                <label for="gridwidth">Grid Width</label>
-                <input
-                  id="gridwidth"
-                  type="number"
-                  min="1"
-                  value="${this.canvasGridWidth}"
-                  @change="${(e: Event) => {
-                    this.canvasGridWidth = parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10
-                    );
-                  }}"
-                />
-              </div>
-              <div>
-                <label for="gridwidth">Pixel Scale</label>
-                <input
-                  id="pixelscale"
-                  type="number"
-                  min="1"
-                  value="${this.canvasScale}"
-                  @change="${(e: Event) => {
-                    this.canvasScale = parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10
-                    );
-                  }}"
-                />
-              </div>
-            </my-section>
-          </div>
-          <div class="element-settings-container">
-            <my-element-settings
-              .selectedElement="${this.selectedElement}"
-            ></my-element-settings>
-          </div>
+      <div class="container two-rows-row">
+        <div class="first-row header">
+          <div class="logo"><esphome-logo></esphome-logo></div>
+          <div class="title">ESPHome GUI Builder</div>
         </div>
-        <div class="col2 second-col-container two-rows-col">
-          <div class="row1 screen-container">
-            <my-canvas-display
-              .displayWidth="${this.screenWidth}"
-              .displayHeight="${this.screenHeight}"
-              .canvasGridWidth="${this.canvasGridWidth}"
-              .canvasScale="${this.canvasScale}"
-              .showGrid="${this.showGrid}"
-              .elements="${this.guiElements}"
-              .selectedElement="${this.selectedElement}"
-              @init-canvas="${this.handleInitCanvas}"
-              @drawing-update="${this.handleDrawingUpdate}"
-              @element-selected="${this.handleElementSelected}"
-              @element-moved="${this.handleElementMoved}"
-            ></my-canvas-display>
-          </div>
-          <div class="row2 toolbox-container">
-            <my-toolbox></my-toolbox>
-          </div>
-        </div>
-        <div class="col3">
-          <div class="element-list-container">
-            <my-element-list
-              .guiElements="${this.guiElements}"
-              .selectedElement="${this.selectedElement}"
-              @element-selected="${this.handleElementSelected}"
-            ></my-element-list>
+        <div class="second-row">
+          <div class="second-row-container three-cols-row">
+            <div class="col1">
+              <div class="screen-settings-container">
+                <my-section class="settings">
+                  <span slot="title">Screen settings</span>
+                  <div>
+                    <label for="screenwidth">Display Width</label>
+                    <input
+                      id="screenwidth"
+                      type="number"
+                      min="1"
+                      value="${this.screenWidth}"
+                      @change="${(e: Event) => {
+                        this.screenWidth = parseInt(
+                          (e.target as HTMLInputElement).value,
+                          10
+                        );
+                      }}"
+                    />
+                  </div>
+                  <div>
+                    <label for="screenwidth">Display Height</label>
+                    <input
+                      id="screenheight"
+                      type="number"
+                      min="1"
+                      value="${this.screenHeight}"
+                      @change="${(e: Event) => {
+                        this.screenHeight = parseInt(
+                          (e.target as HTMLInputElement).value,
+                          10
+                        );
+                      }}"
+                    />
+                  </div>
+                  <div>
+                    <label for="showgrid">Show grid</label>
+                    <input
+                      id="showgrid"
+                      type="checkbox"
+                      .checked="${this.showGrid}"
+                      @change="${(e: Event) =>
+                        (this.showGrid = (
+                          e.target as HTMLInputElement
+                        ).checked)}"
+                    />
+                  </div>
+                  <div>
+                    <label for="gridwidth">Grid Width</label>
+                    <input
+                      id="gridwidth"
+                      type="number"
+                      min="1"
+                      value="${this.canvasGridWidth}"
+                      @change="${(e: Event) => {
+                        this.canvasGridWidth = parseInt(
+                          (e.target as HTMLInputElement).value,
+                          10
+                        );
+                      }}"
+                    />
+                  </div>
+                  <div>
+                    <label for="gridwidth">Pixel Scale</label>
+                    <input
+                      id="pixelscale"
+                      type="number"
+                      min="1"
+                      value="${this.canvasScale}"
+                      @change="${(e: Event) => {
+                        this.canvasScale = parseInt(
+                          (e.target as HTMLInputElement).value,
+                          10
+                        );
+                      }}"
+                    />
+                  </div>
+                </my-section>
+              </div>
+              <div class="element-settings-container">
+                <my-element-settings
+                  .selectedElement="${this.selectedElement}"
+                ></my-element-settings>
+              </div>
+            </div>
+            <div class="col2 second-col-container two-rows-col">
+              <div class="row1 screen-container">
+                <my-canvas-display
+                  .displayWidth="${this.screenWidth}"
+                  .displayHeight="${this.screenHeight}"
+                  .canvasGridWidth="${this.canvasGridWidth}"
+                  .canvasScale="${this.canvasScale}"
+                  .showGrid="${this.showGrid}"
+                  .elements="${this.guiElements}"
+                  .selectedElement="${this.selectedElement}"
+                  @init-canvas="${this.handleInitCanvas}"
+                  @drawing-update="${this.handleDrawingUpdate}"
+                  @element-selected="${this.handleElementSelected}"
+                  @element-moved="${this.handleElementMoved}"
+                ></my-canvas-display>
+              </div>
+              <div class="row2 toolbox-container">
+                <my-toolbox></my-toolbox>
+              </div>
+            </div>
+            <div class="col3">
+              <div class="element-list-container">
+                <my-element-list
+                  .guiElements="${this.guiElements}"
+                  .selectedElement="${this.selectedElement}"
+                  @element-selected="${this.handleElementSelected}"
+                ></my-element-list>
+              </div>
+            </div>
           </div>
         </div>
       </div>

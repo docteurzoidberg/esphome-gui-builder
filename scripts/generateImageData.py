@@ -92,12 +92,12 @@ def generate_images_json():
         jsonout.append(get_image_json(path))
     with open('data/images.json', 'w') as outfile:
         jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr) 
+        outfile.write(jsonStr)
         outfile.close()
-        print(jsonStr) 
+        print(jsonStr)
     return jsonout
 
-def get_image_json(path): 
+def get_image_json(path):
     from PIL import Image
     file = open(path, 'rb')
     binary_fc       = file.read()  # fc aka file_content
@@ -108,7 +108,7 @@ def get_image_json(path):
     dataurl = f'data:image/png;base64,{base64_utf8_str}'
     file.close()
     return ImageJson(path, width, height, dataurl)
- 
+
 
 def generate_animations_json():
     result = glob.iglob('data/animations/*.[gG][iI][fF]', recursive=True)
@@ -117,14 +117,14 @@ def generate_animations_json():
         jsonout.append(get_animation_json(path))
     with open('data/animations.json', 'w') as outfile:
         jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr) 
+        outfile.write(jsonStr)
         outfile.close()
-        print(jsonStr) 
+        print(jsonStr)
     return jsonout
 
-def get_animation_json(path): 
-    #path = CORE.relative_config_path(config[CONF_FILE])    
-    
+def get_animation_json(path):
+    #path = CORE.relative_config_path(config[CONF_FILE])
+
     file = open(path, 'rb')
     binary_fc       = file.read()  # fc aka file_content
     file.close()
@@ -168,12 +168,12 @@ def generate_fonts_json():
         jsonout.append(get_font_json(path))
     with open('data/fonts.json', 'w') as outfile:
         jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr) 
+        outfile.write(jsonStr)
         outfile.close()
-        print(jsonStr) 
+        print(jsonStr)
     return jsonout
 
-def get_font_json(path, size=20, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
+def get_font_json(path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
     font = load_ttf_font(path, size)
     ascent, descent = font.getmetrics(glyphs)
     glyph_args = {}
@@ -182,19 +182,25 @@ def get_font_json(path, size=20, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOP
         mask = font.getmask(glyph, mode="1")
         offset_x, offset_y = font.getoffset(glyph)
         width, height = mask.size
-        width8 = ((width + 7) // 8) * 8
-        glyph_data = [0] * (height * width8 // 8)
+        #width8 = ((width + 7) // 8) * 8
+        #glyph_data = [0] * (height * width8 // 8)
+        glyph_data = [0] * (height * width)
+
         for y in range(height):
             for x in range(width):
                 if not mask.getpixel((x, y)):
                     continue
-                pos = x + y * width8
-                glyph_data[pos // 8] |= 0x80 >> (pos % 8)
+                #pos = x + y * width8
+                pos = x + y * width
+
+                #glyph_data[pos // 8] |= 0x80 >> (pos % 8)
+                glyph_data[pos] = 1
+
         glyph_args[glyph] = (len(data), offset_x, offset_y, width, height)
         data += glyph_data
 
     rhs = [HexInt(x) for x in data]
-    
+
     glyph_initializer = []
     for glyph in glyphs:
         offset_x = glyph_args[glyph][1]

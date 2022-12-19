@@ -12,8 +12,8 @@ export class MySection extends LitElement {
   }
 
   renderExpandCollapse() {
-    if (this.isOpen) return html`<span>-</span>`;
-    else return html`<span>+</span>`;
+    if (this.isOpen) return html`<span @click="${this.headerClick}">-</span>`;
+    else return html`<span @click="${this.headerClick}">+</span>`;
   }
 
   render() {
