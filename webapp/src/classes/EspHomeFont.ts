@@ -15,25 +15,41 @@ export class EspHomeFont {
     this.tempCanvas.height = height;
     const ctx = this.tempCanvas.getContext("2d");
     if (!ctx) return;
-    const image = ctx.createImageData(width, height);
+
+    //ctx.fillStyle = "rgb(255,255,255)";
+    //ctx.fillRect(0, 0, width, height);
+
+    const newCanvas = document.createElement("canvas");
+    const newctx = newCanvas.getContext("2d");
+    if (!newctx) return;
+
+    const image = newctx.createImageData(width, height);
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
-        const fontIndex = start + (x * width + y);
-        const dataIndex = (x * width + y) * 4;
-        if (this.data.data[fontIndex]) {
+        const fontIndex = start + (y * width + x);
+        const dataIndex = (y * width + x) * 4;
+        if (this.data.data[fontIndex] === 1) {
           image.data[dataIndex + 0] = 255;
           image.data[dataIndex + 1] = 255;
           image.data[dataIndex + 2] = 255;
           image.data[dataIndex + 3] = 255;
-        } else {
+        } else if (this.data.data[fontIndex] === 0) {
           image.data[dataIndex + 0] = 0;
           image.data[dataIndex + 1] = 0;
           image.data[dataIndex + 2] = 0;
           image.data[dataIndex + 3] = 255;
+        } else {
+          console.error("no data");
         }
       }
     }
-    return image;
+
+    newctx.putImageData(image, 0, 0);
+    ctx.drawImage(newCanvas, 0, 0);
+    //ctx.fillStyle = "rgb(255,255,255)";
+    //ctx.fillRect(0, 0, width, .height);
+
+    return ctx.getImageData(0, 0, width, height);
   }
 
   _getTextBound(text: string): TextBound {
@@ -51,8 +67,8 @@ export class EspHomeFont {
 
       //expand canvas for the new char
       w += glyph.width;
-      if (h < glyph.height) {
-        h = glyph.height;
+      if (h < glyph.height + glyph.offset_y) {
+        h = glyph.height + glyph.offset_y;
       }
     }
     return { width: w, height: h };
@@ -69,6 +85,9 @@ export class EspHomeFont {
     canvas.width = textBound.width;
     canvas.height = textBound.height;
 
+    //ctx.fillStyle = "rgb(0,0,0);";
+    //ctx.fillRect(0, 0, textBound.width, textBound.height);
+
     for (let i = 0; i < text.length; i++) {
       const char = text.charAt(i);
 
@@ -83,6 +102,7 @@ export class EspHomeFont {
       if (img) {
         //x=?
         //y=?
+        console.log(glyph);
         ctx.putImageData(img, currentPosX + glyph.offset_x, glyph.offset_y);
       }
       //save next glyph x pos

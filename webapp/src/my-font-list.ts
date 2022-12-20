@@ -28,6 +28,7 @@ export class MyFontList extends LitElement {
   renderFontSample(font: EspHomeFont) {
     if (!font.data) return html`no data`;
     const result = font.render(font.data.glyphstr);
+    //const result = font.render("1122");
     if (!result) return html`no result`;
     return html`<img
       src="${result.dataUrl}"
