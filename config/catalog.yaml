@@ -1,0 +1,15 @@
+fonts:
+  - name: "8Bit HUD"
+    file: "data/fonts/8-bit-hud.ttf"
+    glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+    size: 5
+  - name: "5x5"
+    file: "data/fonts/5x5_pixel.ttf"
+    glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+    size: 8
+
+animations:
+  - include: "data/animations/*.[gG][iI][fF]"
+
+images:
+  - include: "data/images/*.[pP][nN][gG]"

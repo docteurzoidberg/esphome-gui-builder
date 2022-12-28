@@ -165,6 +165,17 @@ export class MyCanvasDisplay extends LitElement {
     context.putImageData(image, element.x, element.y);
   }
 
+  _drawTextElementToCanvas(
+    element: GuiElement,
+    context: CanvasRenderingContext2D
+  ) {
+    const font = element.data.font as EspHomeFont;
+    const text = element.data.text;
+    const result = font.render(text);
+    if (!result) return;
+    context.putImageData(result.image, element.x, element.y);
+  }
+
   _drawCanvasGrid(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "black";
     ctx.lineWidth = this.canvasGridWidth;
@@ -225,6 +236,8 @@ export class MyCanvasDisplay extends LitElement {
         this._drawImageElementToCanvas(element, newctx);
       } else if (element.type == "animation") {
         this._drawAnimationElementToCanvas(element, newctx);
+      } else if (element.type == "text") {
+        this._drawTextElementToCanvas(element, newctx);
       }
     });
 
@@ -272,6 +285,10 @@ export class MyCanvasDisplay extends LitElement {
       elem = this.selectedElement.data as EspHomeImageJSON;
     } else if (this.selectedElement.type == "animation") {
       elem = this.selectedElement.data as EspHomeAnimation;
+    } else if (this.selectedElement.type == "text") {
+      elem = this.selectedElement.data;
+      elem.width = elem.bounds.width;
+      elem.height = elem.bounds.height;
     }
 
     if (!elem) return;
@@ -306,6 +323,10 @@ export class MyCanvasDisplay extends LitElement {
       const imageElement = element.data as EspHomeAnimation;
       elemWidth = imageElement.width;
       elemHeight = imageElement.height;
+    } else if (element.type == "text") {
+      const bounds = element.data.bounds;
+      elemWidth = bounds.width;
+      elemHeight = bounds.height;
     }
 
     if (coords.x >= element.x && coords.x < element.x + elemWidth)

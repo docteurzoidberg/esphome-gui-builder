@@ -2,8 +2,8 @@ export interface EspHomeFontJSON {
   name: string;
   height: number;
   glyphstr: string;
-  glyphs: [Glyph];
-  data: [];
+  glyphs: Array<Glyph>;
+  data: Array<number>;
 }
 
 export interface Glyph {
@@ -19,6 +19,7 @@ export interface RenderResult {
   dataUrl: string;
   width: number;
   height: number;
+  image: any;
 }
 
 export interface TextBound {

@@ -40,8 +40,9 @@ class FontGlyph:
         self.start = start
 
 class FontJson:
-    def __init__(self, name, height=20, glyphstr="", fontdata=[], glyphs=[]) -> None:
+    def __init__(self, name, path, height=20, glyphstr="", fontdata=[], glyphs=[]) -> None:
         self.name = name
+        self.path = path
         self.height = height
         self.glyphstr = glyphstr
         self.glyphs = [glyph.__dict__ for glyph in glyphs]
@@ -61,6 +62,70 @@ class TrueTypeFontWrapper:
     def getmetrics(self, glyphs):
         return self.font.getmetrics()
 
+class AssetsBuilder:
+    yaml_content = None
+    def __init__(self) -> None:
+        self.load_config()
+        self.generate_images_json()
+        self.generate_animations_json()
+        self.generate_fonts_json()
+
+    def generate_images_json(self):
+        jsonout = list()
+        images = self.yaml_content["images"]
+        for image in images:
+            if "include" in image:
+                include = image["include"]
+                result = glob.iglob(include, recursive=True)
+                for path in result:
+                    jsonout.append(get_image_json(path))
+        with open('data/images.json', 'w') as outfile:
+            jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
+            outfile.write(jsonStr)
+            outfile.close()
+        return jsonout
+
+    def generate_animations_json(self):
+        jsonout = list()
+        animations = self.yaml_content["animations"]
+        for animation in animations:
+            if "include" in animation:
+                include = animation["include"]
+                result = glob.iglob(include, recursive=True)
+                for path in result:
+                    jsonout.append(get_animation_json(path))
+
+        with open('data/animations.json', 'w') as outfile:
+            jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
+            outfile.write(jsonStr)
+            outfile.close()
+            #print(jsonStr)
+        return jsonout
+
+    def generate_fonts_json(self):
+        jsonout = list()
+        for font in self.yaml_content['fonts']:
+            fontName = font['name']
+            fontFile = font['file']
+            fontSize = font['size']
+            fontGlyphStr = font['glyphs']
+            jsonout.append(get_font_json(fontName, fontFile, fontSize, fontGlyphStr))
+        with open('data/fonts.json', 'w') as outfile:
+            jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
+            outfile.write(jsonStr)
+            outfile.close()
+        return jsonout
+
+    def load_config(self):
+        from yaml import load, dump
+        try:
+            from yaml import CLoader as Loader, CDumper as Dumper
+        except ImportError:
+            from yaml import Loader, Dumper
+
+        yaml_file = open("config/catalog.yaml", 'r')
+        self.yaml_content = load(yaml_file, Loader=Loader)
+
 def load_ttf_font(path, size):
     from PIL import ImageFont
     try:
@@ -69,33 +134,6 @@ def load_ttf_font(path, size):
         raise Exception(f"Could not load truetype file {path}: {e}")
 
     return TrueTypeFontWrapper(font)
-
-def validate_pillow_installed():
-    try:
-        import PIL
-    except ImportError as err:
-        raise vol.Invalid(
-            "Please install the pillow python package to use this feature. "
-            "(pip install pillow)"
-        ) from err
-
-    if PIL.__version__[0] < "4":
-        raise vol.Invalid(
-            "Please update your pillow installation to at least 4.0.x. "
-            "(pip install -U pillow)"
-        )
-
-def generate_images_json():
-    result = glob.iglob('data/images/*.[pP][nN][gG]', recursive=True)
-    jsonout = list()
-    for path in result:
-        jsonout.append(get_image_json(path))
-    with open('data/images.json', 'w') as outfile:
-        jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr)
-        outfile.close()
-        print(jsonStr)
-    return jsonout
 
 def get_image_json(path):
     from PIL import Image
@@ -108,19 +146,6 @@ def get_image_json(path):
     dataurl = f'data:image/png;base64,{base64_utf8_str}'
     file.close()
     return ImageJson(path, width, height, dataurl)
-
-
-def generate_animations_json():
-    result = glob.iglob('data/animations/*.[gG][iI][fF]', recursive=True)
-    jsonout = list()
-    for path in result:
-        jsonout.append(get_animation_json(path))
-    with open('data/animations.json', 'w') as outfile:
-        jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr)
-        outfile.close()
-        print(jsonStr)
-    return jsonout
 
 def get_animation_json(path):
     #path = CORE.relative_config_path(config[CONF_FILE])
@@ -158,22 +183,10 @@ def get_animation_json(path):
             pos += 1
 
     rhs = [HexInt(x) for x in data]
-    print(rhs)
+    #print(rhs)
     return AnimationJson(path,width, height,frames, rhs, dataurl)
 
-def generate_fonts_json():
-    result = glob.iglob('data/fonts/*.[tT][tT][fF]', recursive=True)
-    jsonout = list()
-    for path in result:
-        jsonout.append(get_font_json(path))
-    with open('data/fonts.json', 'w') as outfile:
-        jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
-        outfile.write(jsonStr)
-        outfile.close()
-        print(jsonStr)
-    return jsonout
-
-def get_font_json(path, size=30, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
+def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
     font = load_ttf_font(path, size)
     ascent, descent = font.getmetrics(glyphs)
     glyph_args = {}
@@ -211,35 +224,37 @@ def get_font_json(path, size=30, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOP
         glyphobj = FontGlyph(glyph, offset_x, offset_y, width, height, start)
         glyph_initializer.append(glyphobj)
 
-    return FontJson(path, size, glyphs, rhs, glyph_initializer)
+    return FontJson(name, path, size, glyphs, rhs, glyph_initializer)
+
+def validate_pillow_installed():
+    try:
+        import PIL
+    except ImportError as err:
+        raise vol.Invalid(
+            "Please install the pillow python package to use this feature. "
+            "(pip install pillow)"
+        ) from err
+
+    if PIL.__version__[0] < "4":
+        raise vol.Invalid(
+            "Please update your pillow installation to at least 4.0.x. "
+            "(pip install -U pillow)"
+        )
+
+def main():
+    AssetsBuilder()
+
+    file_size = os.path.getsize('data/images.json')
+    print(f'images.json is {file_size/ (1024)} kB')
+    shutil.copy('data/images.json', 'webapp/public/images.json')
+
+    file_size = os.path.getsize('data/animations.json')
+    print(f'animations.json is {file_size/ (1024)} kB')
+    shutil.copy('data/animations.json', 'webapp/public/animations.json')
+
+    file_size = os.path.getsize('data/fonts.json')
+    print(f'fonts.json is {file_size/ (1024)} kB')
+    shutil.copy('data/fonts.json', 'webapp/public/fonts.json')
 
 validate_pillow_installed()
-generate_images_json()
-generate_animations_json()
-generate_fonts_json()
-
-file_size = os.path.getsize('data/images.json')
-print(f'images.json is {file_size/ (1024)} kB')
-shutil.copy('data/images.json', 'webapp/public/images.json')
-
-file_size = os.path.getsize('data/animations.json')
-print(f'animations.json is {file_size/ (1024)} kB')
-shutil.copy('data/animations.json', 'webapp/public/animations.json')
-
-file_size = os.path.getsize('data/fonts.json')
-print(f'fonts.json is {file_size/ (1024)} kB')
-shutil.copy('data/fonts.json', 'webapp/public/fonts.json')
-
-
-
-
-
-#pour chaque image dans data/images:
-    #retourne l'imagedata, le path, la size, la config a utiliser
-
-#pour chaque font dans data/fonts:
-    #retourne la font family, le path, la size, la config a utiliser
-
-#pour chaque gif dans data/animations
-
-#generer un zip avec les gif/fonts/images
+main()

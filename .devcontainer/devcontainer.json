@@ -1,5 +1,5 @@
 {
-  "name": "esphome gui builder - lit devcontainer",
+  "name": "esphome gui builder - lit+python devcontainer",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

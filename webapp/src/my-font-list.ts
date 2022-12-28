@@ -7,6 +7,8 @@ import "./my-animation-list";
 import { EspHomeFontJSON } from "interfaces/EspHomeFontJSON";
 import { EspHomeFont } from "./classes/EspHomeFont";
 
+const imageScale = 1;
+
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
   @property({ type: Array })
@@ -32,8 +34,8 @@ export class MyFontList extends LitElement {
     if (!result) return html`no result`;
     return html`<img
       src="${result.dataUrl}"
-      width="${result.width}"
-      height="${result.height}"
+      width="${result.width * imageScale}"
+      height="${result.height * imageScale}"
     />`;
     //return html`<span>${font.glyphstr}</span>`;
   }
@@ -58,6 +60,9 @@ export class MyFontList extends LitElement {
   static styles = css`
     [is-selected="true"] {
       border: 2px solid red;
+    }
+    img {
+      image-rendering: pixelated;
     }
   `;
 }

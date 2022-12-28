@@ -8,6 +8,7 @@ import {
 export class EspHomeFont {
   data?: EspHomeFontJSON;
   tempCanvas: HTMLCanvasElement;
+
   getGlyphBitmap(start: number, width: number, height: number) {
     if (!this.data) return;
     if (width == 0 || height == 0) return;
@@ -15,15 +16,7 @@ export class EspHomeFont {
     this.tempCanvas.height = height;
     const ctx = this.tempCanvas.getContext("2d");
     if (!ctx) return;
-
-    //ctx.fillStyle = "rgb(255,255,255)";
-    //ctx.fillRect(0, 0, width, height);
-
-    const newCanvas = document.createElement("canvas");
-    const newctx = newCanvas.getContext("2d");
-    if (!newctx) return;
-
-    const image = newctx.createImageData(width, height);
+    const image = ctx.createImageData(width, height);
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
         const fontIndex = start + (y * width + x);
@@ -43,16 +36,10 @@ export class EspHomeFont {
         }
       }
     }
-
-    newctx.putImageData(image, 0, 0);
-    ctx.drawImage(newCanvas, 0, 0);
-    //ctx.fillStyle = "rgb(255,255,255)";
-    //ctx.fillRect(0, 0, width, .height);
-
-    return ctx.getImageData(0, 0, width, height);
+    return image; // ctx.getImageData(0, 0, width, height);
   }
 
-  _getTextBound(text: string): TextBound {
+  getBoundingBox(text: string): TextBound {
     if (!this.data) return { width: 0, height: 0 };
     let w = 0;
     let h = 0;
@@ -81,7 +68,7 @@ export class EspHomeFont {
     if (!ctx) return null;
     let currentPosX = 0;
 
-    let textBound = this._getTextBound(text);
+    let textBound = this.getBoundingBox(text);
     canvas.width = textBound.width;
     canvas.height = textBound.height;
 
@@ -113,6 +100,7 @@ export class EspHomeFont {
       dataUrl: canvas.toDataURL(),
       width: canvas.width,
       height: canvas.height,
+      image: ctx.getImageData(0, 0, canvas.width, canvas.height),
     };
   }
 
