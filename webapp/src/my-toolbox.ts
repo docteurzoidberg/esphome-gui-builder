@@ -32,7 +32,7 @@ export class MyToolbox extends LitElement {
     if (this.dataLoaded) return;
     if (this.fontsLoaded && this.imagesLoaded && this.animationsLoaded) {
       this.dataLoaded = true;
-      const event = new CustomEvent("toolbox-loaded", { detail: {} });
+      const event = new CustomEvent("toolbox-loaded", { detail: null });
       this.dispatchEvent(event);
     }
   }

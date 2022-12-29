@@ -33,7 +33,7 @@ export class MyAnimationList extends LitElement {
           return new EspHomeAnimation(animation);
         });
         this.raiseAnimationsLoaded();
-        console.dir(json);
+        //console.dir(json);
       });
   }
 

@@ -33,6 +33,7 @@ export class MyApp extends LitElement {
       }
 
       .col1 {
+        width: 15vw;
       }
 
       .container {
@@ -871,9 +872,11 @@ export class MyApp extends LitElement {
       ],
     });
 
-    this.guiElements.push({
+    const elements = [];
+
+    elements.push({
       id: "icon1",
-      name: "data/images/1.PNG",
+      name: "image1",
       type: "image",
       x: 0,
       y: 0,
@@ -886,9 +889,9 @@ export class MyApp extends LitElement {
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAALJJREFUOE+tk9ENgzAMRG2pA8B23aSMwgh0i27UBSq5uqALxhga2vqLoPjlnLvo1InJD6UAXJ8zYerbSH7/CsB2ExMVLUt8o7j2R+DAAsBPUtnkGzyQAKo9DaCiez8rrIDH8JLxdqkK4xhQ5MfZKAAAlUHYSDpgTQB/idGfjyN4R8qsqmK2OLJ7iVHuXjI2CmhjZpmH0t5DBVloIngFiCGKycsUMPr/eQttTyjfVZP4LeQNrUFugXTpubMAAAAASUVORK5CYII=",
       },
     });
-    this.guiElements.push({
+    elements.push({
       id: "icon2",
-      name: "data/images/2.PNG",
+      name: "image2",
       type: "image",
       x: 0,
       y: 0,
@@ -901,9 +904,9 @@ export class MyApp extends LitElement {
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAIlJREFUOE/NkzsSgCAMRE3nUT0CR/AIHpUOZ3HiLIuRgkJpgHzeZEmwI+WyTCz7B2Db11DEkfKrwCoBgFL6pzCzIfgGeCRAmshw9qG65hG9Eg9iWHQOAZ4w2jsAi36SAz/bwzngznAn1P7dIKGS2gVIwsENuusgqL8BeLADcVe4Aitg4jNeEmYAJw3Nh1EDECkvAAAAAElFTkSuQmCC",
       },
     });
-    this.guiElements.push({
+    elements.push({
       id: "animation1",
-      name: "data/animations/boot-aliens-16x16.gif",
+      name: "boot-aliens-16x16",
       type: "animation",
       x: 14,
       y: 14,
@@ -1347,7 +1350,7 @@ export class MyApp extends LitElement {
           "data:image/gif;base64,R0lGODlhDgAMAPEAAAAAAAEEABV4jBTMgCH5BAAUAAAAIf8LTkVUU0NBUEUyLjADAQAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAIIAAAABBAAKFCMVeIwUzIAAAAAAAAAAAAADIgi63P6LOOkGs4/o/cbeGPN9zTgqAkB4o7ewphYGdG1DUAIAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACH4SPqcs9gsRYo9olbYVRa248nniMo5GZjxG07ts2SgEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACIoSPqXujrsSYQyxJp0U4a+R5h9RRpBGGRlBmQnAE8kwzTAEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiOEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZHMFM19MNFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiCEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZTPKcFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiOEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZHMFM19MNFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAIEAAAAVeIwUzIAAAAACHISPqXuirgKSS9i7wr0U7Z18n6d92lGKVse0bQEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACH4SPqcs9gsRYo9olbYVRa248nniMo5GZjxG07ts2SgEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACIoSPqXujrsSYQyxJp0U4a+R5h9RRpBGGRlBmQnAE8kwzTAEAOw==",
       }),
     });
-    this.guiElements.push({
+    elements.push({
       id: "text1",
       name: "text1",
       type: "text",
@@ -1361,7 +1364,8 @@ export class MyApp extends LitElement {
       },
     });
 
-    //this.guiElements.sort((a, b) => a.zorder - b.zorder);
+    elements.sort((a, b) => a.zorder - b.zorder);
+    this.guiElements = elements;
     //this.requestUpdate();
   }
 
@@ -1378,9 +1382,10 @@ export class MyApp extends LitElement {
   }
 
   handleElementSelected(e: CustomEvent) {
-    const element = e.detail;
+    console.log("element-selected", e.detail);
+    const element = e.detail as GuiElement;
     this.selectedElement = element;
-    this.requestUpdate();
+    //this.requestUpdate();
   }
 
   handleElementMoved(e: CustomEvent) {
@@ -1390,8 +1395,16 @@ export class MyApp extends LitElement {
     this.requestUpdate();
   }
 
+  handleElementRemoved(e: CustomEvent) {
+    console.log("element-removed", e.detail);
+    const elementToRemove = e.detail as GuiElement;
+    this.guiElements = this.guiElements.filter((element: GuiElement) => {
+      return element.id !== elementToRemove.id;
+    });
+  }
+
   handleToolboxLoaded(e: CustomEvent) {
-    console.log("toolbox-loaded", e);
+    console.log("toolbox-loaded", e.detail);
     //TODO! load scene from storage if any
     this.loadHardcodedScene();
   }
@@ -1523,6 +1536,7 @@ export class MyApp extends LitElement {
                   .guiElements="${this.guiElements}"
                   .selectedElement="${this.selectedElement}"
                   @element-selected="${this.handleElementSelected}"
+                  @element-removed="${this.handleElementRemoved}"
                 ></my-element-list>
               </div>
             </div>

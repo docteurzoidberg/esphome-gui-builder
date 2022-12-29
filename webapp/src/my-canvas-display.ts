@@ -6,7 +6,6 @@ import { GuiElement } from "interfaces/GuiElement";
 import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
 import { EspHomeFont } from "classes/EspHomeFont";
 import { EspHomeAnimation } from "classes/EspHomeAnimation";
-import { EspHomeAnimationJSON } from "interfaces/EspHomeAnimationJSON";
 
 const imageScale = 5;
 
@@ -270,6 +269,11 @@ export class MyCanvasDisplay extends LitElement {
       }
     }
 
+    if (this.dragOverEvent != null) {
+      this._drawDragOver(ctx);
+      return;
+    }
+
     //draw rect over selected element
     if (!this.selectedElement) return;
 
@@ -287,6 +291,61 @@ export class MyCanvasDisplay extends LitElement {
       elem = this.selectedElement.data as EspHomeAnimation;
     } else if (this.selectedElement.type == "text") {
       elem = this.selectedElement.data;
+      elem.width = elem.bounds.width;
+      elem.height = elem.bounds.height;
+    }
+
+    if (!elem) return;
+
+    const elemWidth =
+      (elem.width + 1) * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * elem.width : 0);
+    const elemHeight =
+      (elem.height + 1) * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * elem.height : 0);
+
+    const selectedLineWidth = 8;
+    ctx.strokeStyle = "rgba(" + 255 + "," + 0 + "," + 0 + ", 1)";
+    ctx.lineWidth = selectedLineWidth;
+    ctx.strokeRect(
+      elemCanvasX - selectedLineWidth / 2,
+      elemCanvasY - selectedLineWidth / 2,
+      elemWidth,
+      elemHeight
+    );
+  }
+
+  _drawDragOver(ctx: CanvasRenderingContext2D) {
+    const data =
+      this.dragOverEvent!.dataTransfer!.getData("application/my-app");
+
+    const dragOverElement: GuiElement = JSON.parse(data) as GuiElement;
+
+    if (!dragOverElement) return;
+
+    let mouseX = this.dragOverEvent!.clientX - this.canvas.offsetLeft;
+    let mouseY = this.dragOverEvent!.clientY - this.canvas.offsetTop;
+    dragOverElement.x = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
+    dragOverElement.y = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
+
+    //dragOverElement.x = this.mouse_pixel_coord.x;
+    //dragOverElement.y = this.mouse_pixel_coord.y;
+    //console.log("draw drag over");
+
+    const elemCanvasX =
+      dragOverElement!.x * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * (dragOverElement.x + 1) : 0);
+    const elemCanvasY =
+      dragOverElement.y * this.canvasScale +
+      (this.showGrid ? this.canvasGridWidth * (dragOverElement.y + 1) : 0);
+
+    let elem = null;
+    if (dragOverElement.type == "image") {
+      elem = dragOverElement.data as EspHomeImageJSON;
+    } else if (dragOverElement.type == "animation") {
+      elem = dragOverElement.data as EspHomeAnimation;
+    } else if (dragOverElement.type == "text") {
+      elem = dragOverElement.data;
       elem.width = elem.bounds.width;
       elem.height = elem.bounds.height;
     }
@@ -416,6 +475,30 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
+  dragOverEvent: DragEvent | null = null;
+
+  handleDrop(ev: DragEvent) {
+    const data = ev.dataTransfer!.getData("application/my-app");
+    const guiElement: GuiElement = JSON.parse(data) as GuiElement;
+    guiElement.x = this.mouse_pixel_coord.x;
+    guiElement.y = this.mouse_pixel_coord.y;
+    console.log("dropped", guiElement);
+    //v.target.appendChild(document.getElementById(data));
+    this.dragOverEvent = null;
+  }
+
+  handleDragOver(ev: DragEvent) {
+    console.log("dragover", ev);
+    ev.preventDefault();
+    ev.dataTransfer!.dropEffect = "move";
+
+    //const data = ev.dataTransfer!.getData("application/my-app");
+    //if (!data) return;
+    //const guiElement: GuiElement = JSON.parse(data) as GuiElement;
+    //console.log(guiElement);
+    this.dragOverEvent = ev;
+  }
+
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -432,6 +515,8 @@ export class MyCanvasDisplay extends LitElement {
           @mousedown="${this.handleMouseDown}"
           @mouseup="${this.handleMouseUp}"
           @mouseleave="${this.handleMouseLeave}"
+          @drop="${this.handleDrop}"
+          @dragover="${this.handleDragOver}"
         ></canvas>
       </div>
     `;

@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
+import { GuiElement } from "interfaces/GuiElement";
 const imageScale = 5;
 
 @customElement("my-image-list")
@@ -34,7 +35,7 @@ export class MyImageList extends LitElement {
       .then((json) => {
         this.images = json;
         this.raiseImagesLoaded();
-        console.dir(json);
+        //console.dir(json);
       });
   }
 
@@ -43,12 +44,32 @@ export class MyImageList extends LitElement {
     this.dispatchEvent(new CustomEvent("image-selected", { detail: image }));
   }
 
+  handleDragStart(ev: DragEvent, image: EspHomeImageJSON) {
+    console.log("drag-start", ev);
+    const newGuiElement: GuiElement = {
+      id: "?",
+      type: "image",
+      name: image.name,
+      x: 0,
+      y: 0,
+      zorder: 1,
+      data: image,
+    };
+    ev.dataTransfer!.setData(
+      "application/my-app",
+      JSON.stringify(newGuiElement)
+    );
+    ev.dataTransfer!.effectAllowed = "move";
+  }
+
   renderImages() {
     if (!this.images) return;
     return this.images.map((image: EspHomeImageJSON) => {
       return html`
         <img
           class="image"
+          draggable="true"
+          @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, image)}"
           is-selected="${this.selectedImage?.name === image.name}"
           width=${image.width * imageScale}
           height=${image.height * imageScale}
@@ -72,10 +93,7 @@ export class MyImageList extends LitElement {
   }
 
   render() {
-    return html`
-      ${this.renderSelectedImageInfos()}
-      <div class="images">${this.renderImages()}</div>
-    `;
+    return html`<div class="images">${this.renderImages()}</div> `;
   }
 
   static styles = css`
