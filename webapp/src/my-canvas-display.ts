@@ -271,7 +271,7 @@ export class MyCanvasDisplay extends LitElement {
 
     if (this.dragOverEvent != null) {
       this._drawDragOver(ctx);
-      return;
+      //return;
     }
 
     //draw rect over selected element
@@ -360,7 +360,7 @@ export class MyCanvasDisplay extends LitElement {
       (this.showGrid ? this.canvasGridWidth * elem.height : 0);
 
     const selectedLineWidth = 8;
-    ctx.strokeStyle = "rgba(" + 255 + "," + 0 + "," + 0 + ", 1)";
+    ctx.strokeStyle = "rgba(" + 0 + "," + 0 + "," + 255 + ", 1)";
     ctx.lineWidth = selectedLineWidth;
     ctx.strokeRect(
       elemCanvasX - selectedLineWidth / 2,
@@ -482,21 +482,20 @@ export class MyCanvasDisplay extends LitElement {
     const guiElement: GuiElement = JSON.parse(data) as GuiElement;
     guiElement.x = this.mouse_pixel_coord.x;
     guiElement.y = this.mouse_pixel_coord.y;
-    console.log("dropped", guiElement);
-    //v.target.appendChild(document.getElementById(data));
     this.dragOverEvent = null;
+    const event = new CustomEvent("element-dropped", { detail: guiElement });
+    this.dispatchEvent(event);
   }
 
   handleDragOver(ev: DragEvent) {
-    console.log("dragover", ev);
     ev.preventDefault();
     ev.dataTransfer!.dropEffect = "move";
-
-    //const data = ev.dataTransfer!.getData("application/my-app");
-    //if (!data) return;
-    //const guiElement: GuiElement = JSON.parse(data) as GuiElement;
-    //console.log(guiElement);
     this.dragOverEvent = ev;
+    //TODO: check mouse coord?
+  }
+
+  handleDragLeave(ev: DragEvent) {
+    this.dragOverEvent = null;
   }
 
   protected firstUpdated(
@@ -517,6 +516,7 @@ export class MyCanvasDisplay extends LitElement {
           @mouseleave="${this.handleMouseLeave}"
           @drop="${this.handleDrop}"
           @dragover="${this.handleDragOver}"
+          @dragleave="${this.handleDragLeave}"
         ></canvas>
       </div>
     `;

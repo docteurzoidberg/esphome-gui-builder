@@ -28,26 +28,17 @@ export class MyImageList extends LitElement {
     this.dispatchEvent(event);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    fetch("./images.json")
-      .then((response) => response.json())
-      .then((json) => {
-        this.images = json;
-        this.raiseImagesLoaded();
-        //console.dir(json);
-      });
-  }
-
   selectImage(image: EspHomeImageJSON) {
     this.selectedImage = image;
     this.dispatchEvent(new CustomEvent("image-selected", { detail: image }));
   }
 
   handleDragStart(ev: DragEvent, image: EspHomeImageJSON) {
-    console.log("drag-start", ev);
+    //console.log("drag-start", ev);
+
+    //TODO: generate uniques ids !
     const newGuiElement: GuiElement = {
-      id: "?",
+      id: image.name,
       type: "image",
       name: image.name,
       x: 0,
@@ -60,6 +51,17 @@ export class MyImageList extends LitElement {
       JSON.stringify(newGuiElement)
     );
     ev.dataTransfer!.effectAllowed = "move";
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    fetch("./images.json")
+      .then((response) => response.json())
+      .then((json) => {
+        this.images = json;
+        this.raiseImagesLoaded();
+        //console.dir(json);
+      });
   }
 
   renderImages() {
