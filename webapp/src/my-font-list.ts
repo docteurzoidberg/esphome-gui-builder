@@ -17,14 +17,55 @@ export class MyFontList extends LitElement {
   @property({ type: Object })
   selectedFont?: EspHomeFont;
 
-  connectedCallback() {
-    super.connectedCallback();
+  @property({ type: Boolean })
+  fontsLoaded = false;
+
+  haveLocalData(): boolean {
+    const localFontsStr = localStorage.getItem("fonts.json");
+    if (!localFontsStr || localFontsStr == "") return false;
+    return true;
+  }
+
+  raiseFontsLoaded() {
+    const event = new CustomEvent("fonts-loaded", {
+      detail: this.fonts,
+    });
+    this.dispatchEvent(event);
+  }
+
+  loadLocalData() {
+    const localFontsStr = localStorage.getItem("fonts.json");
+    if (!localFontsStr) return; //ts possibly null
+    let base64 = localFontsStr;
+    let base64Parts = base64.split(",");
+    let fileFormat = base64Parts[0].split(";")[1];
+    let fileContent = base64Parts[1];
+    let file = new File([fileContent], "fonts.json", { type: fileFormat });
+    //TODO: read file and parse JSON
+    this.fontsLoaded = true;
+    this.raiseFontsLoaded();
+    return file;
+  }
+
+  loadXhrData() {
     fetch("./fonts.json")
       .then((response) => response.json())
       .then((json: Array<EspHomeFontJSON>) => {
         this.fonts = json.map((font: EspHomeFontJSON) => new EspHomeFont(font));
-        console.dir(json);
+        this.fontsLoaded = true;
+        this.raiseFontsLoaded();
+        //console.dir(json);
       });
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.fontsLoaded) return;
+    if (this.haveLocalData()) {
+      this.loadLocalData();
+    } else {
+      this.loadXhrData();
+    }
   }
 
   renderFontSample(font: EspHomeFont) {

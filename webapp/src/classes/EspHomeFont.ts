@@ -89,7 +89,7 @@ export class EspHomeFont {
       if (img) {
         //x=?
         //y=?
-        console.log(glyph);
+        //console.log(glyph);
         ctx.putImageData(img, currentPosX + glyph.offset_x, glyph.offset_y);
       }
       //save next glyph x pos

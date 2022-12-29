@@ -136,9 +136,7 @@ export class MyApp extends LitElement {
   @property()
   selectedElement?: GuiElement;
 
-  connectedCallback(): void {
-    super.connectedCallback();
-
+  loadHardcodedScene() {
     const font = new EspHomeFont({
       name: "data/fonts/8-bit-hud.ttf",
       height: 5,
@@ -1367,6 +1365,10 @@ export class MyApp extends LitElement {
     //this.requestUpdate();
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+  }
+
   handleInitCanvas() {
     console.log("init-canvas");
   }
@@ -1386,6 +1388,12 @@ export class MyApp extends LitElement {
     const element = e.detail;
     this.selectedElement = element;
     this.requestUpdate();
+  }
+
+  handleToolboxLoaded(e: CustomEvent) {
+    console.log("toolbox-loaded", e);
+    //TODO! load scene from storage if any
+    this.loadHardcodedScene();
   }
 
   protected firstUpdated(
@@ -1504,7 +1512,9 @@ export class MyApp extends LitElement {
                 ></my-canvas-display>
               </div>
               <div class="row2 toolbox-container">
-                <my-toolbox></my-toolbox>
+                <my-toolbox
+                  @toolbox-loaded="${this.handleToolboxLoaded}"
+                ></my-toolbox>
               </div>
             </div>
             <div class="col3">

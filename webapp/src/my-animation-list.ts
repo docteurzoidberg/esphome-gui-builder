@@ -9,6 +9,21 @@ export class MyAnimationList extends LitElement {
   @property({ type: Array })
   animations: Array<EspHomeAnimation> = [];
 
+  @property({ type: Boolean })
+  animationsLoaded = false;
+
+  haveLocalData(): boolean {
+    const localAnimationsStr = localStorage.getItem("animations.json");
+    if (!localAnimationsStr || localAnimationsStr == "") return false;
+    return true;
+  }
+
+  raiseAnimationsLoaded() {
+    const event = new CustomEvent("animations-loaded", {
+      detail: this.animations,
+    });
+    this.dispatchEvent(event);
+  }
   connectedCallback() {
     super.connectedCallback();
     fetch("./animations.json")
@@ -17,6 +32,7 @@ export class MyAnimationList extends LitElement {
         this.animations = json.map((animation) => {
           return new EspHomeAnimation(animation);
         });
+        this.raiseAnimationsLoaded();
         console.dir(json);
       });
   }

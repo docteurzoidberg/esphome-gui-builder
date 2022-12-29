@@ -11,12 +11,29 @@ export class MyImageList extends LitElement {
   @property({ type: Object })
   selectedImage?: EspHomeImageJSON;
 
+  @property({ type: Boolean })
+  imagesLoaded = false;
+
+  haveLocalData(): boolean {
+    const localImagesStr = localStorage.getItem("images.json");
+    if (!localImagesStr || localImagesStr == "") return false;
+    return true;
+  }
+
+  raiseImagesLoaded() {
+    const event = new CustomEvent("images-loaded", {
+      detail: this.images,
+    });
+    this.dispatchEvent(event);
+  }
+
   connectedCallback() {
     super.connectedCallback();
     fetch("./images.json")
       .then((response) => response.json())
       .then((json) => {
         this.images = json;
+        this.raiseImagesLoaded();
         console.dir(json);
       });
   }
