@@ -1,16 +1,19 @@
+import { EspHomeImage } from "esphome/image/EspHomeImage";
+import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
+import { ImageGuiElement } from "gui/image/ImageGuiElement";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { EspHomeImageJSON } from "interfaces/EspHomeImageJSON";
-import { GuiElement } from "interfaces/GuiElement";
+
 const imageScale = 5;
 
 @customElement("my-image-list")
 export class MyImageList extends LitElement {
   @property({ type: Array })
-  images = [];
+  images: Array<EspHomeImage> = [];
 
   @property({ type: Object })
-  selectedImage?: EspHomeImageJSON;
+  selectedImage?: EspHomeImage;
 
   @property({ type: Boolean })
   imagesLoaded = false;
@@ -28,28 +31,44 @@ export class MyImageList extends LitElement {
     this.dispatchEvent(event);
   }
 
-  selectImage(image: EspHomeImageJSON) {
+  selectImage(image: EspHomeImage) {
     this.selectedImage = image;
     this.dispatchEvent(new CustomEvent("image-selected", { detail: image }));
   }
 
-  handleDragStart(ev: DragEvent, image: EspHomeImageJSON) {
+  handleDragStart(ev: DragEvent, image: EspHomeImage) {
     //console.log("drag-start", ev);
 
-    //TODO: generate uniques ids !
-    const newGuiElement: GuiElement = {
-      id: image.name,
-      type: "image",
+    /*
+    const imageElement = new ImageGuiElement({
+      id: "id_" + image.name, //TODO: generate uniques ids !
       name: image.name,
-      x: 0,
-      y: 0,
-      zorder: 1,
-      data: image,
+      x: 0, //overwriten when dropped
+      y: 0, //overwriten when dropped
+      zorder: 0,
+      image: image.originalData,
+    });
+*/
+    const elem: GuiElementJSON = {
+      id: "id_" + image.name, //TODO: generate uniques ids !
+      name: image.name,
+      x: 0, //overwriten when dropped
+      y: 0, //overwriten when dropped
+      zorder: 0,
+      type: "image",
+      jsonData: image.originalData,
     };
+
+    //TODDDO!
     ev.dataTransfer!.setData(
-      "application/my-app",
-      JSON.stringify(newGuiElement)
+      "application/gui-element-json",
+      JSON.stringify(elem)
     );
+
+    //ev.dataTransfer!.setData("application/esphome-image-json", image.getJSON());
+    const img = new Image();
+    img.src = "drag_png.png";
+    ev.dataTransfer!.setDragImage(img, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }
 
@@ -57,8 +76,10 @@ export class MyImageList extends LitElement {
     super.connectedCallback();
     fetch("./images.json")
       .then((response) => response.json())
-      .then((json) => {
-        this.images = json;
+      .then((json: Array<EspHomeImageJSON>) => {
+        this.images = json.map((image) => {
+          return new EspHomeImage(image);
+        });
         this.raiseImagesLoaded();
         //console.dir(json);
       });
@@ -66,7 +87,7 @@ export class MyImageList extends LitElement {
 
   renderImages() {
     if (!this.images) return;
-    return this.images.map((image: EspHomeImageJSON) => {
+    return this.images.map((image: EspHomeImage) => {
       return html`
         <img
           class="image"

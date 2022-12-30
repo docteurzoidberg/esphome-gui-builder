@@ -1,7 +1,7 @@
-export interface GuiElement {
+export interface GuiElementJSON {
   id: string;
   name: string;
-  data?: any;
+  jsonData?: any;
   params?: any;
   x: number;
   y: number;

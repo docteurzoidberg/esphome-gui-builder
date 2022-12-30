@@ -1,7 +1,9 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { EspHomeAnimationJSON } from "./interfaces/EspHomeAnimationJSON";
-import { EspHomeAnimation } from "./classes/EspHomeAnimation";
+
+import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
+import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
+
 const imageScale = 5;
 
 @customElement("my-animation-list")
@@ -24,6 +26,32 @@ export class MyAnimationList extends LitElement {
     });
     this.dispatchEvent(event);
   }
+
+  handleDragStart(ev: DragEvent, animation: EspHomeAnimation) {
+    //TODO: generate uniques ids !
+    /*
+    const newGuiElement: GuiElement = {
+      id: animation.data!.name,
+      type: "animation",
+      name: animation.data!.name,
+      x: 0,
+      y: 0,
+      zorder: 1,
+      data: animation.data!,
+    };
+    ev.dataTransfer!.setData(
+      "application/my-app",
+      JSON.stringify(newGuiElement)
+    );
+    */
+
+    //TODO
+    const img = new Image();
+    img.src = "drag_gif.png";
+    ev.dataTransfer!.setDragImage(img, 0, 0);
+    ev.dataTransfer!.effectAllowed = "move";
+  }
+
   connectedCallback() {
     super.connectedCallback();
     fetch("./animations.json")
@@ -42,6 +70,7 @@ export class MyAnimationList extends LitElement {
     return this.animations.map((animation: EspHomeAnimation) => {
       return html`
         <img
+          @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, animation)}"
           class="image"
           width=${animation.width * imageScale}
           height=${animation.height * imageScale}

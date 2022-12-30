@@ -4,8 +4,8 @@ import { customElement, property } from "lit/decorators.js";
 import "./my-image-list";
 import "./my-animation-list";
 
-import { EspHomeFontJSON } from "interfaces/EspHomeFontJSON";
-import { EspHomeFont } from "./classes/EspHomeFont";
+import { EspHomeFont } from "esphome/font/EspHomeFont";
+import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
 
 const imageScale = 1;
 
@@ -58,6 +58,30 @@ export class MyFontList extends LitElement {
       });
   }
 
+  handleDragStart(ev: DragEvent, font: EspHomeFont) {
+    //console.log("drag-start", ev);
+    //TODO: generate uniques ids !
+    /*
+    const newGuiElement: GuiElement = {
+      id: font.data!.name,
+      type: "text",
+      name: font.data!.name,
+      x: 0,
+      y: 0,
+      zorder: 1,
+      data: font.data,
+    };
+    ev.dataTransfer!.setData(
+      "application/my-app",
+      JSON.stringify(newGuiElement)
+    );
+    */
+    const img = new Image();
+    img.src = "drag_text.png";
+    ev.dataTransfer!.setDragImage(img, 0, 0);
+    ev.dataTransfer!.effectAllowed = "move";
+  }
+
   connectedCallback() {
     super.connectedCallback();
     if (this.fontsLoaded) return;
@@ -74,6 +98,7 @@ export class MyFontList extends LitElement {
     //const result = font.render("1122");
     if (!result) return html`no result`;
     return html`<img
+      @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, font)}"
       src="${result.dataUrl}"
       width="${result.width * imageScale}"
       height="${result.height * imageScale}"

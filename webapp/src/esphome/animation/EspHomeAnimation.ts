@@ -1,4 +1,4 @@
-import { EspHomeAnimationJSON } from "interfaces/EspHomeAnimationJSON";
+import { EspHomeAnimationJSON } from "./EspHomeAnimationJSON";
 
 export class EspHomeAnimation {
   data?: EspHomeAnimationJSON;

@@ -3,7 +3,7 @@ import {
   Glyph,
   RenderResult,
   TextBound,
-} from "interfaces/EspHomeFontJSON";
+} from "./EspHomeFontJSON";
 
 export class EspHomeFont {
   data?: EspHomeFontJSON;

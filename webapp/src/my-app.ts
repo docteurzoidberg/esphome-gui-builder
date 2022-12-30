@@ -1,8 +1,6 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { GuiElement } from "interfaces/GuiElement";
-
 import "./esphome-logo";
 
 import "./my-element-list";
@@ -11,8 +9,13 @@ import "./my-canvas-display";
 import "./my-toolbox";
 import "./my-section";
 
-import { EspHomeAnimation } from "./classes/EspHomeAnimation";
-import { EspHomeFont } from "./classes/EspHomeFont";
+import { EspHomeAnimation } from "./esphome/animation/EspHomeAnimation";
+import { EspHomeFont } from "./esphome/font/EspHomeFont";
+import { GuiElement } from "./gui/GuiElement";
+import { ImageGuiElement } from "./gui/image/ImageGuiElement";
+import { AnimationGuiElement } from "./gui/animation/AnimationGuiElement";
+import { FontGuiElement } from "./gui/font/FontGuiElement";
+import { EspHomeFontJSON } from "./esphome/font/EspHomeFontJSON";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -138,7 +141,7 @@ export class MyApp extends LitElement {
   selectedElement?: GuiElement;
 
   loadHardcodedScene() {
-    const font = new EspHomeFont({
+    const fontJson: EspHomeFontJSON = {
       name: "data/fonts/8-bit-hud.ttf",
       height: 5,
       glyphstr:
@@ -870,18 +873,19 @@ export class MyApp extends LitElement {
         1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
         1, 1, 1, 1,
       ],
-    });
+    };
+
+    const font = new EspHomeFont(fontJson);
 
     const elements = [];
 
-    elements.push({
+    const image1 = new ImageGuiElement({
       id: "icon1",
       name: "image1",
-      type: "image",
       x: 0,
       y: 0,
       zorder: 9,
-      data: {
+      image: {
         name: "data/images/1.PNG",
         width: 16,
         height: 16,
@@ -889,14 +893,14 @@ export class MyApp extends LitElement {
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAALJJREFUOE+tk9ENgzAMRG2pA8B23aSMwgh0i27UBSq5uqALxhga2vqLoPjlnLvo1InJD6UAXJ8zYerbSH7/CsB2ExMVLUt8o7j2R+DAAsBPUtnkGzyQAKo9DaCiez8rrIDH8JLxdqkK4xhQ5MfZKAAAlUHYSDpgTQB/idGfjyN4R8qsqmK2OLJ7iVHuXjI2CmhjZpmH0t5DBVloIngFiCGKycsUMPr/eQttTyjfVZP4LeQNrUFugXTpubMAAAAASUVORK5CYII=",
       },
     });
-    elements.push({
+
+    const image2 = new ImageGuiElement({
       id: "icon2",
       name: "image2",
-      type: "image",
       x: 0,
       y: 0,
       zorder: 1,
-      data: {
+      image: {
         name: "data/images/2.PNG",
         width: 16,
         height: 16,
@@ -904,14 +908,14 @@ export class MyApp extends LitElement {
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAIlJREFUOE/NkzsSgCAMRE3nUT0CR/AIHpUOZ3HiLIuRgkJpgHzeZEmwI+WyTCz7B2Db11DEkfKrwCoBgFL6pzCzIfgGeCRAmshw9qG65hG9Eg9iWHQOAZ4w2jsAi36SAz/bwzngznAn1P7dIKGS2gVIwsENuusgqL8BeLADcVe4Aitg4jNeEmYAJw3Nh1EDECkvAAAAAElFTkSuQmCC",
       },
     });
-    elements.push({
+
+    const anim1 = new AnimationGuiElement({
       id: "animation1",
       name: "boot-aliens-16x16",
-      type: "animation",
       x: 14,
       y: 14,
       zorder: 1,
-      data: new EspHomeAnimation({
+      animation: {
         name: "boot-aliens-16x16",
         width: 14,
         height: 12,
@@ -1348,21 +1352,24 @@ export class MyApp extends LitElement {
         ],
         dataurl:
           "data:image/gif;base64,R0lGODlhDgAMAPEAAAAAAAEEABV4jBTMgCH5BAAUAAAAIf8LTkVUU0NBUEUyLjADAQAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAIIAAAABBAAKFCMVeIwUzIAAAAAAAAAAAAADIgi63P6LOOkGs4/o/cbeGPN9zTgqAkB4o7ewphYGdG1DUAIAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACH4SPqcs9gsRYo9olbYVRa248nniMo5GZjxG07ts2SgEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACIoSPqXujrsSYQyxJp0U4a+R5h9RRpBGGRlBmQnAE8kwzTAEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiOEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZHMFM19MNFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiCEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZTPKcFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACI4SPaaOsgqACo9oprJUn641831F5mmeY4iAF6hkcwUzX0w0UACH5BAAUAAAAIf8LSW1hZ2VNYWdpY2sNZ2FtbWE9MC40NTQ1NQAsAAAAAA4ADAAAAiOEj2mjrIKgAqPaKayVJ+uNfN9ReZpnmOIgBeoZHMFM19MNFAAh+QQAFAAAACH/C0ltYWdlTWFnaWNrDWdhbW1hPTAuNDU0NTUALAAAAAAOAAwAAAIjhI9po6yCoAKj2imslSfrjXzfUXmaZ5jiIAXqGRzBTNfTDRQAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAIEAAAAVeIwUzIAAAAACHISPqXuirgKSS9i7wr0U7Z18n6d92lGKVse0bQEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACH4SPqcs9gsRYo9olbYVRa248nniMo5GZjxG07ts2SgEAIfkEABQAAAAh/wtJbWFnZU1hZ2ljaw1nYW1tYT0wLjQ1NDU1ACwAAAAADgAMAAACIoSPqXujrsSYQyxJp0U4a+R5h9RRpBGGRlBmQnAE8kwzTAEAOw==",
-      }),
+      },
     });
-    elements.push({
+
+    const text1 = new FontGuiElement({
       id: "text1",
       name: "text1",
-      type: "text",
       x: 30,
       y: 14,
       zorder: 1,
-      data: {
-        font: font,
-        text: "Hello, World !",
-        bounds: font.getBoundingBox("Hello, World !"),
-      },
+      font: fontJson,
+      text: "Hello, World !",
+      bounds: font.getBoundingBox("Hello, World !"),
     });
+
+    elements.push(image1);
+    elements.push(image2);
+    elements.push(anim1);
+    elements.push(text1);
 
     elements.sort((a, b) => a.zorder - b.zorder);
     this.guiElements = elements;
@@ -1406,7 +1413,15 @@ export class MyApp extends LitElement {
   handleElementDropped(e: CustomEvent) {
     console.log("element-dropped", e.detail);
     const elementToAdd = e.detail as GuiElement;
-    this.guiElements = [...this.guiElements, elementToAdd];
+    if (elementToAdd.type == "animation") {
+      console.log("titi", elementToAdd);
+      const animation = new EspHomeAnimation(elementToAdd.data);
+      elementToAdd.data = animation;
+      console.log("toto", elementToAdd);
+    } else if (elementToAdd.type == "text") {
+      elementToAdd.data = new EspHomeFont(elementToAdd.data);
+    }
+    //this.guiElements = [...this.guiElements, elementToAdd];
   }
 
   handleToolboxLoaded(e: CustomEvent) {
@@ -1446,8 +1461,8 @@ export class MyApp extends LitElement {
     scale = scale || 1;
     const img = new Image();
     const self = this;
-    img.onload = function () {
-      const dim = self.getBox(this.width * scale, this.height * scale);
+    img.onload = () => {
+      const dim = self.getBox(img.width * scale, img.height * scale);
       console.log(
         "%c" + dim.string,
         dim.style +

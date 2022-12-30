@@ -28,15 +28,6 @@ export class MyElementList extends LitElement {
     );
   }
 
-  moveElementUp(element: GuiElement) {
-    //element.zorder += 1;
-    //TODO: gui element list order
-  }
-
-  moveElementDown(element: GuiElement) {
-    //TODO: gui element list order
-  }
-
   handleClick() {
     this.selectedElement = undefined;
     this.dispatchEvent(
@@ -67,28 +58,6 @@ export class MyElementList extends LitElement {
       >
         ✖
       </button>
-      <!--
-      <button
-        type="button"
-        disabled
-        @click="${(e: Event) => {
-        this.moveElementUp(element);
-        e.stopPropagation();
-      }}"
-      >
-        🡅
-      </button>
-      <button
-        type="button"
-        disabled
-        @click="${(e: Event) => {
-        this.moveElementDown(element);
-        e.stopPropagation();
-      }}"
-      >
-        🡇
-      </button>
-      -->
     `;
   }
 
