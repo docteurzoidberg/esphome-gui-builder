@@ -14,18 +14,28 @@ class MyTabs extends LitElement {
       display: flex;
     }
     nav > ::slotted([slot="tab"]) {
-      padding: 1rem 2rem;
+      padding: 5px;
       margin-bottom: 0px;
       flex: 1 1 auto;
       color: lightgrey;
       border-bottom: 2px solid lightgrey;
       text-align: center;
+      text-decoration: underline;
+      cursor: pointer;
     }
     nav > ::slotted([slot="tab"][selected]) {
-      border-color: black;
+      //border-color: black;
       color: white;
       background-color: grey;
+      border-left: 2px solid;
+      border-right: 2px solid;
+      border-top: 2px solid;
+      border-bottom: none;
+      border-radius: 8px 8px 0px 0px;
+      text-decoration: none;
+      cursor: default;
     }
+
     ::slotted([slot="panel"]) {
       display: none;
     }

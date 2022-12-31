@@ -34,6 +34,7 @@ export class MySection extends LitElement {
     }
     h3 {
       text-decoration: underline;
+      cursor: pointer;
     }
   `;
 }

@@ -112,9 +112,9 @@ export class MyApp extends LitElement {
           background-color: #222222;
         }
       }
-      h2 {
-        text-decoration: underline;
-      }
+      //h2 {
+      //  text-decoration: underline;
+      //}
     `,
   ];
 
@@ -885,7 +885,7 @@ export class MyApp extends LitElement {
       id: "icon1",
       name: "image1",
       x: 0,
-      y: 0,
+      y: 32,
       zorder: 9,
       image: {
         name: "data/images/1.PNG",
@@ -899,8 +899,8 @@ export class MyApp extends LitElement {
     const image2 = new ImageGuiElement({
       id: "icon2",
       name: "image2",
-      x: 0,
-      y: 0,
+      x: 32,
+      y: 32,
       zorder: 1,
       image: {
         name: "data/images/2.PNG",

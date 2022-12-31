@@ -104,6 +104,9 @@ export class MyElementList extends LitElement {
     button {
       font-family: Wendy;
     }
+    .element {
+      cursor: pointer;
+    }
     .delete {
       color: red;
     }
