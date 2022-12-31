@@ -1554,9 +1554,9 @@ export class MyApp extends LitElement {
                     />
                   </div>
                   <div>
-                    <label for="pixelscale">Pixel Scale</label>
+                    <label for="displayscale">Display Scale</label>
                     <input
-                      id="pixelscale"
+                      id="displayscale"
                       type="number"
                       min="1"
                       value="${this.canvasScale}"
