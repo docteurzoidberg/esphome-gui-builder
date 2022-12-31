@@ -18,5 +18,6 @@ animations:
 
 images:
   - include: "data/images/18x18_emojis/*.png"
-  - include: "data/images/16x16_icons/*.png"
+  - include: "data/images/16x16_bw_icons/*.png"
+  - include: "data/images/16x16_color_icons/*.png"
   - include: "data/images/*.[pP][nN][gG]"

@@ -34,7 +34,7 @@ export class MyApp extends LitElement {
       }
 
       .col1 {
-        width: 15vw;
+        //width: 15vw;
       }
 
       .container {
@@ -57,6 +57,7 @@ export class MyApp extends LitElement {
         /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: auto;
+        min-width: 290px;
       }
 
       .col2 {

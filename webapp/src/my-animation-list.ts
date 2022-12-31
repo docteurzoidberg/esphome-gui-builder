@@ -93,9 +93,6 @@ export class MyAnimationList extends LitElement {
     img {
       image-rendering: pixelated;
     }
-    .animations {
-      width: 100ch;
-    }
   `;
 }
 

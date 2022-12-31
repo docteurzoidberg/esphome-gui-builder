@@ -119,7 +119,7 @@ export class MyElementList extends LitElement {
     }
     .elements {
       height: 100vh;
-      width: 20vw;
+      min-width: 350px;
     }
     .type {
       width: 54px;

@@ -120,7 +120,7 @@ export class MyFontList extends LitElement {
   }
 
   render() {
-    return html` <div class="fonts">${this.renderFonts()}</div> `;
+    return html`<div class="fonts">${this.renderFonts()}</div> `;
   }
 
   static styles = css`
@@ -129,9 +129,6 @@ export class MyFontList extends LitElement {
     }
     img {
       image-rendering: pixelated;
-    }
-    .fonts {
-      width: 100ch;
     }
   `;
 }
