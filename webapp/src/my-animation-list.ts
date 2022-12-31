@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
 import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
 
 @customElement("my-animation-list")
 export class MyAnimationList extends LitElement {
@@ -31,24 +32,20 @@ export class MyAnimationList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, animation: EspHomeAnimation) {
-    console.log(animation);
-    //TODO: generate uniques ids !
-    /*
-    const newGuiElement: GuiElement = {
-      id: animation.data!.name,
+    const elem: GuiElementJSON = {
+      id: "id_" + animation.name, //TODO: generate uniques ids !
+      name: animation.name,
+      x: 0, //overwriten when dropped
+      y: 0, //overwriten when dropped
+      zorder: 0,
       type: "animation",
-      name: animation.data!.name,
-      x: 0,
-      y: 0,
-      zorder: 1,
-      data: animation.data!,
+      jsonData: animation.originalData,
     };
-    ev.dataTransfer!.setData(
-      "application/my-app",
-      JSON.stringify(newGuiElement)
-    );
-    */
 
+    ev.dataTransfer!.setData(
+      "application/gui-element-json",
+      JSON.stringify(elem)
+    );
     ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }

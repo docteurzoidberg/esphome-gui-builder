@@ -458,7 +458,7 @@ export class MyCanvasDisplay extends LitElement {
         animation: guiElementJSON.jsonData,
       };
       element = new AnimationGuiElement(animationJson);
-    } else if (guiElementJSON.type == "font") {
+    } else if (guiElementJSON.type == "text") {
       const font = new EspHomeFont(guiElementJSON.jsonData);
       const fontJson: FontGuiElementJSON = {
         id: guiElementJSON.id,
@@ -471,6 +471,8 @@ export class MyCanvasDisplay extends LitElement {
         bounds: font.getBoundingBox("TOTO"),
       };
       element = new FontGuiElement(fontJson);
+    } else {
+      console.error("unknow type", guiElementJSON.type);
     }
 
     if (!element) return;
@@ -510,7 +512,7 @@ export class MyCanvasDisplay extends LitElement {
         animation: dragOverElementJSON.jsonData,
       };
       this.dragOverElement = new AnimationGuiElement(animationJson);
-    } else if (dragOverElementJSON.type == "font") {
+    } else if (dragOverElementJSON.type == "text") {
       const font = new EspHomeFont(dragOverElementJSON.jsonData);
       const fontJson: FontGuiElementJSON = {
         id: dragOverElementJSON.id,
@@ -523,6 +525,8 @@ export class MyCanvasDisplay extends LitElement {
         bounds: font.getBoundingBox("TOTO"),
       };
       this.dragOverElement = new FontGuiElement(fontJson);
+    } else {
+      console.error("unknown type:", dragOverElementJSON.type);
     }
   }
 

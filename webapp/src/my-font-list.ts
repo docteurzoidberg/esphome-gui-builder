@@ -6,6 +6,7 @@ import "./my-animation-list";
 
 import { EspHomeFont } from "esphome/font/EspHomeFont";
 import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
 
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
@@ -62,25 +63,20 @@ export class MyFontList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, font: EspHomeFont) {
-    console.log(font);
-    //console.log("drag-start", ev);
-    //TODO: generate uniques ids !
-    /*
-    const newGuiElement: GuiElement = {
-      id: font.data!.name,
+    const elem: GuiElementJSON = {
+      id: "id_" + font.name, //TODO: generate uniques ids !
+      name: font.name,
+      x: 0, //overwriten when dropped
+      y: 0, //overwriten when dropped
+      zorder: 0,
       type: "text",
-      name: font.data!.name,
-      x: 0,
-      y: 0,
-      zorder: 1,
-      data: font.data,
+      jsonData: font.originalData,
     };
-    ev.dataTransfer!.setData(
-      "application/my-app",
-      JSON.stringify(newGuiElement)
-    );
-    */
 
+    ev.dataTransfer!.setData(
+      "application/gui-element-json",
+      JSON.stringify(elem)
+    );
     ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }
@@ -115,9 +111,9 @@ export class MyFontList extends LitElement {
       return html`<div
         class="font"
         @click="${() => (this.selectedFont = font)}"
-        is-selected="${this.selectedFont?.data?.name == font.data?.name}"
+        is-selected="${this.selectedFont?.name === font.name}"
       >
-        <span class="font-name">${font.data?.name}</span> &gt;
+        <span class="font-name">${font.name}</span> &gt;
         <span class="font-sample">${this.renderFontSample(font)}</span>
       </div>`;
     });

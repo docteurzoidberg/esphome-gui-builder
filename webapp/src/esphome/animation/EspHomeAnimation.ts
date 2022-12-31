@@ -1,8 +1,13 @@
-import { EspHomeAnimationJSON } from "./EspHomeAnimationJSON";
+import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
 
-export class EspHomeAnimation {
-  data?: EspHomeAnimationJSON;
+export class EspHomeAnimation implements EspHomeAnimationJSON {
+  originalData: EspHomeAnimationJSON;
   fps: number = 16; //Math.ceil(1000 / 16); //default esphome refresh rate
+
+  name: string;
+  frames: number;
+  data: number[];
+  dataurl: string;
 
   width: number = 0;
   height: number = 0;
@@ -39,7 +44,7 @@ export class EspHomeAnimation {
     );
 
     //fill image data with current frame data
-    const animdata = this.data.data;
+    const animdata = this.data;
     const frameIndex = this._currentFrameIndex * this.width * this.height * 3; //3=>rgb24 in esphome
     //console.log("drawing next frame");
     for (let x = 0; x <= this.width; x++) {
@@ -71,7 +76,11 @@ export class EspHomeAnimation {
   }
 
   constructor(animationjson: EspHomeAnimationJSON) {
-    this.data = animationjson;
+    this.originalData = animationjson;
+    this.name = animationjson.name;
+    this.frames = animationjson.frames;
+    this.dataurl = animationjson.dataurl;
+    this.data = animationjson.data;
     this.width = animationjson.width;
     this.height = animationjson.height;
     this.frameCount = animationjson.frames;
