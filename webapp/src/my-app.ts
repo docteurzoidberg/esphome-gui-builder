@@ -135,6 +135,9 @@ export class MyApp extends LitElement {
   @property({ type: Number })
   canvasScale: number = 5;
 
+  @property({ type: Number })
+  toolboxScale: number = 3;
+
   @property()
   guiElements: Array<GuiElement> = [];
 
@@ -1551,7 +1554,7 @@ export class MyApp extends LitElement {
                     />
                   </div>
                   <div>
-                    <label for="gridwidth">Pixel Scale</label>
+                    <label for="pixelscale">Pixel Scale</label>
                     <input
                       id="pixelscale"
                       type="number"
@@ -1559,6 +1562,22 @@ export class MyApp extends LitElement {
                       value="${this.canvasScale}"
                       @change="${(e: Event) => {
                         this.canvasScale = parseInt(
+                          (e.target as HTMLInputElement).value,
+                          10
+                        );
+                      }}"
+                    />
+                  </div>
+                  <div>
+                    <label for="guiscale">GUI Scale</label>
+                    <input
+                      id="guiscale"
+                      type="number"
+                      min="1"
+                      min="5"
+                      value="${this.toolboxScale}"
+                      @change="${(e: Event) => {
+                        this.toolboxScale = parseInt(
                           (e.target as HTMLInputElement).value,
                           10
                         );
@@ -1595,6 +1614,7 @@ export class MyApp extends LitElement {
                   <h2 slot="tab">TOOLBOX</h2>
                   <section slot="panel">
                     <my-toolbox
+                      .displayScale="${this.toolboxScale}"
                       @toolbox-loaded="${this.handleToolboxLoaded}"
                     ></my-toolbox>
                   </section>

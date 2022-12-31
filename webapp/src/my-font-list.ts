@@ -7,8 +7,6 @@ import "./my-animation-list";
 import { EspHomeFont } from "esphome/font/EspHomeFont";
 import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
 
-const imageScale = 1;
-
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
   @property({ type: Array })
@@ -16,6 +14,9 @@ export class MyFontList extends LitElement {
 
   @property({ type: Object })
   selectedFont?: EspHomeFont;
+
+  @property({ type: Number })
+  displayScale = 1;
 
   @property({ type: Boolean })
   fontsLoaded = false;
@@ -97,14 +98,14 @@ export class MyFontList extends LitElement {
 
   renderFontSample(font: EspHomeFont) {
     if (!font.data) return html`no data`;
-    const result = font.render(font.data.glyphstr);
+    const result = font.render("0123456789ABCDEFabcdef.=()");
     //const result = font.render("1122");
     if (!result) return html`no result`;
     return html`<img
       @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, font)}"
       src="${result.dataUrl}"
-      width="${result.width * imageScale}"
-      height="${result.height * imageScale}"
+      width="${result.width * this.displayScale}"
+      height="${result.height * this.displayScale}"
     />`;
     //return html`<span>${font.glyphstr}</span>`;
   }

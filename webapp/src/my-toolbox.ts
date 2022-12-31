@@ -11,6 +11,9 @@ export class MyToolbox extends LitElement {
   @property()
   dataLoaded = false;
 
+  @property()
+  displayScale = 3;
+
   fontsLoaded = false;
   animationsLoaded = false;
   imagesLoaded = false;
@@ -48,18 +51,21 @@ export class MyToolbox extends LitElement {
           <my-section>
             <span slot="title">Fonts</span>
             <my-font-list
+              .displayScale="${this.displayScale}"
               @fonts-loaded="${this.handleFontsLoaded}"
             ></my-font-list>
           </my-section>
           <my-section>
             <span slot="title">Images</span>
             <my-image-list
+              .displayScale="${this.displayScale}"
               @images-loaded="${this.handleImagesLoaded}"
             ></my-image-list>
           </my-section>
           <my-section>
             <span slot="title">Animations</span>
             <my-animation-list
+              .displayScale="${this.displayScale}"
               @animations-loaded="${this.handleAnimationsLoaded}"
             ></my-animation-list>
           </my-section>

@@ -4,8 +4,6 @@ import { GuiElementJSON } from "gui/GuiElementJSON";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-const imageScale = 5;
-
 @customElement("my-image-list")
 export class MyImageList extends LitElement {
   @property({ type: Array })
@@ -16,6 +14,9 @@ export class MyImageList extends LitElement {
 
   @property({ type: Boolean })
   imagesLoaded = false;
+
+  @property({ type: Number })
+  displayScale = 1;
 
   dragImg = new Image();
 
@@ -82,8 +83,8 @@ export class MyImageList extends LitElement {
           draggable="true"
           is-selected="${this.selectedImage?.name === image.name}"
           src="${image.dataurl}"
-          width=${image.width * imageScale}
-          height=${image.height * imageScale}
+          width=${image.width * this.displayScale}
+          height=${image.height * this.displayScale}
           @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, image)}"
           @click="${() => this.selectImage(image)}"
         />

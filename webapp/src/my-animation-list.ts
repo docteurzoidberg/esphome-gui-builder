@@ -4,8 +4,6 @@ import { customElement, property } from "lit/decorators.js";
 import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
 import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
 
-const imageScale = 5;
-
 @customElement("my-animation-list")
 export class MyAnimationList extends LitElement {
   @property({ type: Array })
@@ -13,6 +11,9 @@ export class MyAnimationList extends LitElement {
 
   @property({ type: Boolean })
   animationsLoaded = false;
+
+  @property({ type: Number })
+  displayScale = 1;
 
   dragImg = new Image();
 
@@ -73,8 +74,8 @@ export class MyAnimationList extends LitElement {
         <img
           @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, animation)}"
           class="image"
-          width=${animation.width * imageScale}
-          height=${animation.height * imageScale}
+          width=${animation.width * this.displayScale}
+          height=${animation.height * this.displayScale}
           src="${animation.previewDataUrl}"
         />
       `;
