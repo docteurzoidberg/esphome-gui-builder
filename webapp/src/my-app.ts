@@ -1413,15 +1413,7 @@ export class MyApp extends LitElement {
   handleElementDropped(e: CustomEvent) {
     console.log("element-dropped", e.detail);
     const elementToAdd = e.detail as GuiElement;
-    if (elementToAdd.type == "animation") {
-      console.log("titi", elementToAdd);
-      const animation = new EspHomeAnimation(elementToAdd.data);
-      elementToAdd.data = animation;
-      console.log("toto", elementToAdd);
-    } else if (elementToAdd.type == "text") {
-      elementToAdd.data = new EspHomeFont(elementToAdd.data);
-    }
-    //this.guiElements = [...this.guiElements, elementToAdd];
+    this.guiElements = [...this.guiElements, elementToAdd];
   }
 
   handleToolboxLoaded(e: CustomEvent) {

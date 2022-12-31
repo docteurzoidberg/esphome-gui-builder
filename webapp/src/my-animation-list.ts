@@ -14,6 +14,8 @@ export class MyAnimationList extends LitElement {
   @property({ type: Boolean })
   animationsLoaded = false;
 
+  dragImg = new Image();
+
   haveLocalData(): boolean {
     const localAnimationsStr = localStorage.getItem("animations.json");
     if (!localAnimationsStr || localAnimationsStr == "") return false;
@@ -46,14 +48,14 @@ export class MyAnimationList extends LitElement {
     */
 
     //TODO
-    const img = new Image();
-    img.src = "drag_gif.png";
-    ev.dataTransfer!.setDragImage(img, 0, 0);
+
+    ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.dragImg.src = "drag_gif.png";
     fetch("./animations.json")
       .then((response) => response.json())
       .then((json: Array<EspHomeAnimationJSON>) => {

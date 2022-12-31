@@ -1,7 +1,6 @@
 import { EspHomeImage } from "esphome/image/EspHomeImage";
 import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
 import { GuiElementJSON } from "gui/GuiElementJSON";
-import { ImageGuiElement } from "gui/image/ImageGuiElement";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
@@ -17,6 +16,8 @@ export class MyImageList extends LitElement {
 
   @property({ type: Boolean })
   imagesLoaded = false;
+
+  dragImg = new Image();
 
   haveLocalData(): boolean {
     const localImagesStr = localStorage.getItem("images.json");
@@ -37,18 +38,6 @@ export class MyImageList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, image: EspHomeImage) {
-    //console.log("drag-start", ev);
-
-    /*
-    const imageElement = new ImageGuiElement({
-      id: "id_" + image.name, //TODO: generate uniques ids !
-      name: image.name,
-      x: 0, //overwriten when dropped
-      y: 0, //overwriten when dropped
-      zorder: 0,
-      image: image.originalData,
-    });
-*/
     const elem: GuiElementJSON = {
       id: "id_" + image.name, //TODO: generate uniques ids !
       name: image.name,
@@ -66,14 +55,13 @@ export class MyImageList extends LitElement {
     );
 
     //ev.dataTransfer!.setData("application/esphome-image-json", image.getJSON());
-    const img = new Image();
-    img.src = "drag_png.png";
-    ev.dataTransfer!.setDragImage(img, 0, 0);
+    ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.dragImg.src = "drag_png.png";
     fetch("./images.json")
       .then((response) => response.json())
       .then((json: Array<EspHomeImageJSON>) => {
@@ -92,12 +80,12 @@ export class MyImageList extends LitElement {
         <img
           class="image"
           draggable="true"
-          @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, image)}"
           is-selected="${this.selectedImage?.name === image.name}"
+          src="${image.dataurl}"
           width=${image.width * imageScale}
           height=${image.height * imageScale}
+          @dragstart="${(ev: DragEvent) => this.handleDragStart(ev, image)}"
           @click="${() => this.selectImage(image)}"
-          src="${image.dataurl}"
         />
       `;
     });

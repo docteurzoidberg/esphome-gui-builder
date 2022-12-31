@@ -20,6 +20,8 @@ export class MyFontList extends LitElement {
   @property({ type: Boolean })
   fontsLoaded = false;
 
+  dragImg = new Image();
+
   haveLocalData(): boolean {
     const localFontsStr = localStorage.getItem("fonts.json");
     if (!localFontsStr || localFontsStr == "") return false;
@@ -76,14 +78,14 @@ export class MyFontList extends LitElement {
       JSON.stringify(newGuiElement)
     );
     */
-    const img = new Image();
-    img.src = "drag_text.png";
-    ev.dataTransfer!.setDragImage(img, 0, 0);
+
+    ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.dragImg.src = "drag_text.png";
     if (this.fontsLoaded) return;
     if (this.haveLocalData()) {
       this.loadLocalData();

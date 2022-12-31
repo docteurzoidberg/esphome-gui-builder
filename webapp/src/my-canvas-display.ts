@@ -1,16 +1,18 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
+
 import { pixelcoord } from "interfaces/PixelCoord";
 import { rgb } from "interfaces/rgb";
-import { GuiElement } from "gui/GuiElement";
-import { ImageGuiElement } from "gui/image/ImageGuiElement";
-import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
-import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
+import { EspHomeFont } from "esphome/font/EspHomeFont";
 
-import { FontGuiElement } from "gui/font/FontGuiElement";
+import { GuiElement } from "gui/GuiElement";
 import { GuiElementJSON } from "gui/GuiElementJSON";
+import { ImageGuiElement } from "gui/image/ImageGuiElement";
 import { ImageGuiElementJSON } from "gui/image/ImageGuiElementJSON";
-import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
+import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
+import { AnimationGuiElementJSON } from "gui/animation/AnimationGuiElementJSON";
+import { FontGuiElement } from "gui/font/FontGuiElement";
+import { FontGuiElementJSON } from "gui/font/FontGuiElementJSON";
 
 const imageScale = 5;
 
@@ -64,8 +66,6 @@ export class MyCanvasDisplay extends LitElement {
   showGrid: boolean = true;
 
   mouse_pixel_coord: pixelcoord = { x: 0, y: 0 };
-  mouse_x: number = 0;
-  mouse_y: number = 0;
   width: number = 0;
   height: number = 0;
   canvasWidth: number = 0;
@@ -80,10 +80,8 @@ export class MyCanvasDisplay extends LitElement {
 
   isMovingElement: boolean = false;
   elementStartMoveCoord: pixelcoord = { x: 0, y: 0 };
-
-  connectedCallback() {
-    super.connectedCallback();
-  }
+  dragOverEvent: DragEvent | null = null;
+  dragOverElement: GuiElement | null = null;
 
   _clearBuffer(rgb: rgb = hexToRgb("#000000")) {
     for (let i = 0; i < this.typedArray.length; i += 4) {
@@ -148,38 +146,6 @@ export class MyCanvasDisplay extends LitElement {
     );
   }
 
-  /*
-  _drawImageElementToCanvas(
-    element: ImageGuiElement,
-    ctx: CanvasRenderingContext2D
-  ) {
-    let img = new Image();
-    img.src = element.image.dataurl;
-    ctx.drawImage(img, element.x, element.y);
-  }
-
-  _drawAnimationElementToCanvas(
-    element: AnimationGuiElement,
-    context: CanvasRenderingContext2D
-  ) {
-    const animation = element.animation as EspHomeAnimation;
-    animation.update();
-    const image = animation.getImageData();
-    if (!image) return;
-    context.putImageData(image, element.x, element.y);
-  }
-
-  _drawTextElementToCanvas(
-    element: FontGuiElement,
-    context: CanvasRenderingContext2D
-  ) {
-    const font = element.font;
-    const text = element.text;
-    const result = font.render(text);
-    if (!result) return;
-    context.putImageData(result.image, element.x, element.y);
-  }
-*/
   _drawCanvasGrid(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "black";
     ctx.lineWidth = this.canvasGridWidth;
@@ -206,6 +172,7 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _drawCanvas() {
+    //TODO: check if cnvas size changed?
     this.canvasWidth =
       this.displayWidth * this.canvasScale +
       (this.showGrid ? this.canvasGridWidth * (this.displayWidth + 1) : 0);
@@ -216,33 +183,38 @@ export class MyCanvasDisplay extends LitElement {
     this.canvasCalcScaleY = this.canvasHeight / this.displayHeight;
     this.canvas.width = this.canvasWidth;
     this.canvas.height = this.canvasHeight;
+    //-
 
     const ctx = this.ctx;
     if (!ctx) return;
+
     //fill with white backgound (for transparency)
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    //Draw grid
+    //draw grid
     if (this.showGrid) {
       this._drawCanvasGrid(ctx);
     }
 
-    //Draw everything on a temporary canvas, unscaled
+    //create a temporary canvas, unscaled, to draw on
     const newcanvas = document.createElement("canvas");
     const newctx = newcanvas.getContext("2d");
     if (!newctx) return;
     newcanvas.width = this.displayWidth;
     newcanvas.height = this.displayHeight;
     this.elements.sort((a, b) => a.zorder - b.zorder);
+
+    //draw each guielement
     this.elements.forEach((element) => {
       element.drawToCanvas(newctx);
     });
 
-    if (this.dragOverEvent != null) {
+    //draw drag over element if any
+    if (this.dragOverElement) {
       this._drawDragOverElementToCanvas(newctx);
-      //return;
     }
+
     //get back the temp canvas image data
     const elemsImageData = newctx.getImageData(
       0,
@@ -251,7 +223,7 @@ export class MyCanvasDisplay extends LitElement {
       this.displayHeight
     );
 
-    //drawing to scaled canvas
+    //drawing pixels to scaled canvas
     for (let x = 0; x < this.displayWidth; x++) {
       for (let y = 0; y < this.displayHeight; y++) {
         // get color from buffer
@@ -272,12 +244,12 @@ export class MyCanvasDisplay extends LitElement {
       }
     }
 
-    if (this.dragOverEvent != null) {
-      this._drawDragOverSelection(ctx);
-      //return;
+    //draw drag over element border if any
+    if (this.dragOverElement) {
+      this._drawDragOverElementRectBorder(ctx);
     }
 
-    //draw rect over selected element
+    //draw rect over selected element if any
     if (this.selectedElement) {
       this._drawSelectedElementRectBorder(ctx);
     }
@@ -314,17 +286,10 @@ export class MyCanvasDisplay extends LitElement {
     );
   }
 
-  _drawDragOverSelection(ctx: CanvasRenderingContext2D) {
-    const data = this.dragOverEvent!.dataTransfer!.getData(
-      "application/gui-element-json"
-    );
+  _drawDragOverElementRectBorder(ctx: CanvasRenderingContext2D) {
+    if (!this.dragOverElement) return;
 
-    //TODO: recuperer un guiElement???
-    const dragOverElementJSON: GuiElementJSON = JSON.parse(
-      data
-    ) as GuiElementJSON;
-    if (!dragOverElementJSON) return;
-
+    //TODO: mouseXY?
     let mouseX = this.dragOverEvent!.clientX - this.canvas.offsetLeft;
     let mouseY = this.dragOverEvent!.clientY - this.canvas.offsetTop;
     let pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
@@ -332,34 +297,8 @@ export class MyCanvasDisplay extends LitElement {
 
     let elemX = pixelX;
     let elemY = pixelY;
-    let elemWidth = 0;
-    let elemHeight = 0;
-
-    if (dragOverElementJSON.type == "image") {
-      const imageJson: ImageGuiElementJSON = {
-        id: dragOverElementJSON.id,
-        name: dragOverElementJSON.name,
-        x: 0,
-        y: 0,
-        zorder: 0,
-        image: dragOverElementJSON.jsonData,
-      };
-      const imageElem = new ImageGuiElement(imageJson);
-      elemHeight = imageElem.image.height;
-      elemWidth = imageElem.image.width;
-    } else if (dragOverElementJSON.type == "animation") {
-      const animationElem = new AnimationGuiElement(
-        dragOverElementJSON.jsonData
-      );
-      elemHeight = animationElem.animation.height;
-      elemWidth = animationElem.animation.width;
-    } else if (dragOverElementJSON.type == "text") {
-      const fontElem = new FontGuiElement(dragOverElementJSON.jsonData);
-      elemHeight = fontElem.bounds.height;
-      elemWidth = fontElem.bounds.width;
-    } else {
-      return;
-    }
+    let elemWidth = this.dragOverElement.getWidth();
+    let elemHeight = this.dragOverElement.getHeight();
 
     const elemCanvasX =
       elemX * this.canvasScale +
@@ -387,30 +326,17 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _drawDragOverElementToCanvas(ctx: CanvasRenderingContext2D) {
-    const data = this.dragOverEvent!.dataTransfer!.getData(
-      "application/gui-element-json"
-    );
+    if (!this.dragOverElement) return;
 
-    if (!data) return;
-
-    const dragOverElementJSON: GuiElementJSON = JSON.parse(
-      data
-    ) as GuiElementJSON;
-
-    if (!dragOverElementJSON) return;
-
+    //TODO: mouseXY?
     let mouseX = this.dragOverEvent!.clientX - this.canvas.offsetLeft;
     let mouseY = this.dragOverEvent!.clientY - this.canvas.offsetTop;
     let pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
     let pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
-
-    if (dragOverElementJSON.type == "image") {
-      const imageJson: EspHomeImageJSON = dragOverElementJSON.jsonData;
+    if (this.dragOverElement instanceof ImageGuiElement) {
       let img = new Image();
-      img.src = imageJson.dataurl;
+      img.src = this.dragOverElement.image.dataurl;
       ctx.drawImage(img, pixelX, pixelY);
-    } else {
-      return;
     }
   }
 
@@ -421,20 +347,32 @@ export class MyCanvasDisplay extends LitElement {
     return false;
   }
 
+  _setMouseXY(e: MouseEvent) {
+    this.mouse_pixel_coord.x = Math.ceil(e.offsetX / this.canvasCalcScaleX);
+    this.mouse_pixel_coord.y = Math.ceil(e.offsetY / this.canvasCalcScaleY);
+    if (this.mouse_pixel_coord.x < 1) this.mouse_pixel_coord.x = 1;
+    if (this.mouse_pixel_coord.y < 1) this.mouse_pixel_coord.y = 1;
+    if (this.mouse_pixel_coord.x > this.displayWidth)
+      this.mouse_pixel_coord.x = this.displayWidth;
+    if (this.mouse_pixel_coord.y > this.displayHeight)
+      this.mouse_pixel_coord.y = this.displayHeight;
+  }
+
   _startMoving() {
     this.isMovingElement = true;
 
-    console.log(
-      "start moving",
-      this.mouse_pixel_coord.x,
-      this.mouse_pixel_coord.y
-    );
+    //console.log(
+    //  "start moving",
+    //  this.mouse_pixel_coord.x,
+    //  this.mouse_pixel_coord.y
+    //);
 
     this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
     this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
   }
+
   _stopMoving() {
-    console.log("stop moving");
+    //console.log("stop moving");
     this.isMovingElement = false;
     this._elementMoved();
   }
@@ -479,17 +417,7 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   handleMouseMove(e: MouseEvent) {
-    this.mouse_x = e.offsetX;
-    this.mouse_y = e.offsetY;
-    this.mouse_pixel_coord.x = Math.ceil(this.mouse_x / this.canvasCalcScaleX);
-    this.mouse_pixel_coord.y = Math.ceil(this.mouse_y / this.canvasCalcScaleY);
-    if (this.mouse_pixel_coord.x < 1) this.mouse_pixel_coord.x = 1;
-    if (this.mouse_pixel_coord.y < 1) this.mouse_pixel_coord.y = 1;
-    if (this.mouse_pixel_coord.x > this.displayWidth)
-      this.mouse_pixel_coord.x = this.displayWidth;
-    if (this.mouse_pixel_coord.y > this.displayHeight)
-      this.mouse_pixel_coord.y = this.displayHeight;
-
+    this._setMouseXY(e);
     if (this.isMovingElement && this.selectedElement) {
       const movex = this.mouse_pixel_coord.x - this.elementStartMoveCoord.x;
       const movey = this.mouse_pixel_coord.y - this.elementStartMoveCoord.y;
@@ -501,30 +429,120 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
-  dragOverEvent: DragEvent | null = null;
-
   handleDrop(ev: DragEvent) {
     this.dragOverEvent = null;
-    return;
-    const data = ev.dataTransfer!.getData("application/my-app");
-    const guiElement: GuiElement = JSON.parse(data) as GuiElement;
+    this.dragOverElement = null;
 
-    //guiElement.x = this.mouse_pixel_coord.x;
-    //guiElement.y = this.mouse_pixel_coord.y;
+    const data = ev.dataTransfer!.getData("application/gui-element-json");
+    const guiElementJSON: GuiElementJSON = JSON.parse(data) as GuiElementJSON;
 
-    const event = new CustomEvent("element-dropped", { detail: guiElement });
+    let element: GuiElement | null = null;
+
+    if (guiElementJSON.type == "image") {
+      const imageJson: ImageGuiElementJSON = {
+        id: guiElementJSON.id,
+        name: guiElementJSON.name,
+        x: 0,
+        y: 0,
+        zorder: 0,
+        image: guiElementJSON.jsonData,
+      };
+      element = new ImageGuiElement(imageJson);
+    } else if (guiElementJSON.type == "animation") {
+      const animationJson: AnimationGuiElementJSON = {
+        id: guiElementJSON.id,
+        name: guiElementJSON.name,
+        x: 0,
+        y: 0,
+        zorder: 0,
+        animation: guiElementJSON.jsonData,
+      };
+      element = new AnimationGuiElement(animationJson);
+    } else if (guiElementJSON.type == "font") {
+      const font = new EspHomeFont(guiElementJSON.jsonData);
+      const fontJson: FontGuiElementJSON = {
+        id: guiElementJSON.id,
+        name: guiElementJSON.name,
+        x: 0, //TODO
+        y: 0, //TODO
+        zorder: 0,
+        font: guiElementJSON.jsonData,
+        text: "TOTO",
+        bounds: font.getBoundingBox("TOTO"),
+      };
+      element = new FontGuiElement(fontJson);
+    }
+
+    if (!element) return;
+    const event = new CustomEvent("element-dropped", { detail: element });
     this.dispatchEvent(event);
+  }
+
+  createDragOverElement(ev: DragEvent) {
+    const data = this.dragOverEvent!.dataTransfer!.getData(
+      "application/gui-element-json"
+    );
+
+    //temporary create json
+    const dragOverElementJSON: GuiElementJSON = JSON.parse(
+      data
+    ) as GuiElementJSON;
+
+    if (!dragOverElementJSON) return;
+
+    if (dragOverElementJSON.type == "image") {
+      const imageJson: ImageGuiElementJSON = {
+        id: dragOverElementJSON.id,
+        name: dragOverElementJSON.name,
+        x: 0, //TODO
+        y: 0, //TODO
+        zorder: 0,
+        image: dragOverElementJSON.jsonData,
+      };
+      this.dragOverElement = new ImageGuiElement(imageJson);
+    } else if (dragOverElementJSON.type == "animation") {
+      const animationJson: AnimationGuiElementJSON = {
+        id: dragOverElementJSON.id,
+        name: dragOverElementJSON.name,
+        x: 0, //TODO
+        y: 0, //TODO
+        zorder: 0,
+        animation: dragOverElementJSON.jsonData,
+      };
+      this.dragOverElement = new AnimationGuiElement(animationJson);
+    } else if (dragOverElementJSON.type == "font") {
+      const font = new EspHomeFont(dragOverElementJSON.jsonData);
+      const fontJson: FontGuiElementJSON = {
+        id: dragOverElementJSON.id,
+        name: dragOverElementJSON.name,
+        x: 0, //TODO
+        y: 0, //TODO
+        zorder: 0,
+        font: dragOverElementJSON.jsonData,
+        text: "TOTO",
+        bounds: font.getBoundingBox("TOTO"),
+      };
+      this.dragOverElement = new FontGuiElement(fontJson);
+    }
   }
 
   handleDragOver(ev: DragEvent) {
     ev.preventDefault();
     ev.dataTransfer!.dropEffect = "move";
     this.dragOverEvent = ev;
+    if (!this.dragOverElement) {
+      this.createDragOverElement(ev);
+    }
     //TODO: check mouse coord?
   }
 
   handleDragLeave(ev: DragEvent) {
     this.dragOverEvent = null;
+    this.dragOverElement = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
   }
 
   protected firstUpdated(
