@@ -408,11 +408,11 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
-  handleMouseUp(e: MouseEvent) {
+  handleMouseUp() {
     if (this.isMovingElement) this._stopMoving();
   }
 
-  handleMouseLeave(e: MouseEvent) {
+  handleMouseLeave() {
     if (this.isMovingElement) this._stopMoving();
   }
 
@@ -442,8 +442,8 @@ export class MyCanvasDisplay extends LitElement {
       const imageJson: ImageGuiElementJSON = {
         id: guiElementJSON.id,
         name: guiElementJSON.name,
-        x: 0,
-        y: 0,
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
         zorder: 0,
         image: guiElementJSON.jsonData,
       };
@@ -463,8 +463,8 @@ export class MyCanvasDisplay extends LitElement {
       const fontJson: FontGuiElementJSON = {
         id: guiElementJSON.id,
         name: guiElementJSON.name,
-        x: 0, //TODO
-        y: 0, //TODO
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
         zorder: 0,
         font: guiElementJSON.jsonData,
         text: "TOTO",
@@ -478,7 +478,7 @@ export class MyCanvasDisplay extends LitElement {
     this.dispatchEvent(event);
   }
 
-  createDragOverElement(ev: DragEvent) {
+  createDragOverElement() {
     const data = this.dragOverEvent!.dataTransfer!.getData(
       "application/gui-element-json"
     );
@@ -494,8 +494,8 @@ export class MyCanvasDisplay extends LitElement {
       const imageJson: ImageGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        x: 0, //TODO
-        y: 0, //TODO
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
         zorder: 0,
         image: dragOverElementJSON.jsonData,
       };
@@ -504,8 +504,8 @@ export class MyCanvasDisplay extends LitElement {
       const animationJson: AnimationGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        x: 0, //TODO
-        y: 0, //TODO
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
         zorder: 0,
         animation: dragOverElementJSON.jsonData,
       };
@@ -515,8 +515,8 @@ export class MyCanvasDisplay extends LitElement {
       const fontJson: FontGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        x: 0, //TODO
-        y: 0, //TODO
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
         zorder: 0,
         font: dragOverElementJSON.jsonData,
         text: "TOTO",
@@ -531,12 +531,12 @@ export class MyCanvasDisplay extends LitElement {
     ev.dataTransfer!.dropEffect = "move";
     this.dragOverEvent = ev;
     if (!this.dragOverElement) {
-      this.createDragOverElement(ev);
+      this.createDragOverElement();
     }
     //TODO: check mouse coord?
   }
 
-  handleDragLeave(ev: DragEvent) {
+  handleDragLeave() {
     this.dragOverEvent = null;
     this.dragOverElement = null;
   }

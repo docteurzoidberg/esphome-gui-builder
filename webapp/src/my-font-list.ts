@@ -61,6 +61,7 @@ export class MyFontList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, font: EspHomeFont) {
+    console.log(font);
     //console.log("drag-start", ev);
     //TODO: generate uniques ids !
     /*

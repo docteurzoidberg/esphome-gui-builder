@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { GuiElement } from "interfaces/GuiElement";
+
+import { GuiElement } from "gui/GuiElement";
 
 @customElement("my-element-list")
 export class MyElementList extends LitElement {

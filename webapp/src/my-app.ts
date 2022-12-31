@@ -9,7 +9,6 @@ import "./my-canvas-display";
 import "./my-toolbox";
 import "./my-section";
 
-import { EspHomeAnimation } from "./esphome/animation/EspHomeAnimation";
 import { EspHomeFont } from "./esphome/font/EspHomeFont";
 import { GuiElement } from "./gui/GuiElement";
 import { ImageGuiElement } from "./gui/image/ImageGuiElement";

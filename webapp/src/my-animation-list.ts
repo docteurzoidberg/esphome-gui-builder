@@ -30,6 +30,7 @@ export class MyAnimationList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, animation: EspHomeAnimation) {
+    console.log(animation);
     //TODO: generate uniques ids !
     /*
     const newGuiElement: GuiElement = {
@@ -46,8 +47,6 @@ export class MyAnimationList extends LitElement {
       JSON.stringify(newGuiElement)
     );
     */
-
-    //TODO
 
     ev.dataTransfer!.setDragImage(this.dragImg, 0, 0);
     ev.dataTransfer!.effectAllowed = "move";
