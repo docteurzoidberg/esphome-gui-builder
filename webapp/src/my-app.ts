@@ -1495,7 +1495,7 @@ export class MyApp extends LitElement {
       <div class="container two-rows-row">
         <div class="first-row header">
           <div class="logo"></div>
-          <div class="title">GUI Builder for ESPHome</div>
+          <div class="title">GUI Helper for ESPHome</div>
           <div class="github">
             <a
               target="new"
