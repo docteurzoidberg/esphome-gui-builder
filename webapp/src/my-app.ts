@@ -94,6 +94,14 @@ export class MyApp extends LitElement {
         line-height: 80px;
         vertical-align: middle;
       }
+      .github {
+        float: right;
+        margin-right: 15px;
+      }
+      .githublogo {
+        vertical-align: middle;
+      }
+      .github,
       .logo,
       .title {
         display: inline-block;
@@ -1488,6 +1496,18 @@ export class MyApp extends LitElement {
         <div class="first-row header">
           <div class="logo"></div>
           <div class="title">GUI Builder for ESPHome</div>
+          <div class="github">
+            <a
+              target="new"
+              title="Goto github's repo"
+              href="https://github.com/docteurzoidberg/esphome-gui-builder"
+              ><img
+                class="githublogo"
+                src="githubw.png"
+                alt="github"
+                height="32"
+            /></a>
+          </div>
         </div>
         <div class="second-row">
           <div class="second-row-container three-cols-row">
