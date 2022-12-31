@@ -23,6 +23,8 @@ class MyTabs extends LitElement {
     }
     nav > ::slotted([slot="tab"][selected]) {
       border-color: black;
+      color: white;
+      background-color: grey;
     }
     ::slotted([slot="panel"]) {
       display: none;

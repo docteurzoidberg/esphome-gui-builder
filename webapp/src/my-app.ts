@@ -1,8 +1,6 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "./esphome-logo";
-
 import "./my-element-list";
 import "./my-element-settings";
 import "./my-canvas-display";
@@ -1487,7 +1485,7 @@ export class MyApp extends LitElement {
     return html`
       <div class="container two-rows-row">
         <div class="first-row header">
-          <div class="logo"><esphome-logo></esphome-logo></div>
+          <div class="logo"></div>
           <div class="title">GUI Builder for ESPHome</div>
         </div>
         <div class="second-row">
