@@ -17,6 +17,6 @@ animations:
   - include: "data/animations/*.[gG][iI][fF]"
 
 images:
-  - include: "data/images/zzz1.PNG"
-  - include: "data/images/zzz2.PNG"
-  - include: "data/images/*.[p][n][g]"
+  - include: "data/images/18x18_emojis/*.png"
+  - include: "data/images/16x16_icons/*.png"
+  - include: "data/images/*.[pP][nN][gG]"
