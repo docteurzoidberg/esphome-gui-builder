@@ -5,10 +5,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   build: {
-    lib: {
-      entry: "src/my-app.ts",
-      formats: ["es"],
-    },
+    //lib: {
+    //  entry: "src/my-app.ts",
+    //  formats: ["es"],
+    //},
     rollupOptions: {
       external: /^lit/,
     },
