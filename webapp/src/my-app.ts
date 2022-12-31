@@ -8,6 +8,7 @@ import "./my-element-settings";
 import "./my-canvas-display";
 import "./my-toolbox";
 import "./my-section";
+import "./my-tabs";
 
 import { EspHomeFont } from "./esphome/font/EspHomeFont";
 import { GuiElement } from "./gui/GuiElement";
@@ -1589,9 +1590,18 @@ export class MyApp extends LitElement {
                 ></my-canvas-display>
               </div>
               <div class="row2 toolbox-container">
-                <my-toolbox
-                  @toolbox-loaded="${this.handleToolboxLoaded}"
-                ></my-toolbox>
+                <my-tabs>
+                  <h2 slot="tab">TOOLBOX</h2>
+                  <section slot="panel">
+                    <my-toolbox
+                      @toolbox-loaded="${this.handleToolboxLoaded}"
+                    ></my-toolbox>
+                  </section>
+                  <h2 slot="tab">YAML</h2>
+                  <section slot="panel">//TODO: yaml content</section>
+                  <h2 slot="tab">CODE</h2>
+                  <section slot="panel">//TODO: code exemple</section>
+                </my-tabs>
               </div>
             </div>
             <div class="col3">

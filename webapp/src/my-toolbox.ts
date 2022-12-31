@@ -44,7 +44,6 @@ export class MyToolbox extends LitElement {
   render() {
     return html`
       <div class="tools">
-        <h2>Toolbox</h2>
         <div>
           <my-section>
             <span slot="title">Fonts</span>
