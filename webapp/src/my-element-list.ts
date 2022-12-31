@@ -71,6 +71,7 @@ export class MyElementList extends LitElement {
         >
           ${this.renderTypeIcon(element)}
           <span
+            class="elementname"
             @click="${(e: Event) => {
               this.selectElement(element);
               e.stopPropagation();
@@ -106,6 +107,12 @@ export class MyElementList extends LitElement {
     }
     .element {
       cursor: pointer;
+    }
+    .elementname {
+      text-decoration: underline;
+    }
+    [is-selected="true"] .elementname {
+      text-decoration: none;
     }
     .delete {
       color: red;
