@@ -77,7 +77,7 @@ export class MyApp extends LitElement {
 
       .second-col-container .row1 {
         /* flex:1 1 auto; */
-        flex-grow: 1;
+        flex-grow: auto;
         align-self: auto;
       }
 
@@ -85,6 +85,7 @@ export class MyApp extends LitElement {
         /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: stretch;
+        height: 30vh;
       }
       .header {
         text-align: left;

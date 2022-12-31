@@ -15,6 +15,7 @@ class MyTabs extends LitElement {
     }
     nav > ::slotted([slot="tab"]) {
       padding: 1rem 2rem;
+      margin-bottom: 0px;
       flex: 1 1 auto;
       color: lightgrey;
       border-bottom: 2px solid lightgrey;
