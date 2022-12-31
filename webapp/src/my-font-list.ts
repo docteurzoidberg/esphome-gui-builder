@@ -134,6 +134,9 @@ export class MyFontList extends LitElement {
     img {
       image-rendering: pixelated;
     }
+    .fonts {
+      width: 100ch;
+    }
   `;
 }
 

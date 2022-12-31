@@ -123,6 +123,9 @@ export class MyImageList extends LitElement {
       padding-bottom: 10px;
       border: 1px solid;
     }
+    .images {
+      width: 100ch;
+    }
     img {
       image-rendering: pixelated;
     }
