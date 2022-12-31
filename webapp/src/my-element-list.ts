@@ -38,11 +38,11 @@ export class MyElementList extends LitElement {
 
   renderTypeIcon(element: GuiElement) {
     if (element.type == "image")
-      return html`<span class="type type-png">[png]</span>`;
+      return html`<img src="tag_png.png" class="type type-png" alt="png" />`;
     if (element.type == "animation")
-      return html`<span class="type type-gif">[gif]</span>`;
+      return html`<img src="tag_gif.png" class="type type-gif" alt="gif" />`;
     if (element.type == "text")
-      return html`<span class="type type-text">[text]</span>`;
+      return html`<img src="tag_text.png" class="type type-text" alt="text" />`;
     return html`<span class="type type-unknown">[?]</span>`;
   }
 
@@ -122,8 +122,10 @@ export class MyElementList extends LitElement {
       min-width: 350px;
     }
     .type {
-      width: 54px;
+      width: 38px;
+      image-rendering: pixelated;
       display: inline-block;
+      vertical-align: middle;
     }
   `;
 }
