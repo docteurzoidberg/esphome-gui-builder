@@ -8,12 +8,12 @@ import "./my-toolbox";
 import "./my-section";
 import "./my-tabs";
 
-import { EspHomeFont } from "./esphome/font/EspHomeFont";
-import { GuiElement } from "./gui/GuiElement";
-import { ImageGuiElement } from "./gui/image/ImageGuiElement";
-import { AnimationGuiElement } from "./gui/animation/AnimationGuiElement";
-import { FontGuiElement } from "./gui/font/FontGuiElement";
-import { EspHomeFontJSON } from "./esphome/font/EspHomeFontJSON";
+import { EspHomeFont } from "esphome/font/EspHomeFont";
+import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
+import { GuiElement } from "gui/GuiElement";
+import { ImageGuiElement } from "gui/image/ImageGuiElement";
+import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
+import { FontGuiElement } from "gui/font/FontGuiElement";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -100,6 +100,7 @@ export class MyApp extends LitElement {
       }
       .githublogo {
         vertical-align: middle;
+        image-rendering: pixelated;
       }
       .github,
       .logo,
@@ -114,6 +115,7 @@ export class MyApp extends LitElement {
       .logo img {
         vertical-align: middle;
         margin-right: 16px;
+        image-rendering: pixelated;
       }
       @media (prefers-color-scheme: dark) {
         .header {
@@ -1509,11 +1511,11 @@ export class MyApp extends LitElement {
                 class="githublogo"
                 src="githubw.png"
                 alt="github"
-                height="32"
+                height="48"
             /></a>
           </div>
           <div class="logo">
-            <img src="work-in-progress.png" />
+            <img src="work-in-progress.png" height="48" />
           </div>
         </div>
         <div class="second-row">
