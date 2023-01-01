@@ -108,8 +108,12 @@ export class MyApp extends LitElement {
       }
       .logo {
         margin-top: auto;
-
         align-items: center;
+        float: right;
+      }
+      .logo img {
+        vertical-align: middle;
+        margin-right: 16px;
       }
       @media (prefers-color-scheme: dark) {
         .header {
@@ -1494,8 +1498,8 @@ export class MyApp extends LitElement {
     return html`
       <div class="container two-rows-row">
         <div class="first-row header">
-          <div class="logo"></div>
           <div class="title">GUI Helper for ESPHome</div>
+
           <div class="github">
             <a
               target="new"
@@ -1507,6 +1511,9 @@ export class MyApp extends LitElement {
                 alt="github"
                 height="32"
             /></a>
+          </div>
+          <div class="logo">
+            <img src="work-in-progress.png" />
           </div>
         </div>
         <div class="second-row">
