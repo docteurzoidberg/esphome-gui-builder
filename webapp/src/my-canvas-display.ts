@@ -1,10 +1,10 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { pixelcoord } from "interfaces/PixelCoord";
-import { rgb } from "interfaces/rgb";
-import { EspHomeFont } from "esphome/font/EspHomeFont";
+import { RGB } from "types/RGB";
+import { Coord } from "types/Coord";
 
+import { EspHomeFont } from "esphome/font/EspHomeFont";
 import { GuiElement } from "gui/GuiElement";
 import { ImageGuiElement } from "gui/image/ImageGuiElement";
 import { ImageGuiElementJSON } from "gui/image/ImageGuiElementJSON";
@@ -15,29 +15,6 @@ import { FontGuiElementJSON } from "gui/font/FontGuiElementJSON";
 import { DropElementJSON } from "gui/DropElementJSON";
 
 const imageScale = 5;
-
-const hexToRgb = (hex: string): rgb => {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-        short:
-          "" +
-          parseInt(result[1], 16) +
-          "," +
-          parseInt(result[2], 16) +
-          "," +
-          parseInt(result[3], 16),
-      }
-    : {
-        r: 0,
-        g: 0,
-        b: 0,
-        short: "00,00,00",
-      };
-};
 
 @customElement("my-canvas-display")
 export class MyCanvasDisplay extends LitElement {
@@ -65,7 +42,7 @@ export class MyCanvasDisplay extends LitElement {
   @property({ type: Boolean })
   showGrid: boolean = true;
 
-  mouse_pixel_coord: pixelcoord = { x: 0, y: 0 };
+  mouse_pixel_coord: Coord = { x: 0, y: 0 };
   width: number = 0;
   height: number = 0;
   canvasWidth: number = 0;
@@ -79,11 +56,11 @@ export class MyCanvasDisplay extends LitElement {
   lastAnimationRequest = 0;
 
   isMovingElement: boolean = false;
-  elementStartMoveCoord: pixelcoord = { x: 0, y: 0 };
+  elementStartMoveCoord: Coord = { x: 0, y: 0 };
   dragOverEvent: DragEvent | null = null;
   dragOverElement: GuiElement | null = null;
 
-  _clearBuffer(rgb: rgb = hexToRgb("#000000")) {
+  _clearBuffer(rgb: RGB = { r: 0, g: 0, b: 0 }) {
     for (let i = 0; i < this.typedArray.length; i += 4) {
       this.typedArray[i + 0] = rgb.r;
       this.typedArray[i + 1] = rgb.g;
@@ -115,12 +92,6 @@ export class MyCanvasDisplay extends LitElement {
 
     this.width = width;
     this.height = height;
-    const event = new CustomEvent("init-canvas", {
-      detail: {
-        width: width,
-        height: height,
-      },
-    });
     this.arrayBuffer = new ArrayBuffer(width * height * 4);
     this.typedArray = new Uint8Array(this.arrayBuffer);
     this.canvasWidth =
@@ -134,11 +105,20 @@ export class MyCanvasDisplay extends LitElement {
     this.canvas.width = this.canvasWidth;
     this.canvas.height = this.canvasHeight;
 
-    //init green
-    this._clearBuffer(hexToRgb("#00FF00"));
+    this._clearBuffer({ r: 0, g: 255, b: 0 });
     this._draw(this.lastFrameTs);
 
-    this.dispatchEvent(event);
+    //dispatch init-canvas event
+    this.dispatchEvent(
+      new CustomEvent("init-canvas", {
+        detail: {
+          width: width,
+          height: height,
+        },
+      })
+    );
+
+    //dispatch drawing-update event
     this.dispatchEvent(
       new CustomEvent("drawing-update", {
         detail: this.typedArray,
@@ -340,13 +320,6 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
-  _isElementAtCoords(element: GuiElement, coords: pixelcoord) {
-    if (coords.x >= element.x && coords.x < element.x + element.getWidth())
-      if (coords.y >= element.y && coords.y < element.y + element.getHeight())
-        return true;
-    return false;
-  }
-
   _setMouseXY(e: MouseEvent) {
     this.mouse_pixel_coord.x = Math.ceil(e.offsetX / this.canvasCalcScaleX);
     this.mouse_pixel_coord.y = Math.ceil(e.offsetY / this.canvasCalcScaleY);
@@ -386,7 +359,7 @@ export class MyCanvasDisplay extends LitElement {
   handleMouseDown(e: MouseEvent) {
     //get elements at mouse coordinates
     const atcoords = this.elements.filter((element) =>
-      this._isElementAtCoords(element, this.mouse_pixel_coord)
+      element.isAt(this.mouse_pixel_coord)
     );
 
     //sort elements by z order desc
@@ -444,7 +417,6 @@ export class MyCanvasDisplay extends LitElement {
       const imageJson: ImageGuiElementJSON = {
         id: dropElementJSON.id,
         name: dropElementJSON.name,
-        type: "image",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
@@ -455,7 +427,6 @@ export class MyCanvasDisplay extends LitElement {
       const animationJson: AnimationGuiElementJSON = {
         id: dropElementJSON.id,
         name: dropElementJSON.name,
-        type: "animation",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
@@ -469,7 +440,6 @@ export class MyCanvasDisplay extends LitElement {
         name: dropElementJSON.name,
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
-        type: "text",
         zorder: 0,
         font: dropElementJSON.originalData,
         text: "TOTO",
@@ -497,28 +467,10 @@ export class MyCanvasDisplay extends LitElement {
 
     if (!dragOverElementJSON) return;
 
-    /*
-    const newGuiElementJSON: GuiElementJSON = {
-      id: dragOverElementJSON.id,
-      name: dragOverElementJSON.name,
-      type: dragOverElementJSON.type,
-      x: 0,
-      y: 0,
-      zorder: 0
-    };
-
-    newGuiElementJSON.x = 0; //TODO
-    newGuiElementJSON.y = 0; //TODO
-
-    if (newGuiElementJSON.type == "image") {
-      this.dragOverElement = new ImageGuiElement({ ...newGuiElementJSON, {image: dragOverElementJSON.originalData} });
-    */
-
     if (dragOverElementJSON.type == "image") {
       const imageJson: ImageGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        type: "image",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
@@ -529,7 +481,6 @@ export class MyCanvasDisplay extends LitElement {
       const animationJson: AnimationGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        type: "animation",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
@@ -541,7 +492,6 @@ export class MyCanvasDisplay extends LitElement {
       const fontJson: FontGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
-        type: "text",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,

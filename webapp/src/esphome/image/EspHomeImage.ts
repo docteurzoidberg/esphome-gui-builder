@@ -1,4 +1,4 @@
-import { EspHomeImageJSON } from "./EspHomeImageJSON";
+import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
 
 export class EspHomeImage implements EspHomeImageJSON {
   originalData: EspHomeImageJSON;

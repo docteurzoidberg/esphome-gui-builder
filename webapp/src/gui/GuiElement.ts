@@ -1,3 +1,4 @@
+import { Coord } from "types/Coord";
 import { GuiElementJSON } from "./GuiElementJSON";
 
 export abstract class GuiElement {
@@ -24,4 +25,11 @@ export abstract class GuiElement {
   abstract getWidth(): number;
   abstract getHeight(): number;
   abstract drawToCanvas(ctx: CanvasRenderingContext2D): void;
+
+  isAt(coords: Coord) {
+    if (coords.x >= this.x && coords.x < this.x + this.getWidth())
+      if (coords.y >= this.y && coords.y < this.y + this.getHeight())
+        return true;
+    return false;
+  }
 }
