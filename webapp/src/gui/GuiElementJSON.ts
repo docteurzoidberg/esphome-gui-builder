@@ -1,10 +1,8 @@
 export interface GuiElementJSON {
   id: string;
   name: string;
-  jsonData?: any;
-  params?: any;
+  type?: string;
   x: number;
   y: number;
   zorder: number;
-  type: string;
 }

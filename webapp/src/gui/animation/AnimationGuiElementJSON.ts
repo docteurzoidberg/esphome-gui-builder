@@ -1,10 +1,6 @@
 import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
 
-export interface AnimationGuiElementJSON {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  zorder: number;
+export interface AnimationGuiElementJSON extends GuiElementJSON {
   animation: EspHomeAnimationJSON;
 }

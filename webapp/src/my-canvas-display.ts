@@ -6,13 +6,13 @@ import { rgb } from "interfaces/rgb";
 import { EspHomeFont } from "esphome/font/EspHomeFont";
 
 import { GuiElement } from "gui/GuiElement";
-import { GuiElementJSON } from "gui/GuiElementJSON";
 import { ImageGuiElement } from "gui/image/ImageGuiElement";
 import { ImageGuiElementJSON } from "gui/image/ImageGuiElementJSON";
 import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
 import { AnimationGuiElementJSON } from "gui/animation/AnimationGuiElementJSON";
 import { FontGuiElement } from "gui/font/FontGuiElement";
 import { FontGuiElementJSON } from "gui/font/FontGuiElementJSON";
+import { DropElementJSON } from "gui/DropElementJSON";
 
 const imageScale = 5;
 
@@ -434,45 +434,50 @@ export class MyCanvasDisplay extends LitElement {
     this.dragOverElement = null;
 
     const data = ev.dataTransfer!.getData("application/gui-element-json");
-    const guiElementJSON: GuiElementJSON = JSON.parse(data) as GuiElementJSON;
+    const dropElementJSON: DropElementJSON = JSON.parse(
+      data
+    ) as DropElementJSON;
 
     let element: GuiElement | null = null;
 
-    if (guiElementJSON.type == "image") {
+    if (dropElementJSON.type == "image") {
       const imageJson: ImageGuiElementJSON = {
-        id: guiElementJSON.id,
-        name: guiElementJSON.name,
+        id: dropElementJSON.id,
+        name: dropElementJSON.name,
+        type: "image",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
-        image: guiElementJSON.jsonData,
+        image: dropElementJSON.originalData,
       };
       element = new ImageGuiElement(imageJson);
-    } else if (guiElementJSON.type == "animation") {
+    } else if (dropElementJSON.type == "animation") {
       const animationJson: AnimationGuiElementJSON = {
-        id: guiElementJSON.id,
-        name: guiElementJSON.name,
-        x: 0,
-        y: 0,
-        zorder: 0,
-        animation: guiElementJSON.jsonData,
-      };
-      element = new AnimationGuiElement(animationJson);
-    } else if (guiElementJSON.type == "text") {
-      const font = new EspHomeFont(guiElementJSON.jsonData);
-      const fontJson: FontGuiElementJSON = {
-        id: guiElementJSON.id,
-        name: guiElementJSON.name,
+        id: dropElementJSON.id,
+        name: dropElementJSON.name,
+        type: "animation",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
-        font: guiElementJSON.jsonData,
+        animation: dropElementJSON.originalData,
+      };
+      element = new AnimationGuiElement(animationJson);
+    } else if (dropElementJSON.type == "text") {
+      const font = new EspHomeFont(dropElementJSON.originalData);
+      const fontJson: FontGuiElementJSON = {
+        id: dropElementJSON.id,
+        name: dropElementJSON.name,
+        x: 0, //TODO: coordinates
+        y: 0, //TODO: coordinates
+        type: "text",
+        zorder: 0,
+        font: dropElementJSON.originalData,
         text: "TOTO",
         bounds: font.getBoundingBox("TOTO"),
       };
       element = new FontGuiElement(fontJson);
     } else {
-      console.error("unknow type", guiElementJSON.type);
+      console.error("unknow type", dropElementJSON.type);
     }
 
     if (!element) return;
@@ -486,41 +491,61 @@ export class MyCanvasDisplay extends LitElement {
     );
 
     //temporary create json
-    const dragOverElementJSON: GuiElementJSON = JSON.parse(
+    const dragOverElementJSON: DropElementJSON = JSON.parse(
       data
-    ) as GuiElementJSON;
+    ) as DropElementJSON;
 
     if (!dragOverElementJSON) return;
+
+    /*
+    const newGuiElementJSON: GuiElementJSON = {
+      id: dragOverElementJSON.id,
+      name: dragOverElementJSON.name,
+      type: dragOverElementJSON.type,
+      x: 0,
+      y: 0,
+      zorder: 0
+    };
+
+    newGuiElementJSON.x = 0; //TODO
+    newGuiElementJSON.y = 0; //TODO
+
+    if (newGuiElementJSON.type == "image") {
+      this.dragOverElement = new ImageGuiElement({ ...newGuiElementJSON, {image: dragOverElementJSON.originalData} });
+    */
 
     if (dragOverElementJSON.type == "image") {
       const imageJson: ImageGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
+        type: "image",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
-        image: dragOverElementJSON.jsonData,
+        image: dragOverElementJSON.originalData,
       };
       this.dragOverElement = new ImageGuiElement(imageJson);
     } else if (dragOverElementJSON.type == "animation") {
       const animationJson: AnimationGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
+        type: "animation",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
-        animation: dragOverElementJSON.jsonData,
+        animation: dragOverElementJSON.originalData,
       };
       this.dragOverElement = new AnimationGuiElement(animationJson);
     } else if (dragOverElementJSON.type == "text") {
-      const font = new EspHomeFont(dragOverElementJSON.jsonData);
+      const font = new EspHomeFont(dragOverElementJSON.originalData);
       const fontJson: FontGuiElementJSON = {
         id: dragOverElementJSON.id,
         name: dragOverElementJSON.name,
+        type: "text",
         x: 0, //TODO: coordinates
         y: 0, //TODO: coordinates
         zorder: 0,
-        font: dragOverElementJSON.jsonData,
+        font: dragOverElementJSON.originalData,
         text: "TOTO",
         bounds: font.getBoundingBox("TOTO"),
       };

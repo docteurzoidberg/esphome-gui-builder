@@ -33,10 +33,6 @@ export class MyApp extends LitElement {
         text-align: center;
       }
 
-      .col1 {
-        //width: 15vw;
-      }
-
       .container {
         display: flex;
         /* flex-flow: column; */
@@ -57,7 +53,7 @@ export class MyApp extends LitElement {
         /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: auto;
-        min-width: 290px;
+        min-width: 250px;
       }
 
       .col2 {
@@ -117,6 +113,16 @@ export class MyApp extends LitElement {
         margin-right: 16px;
         image-rendering: pixelated;
       }
+
+      .screen-settings-container label {
+        width: 150px;
+        display: inline-block;
+      }
+      .screen-settings-container input[type="number"] {
+        width: 60px;
+        display: inline-block;
+      }
+
       @media (prefers-color-scheme: dark) {
         .header {
           /* dark mode variables go here */

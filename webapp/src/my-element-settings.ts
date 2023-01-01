@@ -43,11 +43,21 @@ export class MyElementSettings extends LitElement {
       <my-section>
         <span slot="title">Element settings</span>
         <div class="elem-settings">
-          <div>id: ${this.selectedElement.id}</div>
-          <div>type: ${this.selectedElement.type}</div>
-          <div>name: ${this.selectedElement.name}</div>
           <div>
-            <label for="selectedElementX">x: ${this.selectedElement.x}</label>
+            <label>id:</label>
+            <span class="textspan">${this.selectedElement.id}</span>
+          </div>
+          <div>
+            <label>type:</label>
+            <span class="textspan">${this.selectedElement.type}</span>
+          </div>
+          <div>
+            <label>name:</label>
+            <span class="textspan">${this.selectedElement.name}</span>
+          </div>
+          <div>
+            <label for="selectedElementX">x: </label>
+            <span class="numberspan">${this.selectedElement.x}</span>
             <input
               type="number"
               id="selectedElementX"
@@ -57,7 +67,8 @@ export class MyElementSettings extends LitElement {
             />
           </div>
           <div>
-            <label for="selectedElementY">y: ${this.selectedElement.y}</label>
+            <label for="selectedElementY">y:</label>
+            <span class="numberspan">${this.selectedElement.y}</span>
             <input
               type="number"
               id="selectedElementY"
@@ -67,7 +78,8 @@ export class MyElementSettings extends LitElement {
             />
           </div>
           <div>
-            <label for="zorder">zorder: ${this.selectedElement.zorder}</label>
+            <label for="zorder">zorder:</label>
+            <span class="numberspan">${this.selectedElement.zorder}</span>
             <input
               type="number"
               id="zorder"
@@ -94,6 +106,23 @@ export class MyElementSettings extends LitElement {
     }
     h2 {
       text-decoration: underline;
+    }
+
+    label {
+      width: 75px;
+      display: inline-block;
+    }
+    .textspan {
+      display: inline-block;
+      width: 135px;
+    }
+    .numberspan {
+      display: inline-block;
+      width: 75px;
+    }
+    input[type="number"] {
+      width: 60px;
+      display: inline-block;
     }
   `;
 }

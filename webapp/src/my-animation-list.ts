@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
 import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
-import { GuiElementJSON } from "gui/GuiElementJSON";
+import { DropElementJSON } from "gui/DropElementJSON";
 
 @customElement("my-animation-list")
 export class MyAnimationList extends LitElement {
@@ -32,14 +32,11 @@ export class MyAnimationList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, animation: EspHomeAnimation) {
-    const elem: GuiElementJSON = {
+    const elem: DropElementJSON = {
       id: "id_" + animation.name, //TODO: generate uniques ids !
       name: animation.name,
-      x: 0, //overwriten when dropped
-      y: 0, //overwriten when dropped
-      zorder: 0,
       type: "animation",
-      jsonData: animation.originalData,
+      originalData: animation.originalData,
     };
 
     ev.dataTransfer!.setData(

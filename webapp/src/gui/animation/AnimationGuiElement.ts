@@ -13,7 +13,6 @@ export class AnimationGuiElement extends GuiElement {
       type: "animation",
       zorder: json.zorder,
     });
-
     this.animation = new EspHomeAnimation(json.animation);
   }
   getWidth(): number {

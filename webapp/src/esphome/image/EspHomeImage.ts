@@ -1,6 +1,6 @@
 import { EspHomeImageJSON } from "./EspHomeImageJSON";
 
-export class EspHomeImage {
+export class EspHomeImage implements EspHomeImageJSON {
   originalData: EspHomeImageJSON;
   width: number;
   height: number;

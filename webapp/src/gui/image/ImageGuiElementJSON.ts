@@ -1,10 +1,6 @@
 import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
 
-export interface ImageGuiElementJSON {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  zorder: number;
+export interface ImageGuiElementJSON extends GuiElementJSON {
   image: EspHomeImageJSON;
 }

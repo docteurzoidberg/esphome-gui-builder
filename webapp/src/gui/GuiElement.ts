@@ -18,23 +18,10 @@ export abstract class GuiElement {
     this.x = guielementjson.x;
     this.y = guielementjson.y;
     this.zorder = guielementjson.zorder;
-    this.type = guielementjson.type;
+    this.type = guielementjson.type || "";
   }
 
   abstract getWidth(): number;
   abstract getHeight(): number;
   abstract drawToCanvas(ctx: CanvasRenderingContext2D): void;
-
-  toJSON(): string {
-    const jsonData: GuiElementJSON = {
-      x: this.x,
-      y: this.y,
-      id: this.id,
-      type: this.type,
-      name: this.name,
-      zorder: this.zorder,
-      params: this.params,
-    };
-    return JSON.stringify(jsonData);
-  }
 }

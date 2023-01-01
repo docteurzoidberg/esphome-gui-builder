@@ -7,13 +7,7 @@ import { resolve } from "path";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   build: {
-    //lib: {
-    //  entry: "src/my-app.ts",
-    //  formats: ["es"],
-    //},
-    //rollupOptions: {
-    //  external: /^lit/,
-    //},
+    outDir: "./build/dist",
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),

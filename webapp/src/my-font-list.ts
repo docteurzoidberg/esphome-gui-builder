@@ -6,7 +6,7 @@ import "./my-animation-list";
 
 import { EspHomeFont } from "esphome/font/EspHomeFont";
 import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
-import { GuiElementJSON } from "gui/GuiElementJSON";
+import { DropElementJSON } from "gui/DropElementJSON";
 
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
@@ -63,14 +63,11 @@ export class MyFontList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, font: EspHomeFont) {
-    const elem: GuiElementJSON = {
+    const elem: DropElementJSON = {
       id: "id_" + font.name, //TODO: generate uniques ids !
       name: font.name,
-      x: 0, //overwriten when dropped
-      y: 0, //overwriten when dropped
-      zorder: 0,
       type: "text",
-      jsonData: font.originalData,
+      originalData: font.originalData,
     };
 
     ev.dataTransfer!.setData(

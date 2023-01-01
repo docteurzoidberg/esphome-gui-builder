@@ -1,6 +1,6 @@
 import { EspHomeImage } from "esphome/image/EspHomeImage";
 import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
-import { GuiElementJSON } from "gui/GuiElementJSON";
+import { DropElementJSON } from "gui/DropElementJSON";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
@@ -39,14 +39,11 @@ export class MyImageList extends LitElement {
   }
 
   handleDragStart(ev: DragEvent, image: EspHomeImage) {
-    const elem: GuiElementJSON = {
+    const elem: DropElementJSON = {
       id: "id_" + image.name, //TODO: generate uniques ids !
       name: image.name,
-      x: 0, //overwriten when dropped
-      y: 0, //overwriten when dropped
-      zorder: 0,
       type: "image",
-      jsonData: image.originalData,
+      originalData: image.originalData,
     };
 
     //TODDDO!
