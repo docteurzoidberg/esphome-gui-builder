@@ -126,7 +126,7 @@ export class MyElementList extends LitElement {
       image-rendering: pixelated;
       display: inline-block;
       vertical-align: middle;
-      opacity: 0.65;
+      opacity: 0.8;
     }
   `;
 }
