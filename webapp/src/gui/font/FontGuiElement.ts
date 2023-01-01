@@ -20,15 +20,15 @@ export class FontGuiElement extends GuiElement {
     this.text = json.text;
     this.bounds = json.bounds;
   }
-  drawToCanvas(ctx: CanvasRenderingContext2D): void {
-    const result = this.font.render(this.text);
-    if (!result) return;
-    ctx.putImageData(result.image, this.x, this.y);
-  }
   getWidth(): number {
     return this.bounds.width;
   }
   getHeight(): number {
     return this.bounds.height;
+  }
+  drawToCanvas(ctx: CanvasRenderingContext2D): void {
+    const result = this.font.render(this.text);
+    if (!result) return;
+    ctx.putImageData(result.image, this.x, this.y);
   }
 }

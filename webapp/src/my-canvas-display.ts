@@ -13,6 +13,7 @@ import { AnimationGuiElementJSON } from "gui/animation/AnimationGuiElementJSON";
 import { FontGuiElement } from "gui/font/FontGuiElement";
 import { FontGuiElementJSON } from "gui/font/FontGuiElementJSON";
 import { DropElementJSON } from "gui/DropElementJSON";
+import { GuiElementJSON } from "gui/GuiElementJSON";
 
 const imageScale = 5;
 
@@ -467,41 +468,37 @@ export class MyCanvasDisplay extends LitElement {
 
     if (!dragOverElementJSON) return;
 
+    //base object
+    const newGuiElementJSON: GuiElementJSON = {
+      id: dragOverElementJSON.id,
+      name: dragOverElementJSON.name,
+      x: 0, //TODO: coordinates
+      y: 0, //TODO: coordinates
+      zorder: 0,
+    };
+
     if (dragOverElementJSON.type == "image") {
-      const imageJson: ImageGuiElementJSON = {
-        id: dragOverElementJSON.id,
-        name: dragOverElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
+      this.dragOverElement = new ImageGuiElement({
+        ...newGuiElementJSON,
         image: dragOverElementJSON.originalData,
-      };
-      this.dragOverElement = new ImageGuiElement(imageJson);
+      });
     } else if (dragOverElementJSON.type == "animation") {
-      const animationJson: AnimationGuiElementJSON = {
-        id: dragOverElementJSON.id,
-        name: dragOverElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
+      this.dragOverElement = new AnimationGuiElement({
+        ...newGuiElementJSON,
         animation: dragOverElementJSON.originalData,
-      };
-      this.dragOverElement = new AnimationGuiElement(animationJson);
+      });
     } else if (dragOverElementJSON.type == "text") {
+      const text = "//TODO";
       const font = new EspHomeFont(dragOverElementJSON.originalData);
-      const fontJson: FontGuiElementJSON = {
-        id: dragOverElementJSON.id,
-        name: dragOverElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
-        font: dragOverElementJSON.originalData,
-        text: "TOTO",
-        bounds: font.getBoundingBox("TOTO"),
-      };
-      this.dragOverElement = new FontGuiElement(fontJson);
+      this.dragOverElement = new FontGuiElement({
+        ...newGuiElementJSON,
+        font: font,
+        text: text,
+        bounds: font.getBoundingBox(text),
+      });
     } else {
       console.error("unknown type:", dragOverElementJSON.type);
+      this.dragOverElement = null;
     }
   }
 

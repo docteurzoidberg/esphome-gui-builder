@@ -1,7 +1,7 @@
 import { Coord } from "types/Coord";
 import { GuiElementJSON } from "./GuiElementJSON";
 
-export abstract class GuiElement {
+export abstract class GuiElement implements Coord {
   originalData: GuiElementJSON;
   id: string;
   name: string;
