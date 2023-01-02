@@ -1,7 +1,6 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { RGB } from "types/RGB";
 import { Coord } from "types/Coord";
 
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
@@ -10,9 +9,6 @@ import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
 import { FontGuiElement } from "classes/gui/FontGuiElement";
 
-import { ImageGuiElementJSON } from "interfaces/gui/ImageGuiElementJSON";
-import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
-import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
@@ -52,8 +48,10 @@ export class MyCanvasDisplay extends LitElement {
   canvasCalcScaleX: number = 0;
   canvasCalcScaleY: number = 0;
   ctx: CanvasRenderingContext2D | null = null;
-  arrayBuffer!: ArrayBuffer;
-  typedArray!: Uint8Array;
+
+  //arrayBuffer!: ArrayBuffer;
+  //typedArray!: Uint8Array;
+
   lastFrameTs: number = 0;
   lastAnimationRequest = 0;
 
@@ -62,14 +60,14 @@ export class MyCanvasDisplay extends LitElement {
   dragOverEvent: DragEvent | null = null;
   dragOverElement: GuiElement | null = null;
 
-  _clearBuffer(rgb: RGB = { r: 0, g: 0, b: 0 }) {
-    for (let i = 0; i < this.typedArray.length; i += 4) {
-      this.typedArray[i + 0] = rgb.r;
-      this.typedArray[i + 1] = rgb.g;
-      this.typedArray[i + 2] = rgb.b;
-      this.typedArray[i + 3] = 0;
-    }
-  }
+  //_clearBuffer(rgb: RGB = { r: 0, g: 0, b: 0 }) {
+  //  for (let i = 0; i < this.typedArray.length; i += 4) {
+  //    this.typedArray[i + 0] = rgb.r;
+  //    this.typedArray[i + 1] = rgb.g;
+  //    this.typedArray[i + 2] = rgb.b;
+  //    this.typedArray[i + 3] = 0;
+  //  }
+  //}
 
   _draw(ts: number) {
     //todo: limit fps?
@@ -94,8 +92,8 @@ export class MyCanvasDisplay extends LitElement {
 
     this.width = width;
     this.height = height;
-    this.arrayBuffer = new ArrayBuffer(width * height * 4);
-    this.typedArray = new Uint8Array(this.arrayBuffer);
+    //this.arrayBuffer = new ArrayBuffer(width * height * 4);
+    //this.typedArray = new Uint8Array(this.arrayBuffer);
     this.canvasWidth =
       width * this.canvasScale +
       (this.showGrid ? this.canvasGridWidth * (width + 1) : 0);
@@ -107,7 +105,7 @@ export class MyCanvasDisplay extends LitElement {
     this.canvas.width = this.canvasWidth;
     this.canvas.height = this.canvasHeight;
 
-    this._clearBuffer({ r: 0, g: 255, b: 0 });
+    //this._clearBuffer({ r: 0, g: 255, b: 0 });
     this._draw(this.lastFrameTs);
 
     //dispatch init-canvas event
@@ -121,11 +119,11 @@ export class MyCanvasDisplay extends LitElement {
     );
 
     //dispatch drawing-update event
-    this.dispatchEvent(
-      new CustomEvent("drawing-update", {
-        detail: this.typedArray,
-      })
-    );
+    //this.dispatchEvent(
+    //  new CustomEvent("drawing-update", {
+    //    detail: this.typedArray,
+    //  })
+    //);
   }
 
   _drawCanvasGrid(ctx: CanvasRenderingContext2D) {
@@ -358,19 +356,64 @@ export class MyCanvasDisplay extends LitElement {
     );
   }
 
+  _createDragOverElement() {
+    const data = this.dragOverEvent!.dataTransfer!.getData(
+      "application/gui-element-json"
+    );
+
+    //temporary create json
+    const dragOverElementJSON: DropElementJSON = JSON.parse(
+      data
+    ) as DropElementJSON;
+
+    if (!dragOverElementJSON) return;
+
+    //base object
+    const newGuiElementJSON: GuiElementJSON = {
+      id: dragOverElementJSON.id,
+      name: dragOverElementJSON.name,
+      x: 0, //TODO: coordinates
+      y: 0, //TODO: coordinates
+      zorder: 0,
+    };
+
+    if (dragOverElementJSON.type == "image") {
+      this.dragOverElement = new ImageGuiElement({
+        ...newGuiElementJSON,
+        image: dragOverElementJSON.originalData,
+      });
+    } else if (dragOverElementJSON.type == "animation") {
+      this.dragOverElement = new AnimationGuiElement({
+        ...newGuiElementJSON,
+        animation: dragOverElementJSON.originalData,
+      });
+    } else if (dragOverElementJSON.type == "text") {
+      const text = "//TODO";
+      const font = new EspHomeFont(dragOverElementJSON.originalData);
+      this.dragOverElement = new FontGuiElement({
+        ...newGuiElementJSON,
+        font: dragOverElementJSON.originalData,
+        text: text,
+        bounds: font.getBoundingBox(text),
+      });
+    } else {
+      console.error("unknown type:", dragOverElementJSON.type);
+      this.dragOverElement = null;
+    }
+  }
+
   handleMouseDown(e: MouseEvent) {
     //get elements at mouse coordinates
     const atcoords = this.elements.filter((element) =>
       element.isAt(this.mouse_pixel_coord)
     );
-
     //sort elements by z order desc
     atcoords.sort((a, b) =>
       a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
     );
-
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
+    //trigger selection chnge
     if (selected?.id != this.selectedElement?.id) {
       this.dispatchEvent(
         new CustomEvent("element-selected", {
@@ -378,6 +421,7 @@ export class MyCanvasDisplay extends LitElement {
         })
       );
     }
+    //start moving selected element
     if (selected && e.button === 0 && !this.isMovingElement) {
       this._startMoving();
     }
@@ -415,92 +459,43 @@ export class MyCanvasDisplay extends LitElement {
 
     let element: GuiElement | null = null;
 
-    if (dropElementJSON.type == "image") {
-      const imageJson: ImageGuiElementJSON = {
-        id: dropElementJSON.id,
-        name: dropElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
-        image: dropElementJSON.originalData,
-      };
-      element = new ImageGuiElement(imageJson);
-    } else if (dropElementJSON.type == "animation") {
-      const animationJson: AnimationGuiElementJSON = {
-        id: dropElementJSON.id,
-        name: dropElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
-        animation: dropElementJSON.originalData,
-      };
-      element = new AnimationGuiElement(animationJson);
-    } else if (dropElementJSON.type == "text") {
-      const font = new EspHomeFont(dropElementJSON.originalData);
-      const fontJson: FontGuiElementJSON = {
-        id: dropElementJSON.id,
-        name: dropElementJSON.name,
-        x: 0, //TODO: coordinates
-        y: 0, //TODO: coordinates
-        zorder: 0,
-        font: dropElementJSON.originalData,
-        text: "TOTO",
-        bounds: font.getBoundingBox("TOTO"),
-      };
-      element = new FontGuiElement(fontJson);
-    } else {
-      console.error("unknow type", dropElementJSON.type);
-    }
-
-    if (!element) return;
-    const event = new CustomEvent("element-dropped", { detail: element });
-    this.dispatchEvent(event);
-  }
-
-  createDragOverElement() {
-    const data = this.dragOverEvent!.dataTransfer!.getData(
-      "application/gui-element-json"
-    );
-
-    //temporary create json
-    const dragOverElementJSON: DropElementJSON = JSON.parse(
-      data
-    ) as DropElementJSON;
-
-    if (!dragOverElementJSON) return;
-
-    //base object
-    const newGuiElementJSON: GuiElementJSON = {
-      id: dragOverElementJSON.id,
-      name: dragOverElementJSON.name,
+    let elementJson: GuiElementJSON = {
+      id: dropElementJSON.id,
+      name: dropElementJSON.name,
       x: 0, //TODO: coordinates
       y: 0, //TODO: coordinates
       zorder: 0,
     };
 
-    if (dragOverElementJSON.type == "image") {
-      this.dragOverElement = new ImageGuiElement({
-        ...newGuiElementJSON,
-        image: dragOverElementJSON.originalData,
+    if (dropElementJSON.type == "image") {
+      element = new ImageGuiElement({
+        ...elementJson,
+        image: dropElementJSON.originalData,
       });
-    } else if (dragOverElementJSON.type == "animation") {
-      this.dragOverElement = new AnimationGuiElement({
-        ...newGuiElementJSON,
-        animation: dragOverElementJSON.originalData,
+    } else if (dropElementJSON.type == "animation") {
+      element = new AnimationGuiElement({
+        ...elementJson,
+        animation: dropElementJSON.originalData,
       });
-    } else if (dragOverElementJSON.type == "text") {
-      const text = "//TODO";
-      const font = new EspHomeFont(dragOverElementJSON.originalData);
-      this.dragOverElement = new FontGuiElement({
-        ...newGuiElementJSON,
-        font: font,
-        text: text,
-        bounds: font.getBoundingBox(text),
+    } else if (dropElementJSON.type == "text") {
+      const font = new EspHomeFont(dropElementJSON.originalData);
+      element = new FontGuiElement({
+        ...elementJson,
+        font: dropElementJSON.originalData,
+        text: "TOTO",
+        bounds: font.getBoundingBox("TOTO"),
       });
     } else {
-      console.error("unknown type:", dragOverElementJSON.type);
-      this.dragOverElement = null;
+      console.error("unknow type", dropElementJSON.type);
     }
+
+    if (!element) return;
+
+    this.dispatchEvent(
+      new CustomEvent("element-dropped", {
+        detail: element,
+      })
+    );
   }
 
   handleDragOver(ev: DragEvent) {
@@ -508,7 +503,7 @@ export class MyCanvasDisplay extends LitElement {
     ev.dataTransfer!.dropEffect = "move";
     this.dragOverEvent = ev;
     if (!this.dragOverElement) {
-      this.createDragOverElement();
+      this._createDragOverElement();
     }
     //TODO: check mouse coord?
   }

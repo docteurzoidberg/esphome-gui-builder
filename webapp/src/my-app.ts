@@ -1429,7 +1429,7 @@ export class MyApp extends LitElement {
     console.log("element-removed", e.detail);
     const elementToRemove = e.detail as GuiElement;
     this.guiElements = this.guiElements.filter((element: GuiElement) => {
-      return element.id !== elementToRemove.id;
+      return element.internalId !== elementToRemove.internalId;
     });
   }
 

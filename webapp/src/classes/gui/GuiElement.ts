@@ -4,6 +4,8 @@ import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
 export abstract class GuiElement implements Coord {
   originalData: GuiElementJSON;
+  internalId: number;
+
   id: string;
   name: string;
   data?: any;
@@ -17,6 +19,7 @@ export abstract class GuiElement implements Coord {
     if (!guielementjson.type) {
       throw new Error("type must be set");
     }
+    this.internalId = new Date().getTime();
     this.originalData = guielementjson;
     this.id = guielementjson.id;
     this.name = guielementjson.name;
