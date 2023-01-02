@@ -1,8 +1,9 @@
-import { EspHomeImage } from "esphome/image/EspHomeImage";
-import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
-import { DropElementJSON } from "gui/DropElementJSON";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
+
+import { EspHomeImage } from "classes/esphome/EspHomeImage";
+import { EspHomeImageJSON } from "interfaces/esphome/EspHomeImageJSON";
+import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 
 @customElement("my-image-list")
 export class MyImageList extends LitElement {

@@ -4,9 +4,10 @@ import { customElement, property } from "lit/decorators.js";
 import "./my-image-list";
 import "./my-animation-list";
 
-import { EspHomeFont } from "esphome/font/EspHomeFont";
-import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
-import { DropElementJSON } from "gui/DropElementJSON";
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+
+import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
+import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 
 @customElement("my-font-list")
 export class MyFontList extends LitElement {

@@ -1,16 +1,16 @@
 import {
+  EspHomeFontGlyph,
   EspHomeFontJSON,
-  Glyph,
-  RenderResult,
-  TextBound,
-} from "esphome/font/EspHomeFontJSON";
+  EspHomeFontRenderResult,
+  EspHomeFontTextBound,
+} from "interfaces/esphome/EspHomeFontJSON";
 
 export class EspHomeFont implements EspHomeFontJSON {
   originalData: EspHomeFontJSON;
   name: string;
   height: number;
   glyphstr: string;
-  glyphs: Glyph[];
+  glyphs: EspHomeFontGlyph[];
   data: number[];
 
   private _tempCanvas: HTMLCanvasElement;
@@ -45,7 +45,7 @@ export class EspHomeFont implements EspHomeFontJSON {
     return image; // ctx.getImageData(0, 0, width, height);
   }
 
-  getBoundingBox(text: string): TextBound {
+  getBoundingBox(text: string): EspHomeFontTextBound {
     if (!this.originalData) return { width: 0, height: 0 };
     let w = 0;
     let h = 0;
@@ -53,7 +53,7 @@ export class EspHomeFont implements EspHomeFontJSON {
       const char = text.charAt(i);
 
       //lookup char into glyph table
-      const glyph = this.originalData.glyphs.find((glyph: Glyph) => {
+      const glyph = this.originalData.glyphs.find((glyph: EspHomeFontGlyph) => {
         return glyph.glyph === char;
       });
       if (!glyph) continue;
@@ -67,7 +67,7 @@ export class EspHomeFont implements EspHomeFontJSON {
     return { width: w, height: h };
   }
 
-  render(text: string): RenderResult | null {
+  render(text: string): EspHomeFontRenderResult | null {
     if (!this.originalData) return null;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -85,7 +85,7 @@ export class EspHomeFont implements EspHomeFontJSON {
       const char = text.charAt(i);
 
       //lookup char into glyph table
-      const glyph = this.originalData.glyphs.find((glyph: Glyph) => {
+      const glyph = this.originalData.glyphs.find((glyph: EspHomeFontGlyph) => {
         return glyph.glyph === char;
       });
       if (!glyph) continue;

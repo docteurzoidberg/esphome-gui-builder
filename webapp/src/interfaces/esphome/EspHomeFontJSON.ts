@@ -2,11 +2,11 @@ export interface EspHomeFontJSON {
   name: string;
   height: number;
   glyphstr: string;
-  glyphs: Array<Glyph>;
+  glyphs: Array<EspHomeFontGlyph>;
   data: Array<number>;
 }
 
-export interface Glyph {
+export interface EspHomeFontGlyph {
   glyph: string;
   offset_x: number;
   offset_y: number;
@@ -15,14 +15,14 @@ export interface Glyph {
   start: number;
 }
 
-export interface RenderResult {
+export interface EspHomeFontRenderResult {
   dataUrl: string;
   width: number;
   height: number;
   image: any;
 }
 
-export interface TextBound {
+export interface EspHomeFontTextBound {
   width: number;
   height: number;
 }

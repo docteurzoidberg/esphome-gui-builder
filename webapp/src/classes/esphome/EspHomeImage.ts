@@ -1,4 +1,4 @@
-import { EspHomeImageJSON } from "esphome/image/EspHomeImageJSON";
+import { EspHomeImageJSON } from "interfaces/esphome/EspHomeImageJSON";
 
 export class EspHomeImage implements EspHomeImageJSON {
   originalData: EspHomeImageJSON;
@@ -14,7 +14,7 @@ export class EspHomeImage implements EspHomeImageJSON {
     this.name = imagejson.name;
     this.dataurl = imagejson.dataurl;
   }
-
+  /*
   toJSON(): string {
     const jsonData: EspHomeImageJSON = {
       width: this.width,
@@ -24,4 +24,5 @@ export class EspHomeImage implements EspHomeImageJSON {
     };
     return JSON.stringify(jsonData);
   }
+  */
 }

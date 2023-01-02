@@ -1,9 +1,9 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { EspHomeAnimation } from "esphome/animation/EspHomeAnimation";
-import { EspHomeAnimationJSON } from "esphome/animation/EspHomeAnimationJSON";
-import { DropElementJSON } from "gui/DropElementJSON";
+import { EspHomeAnimation } from "classes/esphome/EspHomeAnimation";
+import { EspHomeAnimationJSON } from "interfaces/esphome/EspHomeAnimationJSON";
+import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 
 @customElement("my-animation-list")
 export class MyAnimationList extends LitElement {

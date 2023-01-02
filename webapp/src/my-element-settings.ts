@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { GuiElement } from "gui/GuiElement";
+
+import { GuiElement } from "classes/gui/GuiElement";
 
 import "./my-section";
 

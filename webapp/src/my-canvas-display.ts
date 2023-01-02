@@ -4,16 +4,17 @@ import { customElement, property, query } from "lit/decorators.js";
 import { RGB } from "types/RGB";
 import { Coord } from "types/Coord";
 
-import { EspHomeFont } from "esphome/font/EspHomeFont";
-import { GuiElement } from "gui/GuiElement";
-import { ImageGuiElement } from "gui/image/ImageGuiElement";
-import { ImageGuiElementJSON } from "gui/image/ImageGuiElementJSON";
-import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
-import { AnimationGuiElementJSON } from "gui/animation/AnimationGuiElementJSON";
-import { FontGuiElement } from "gui/font/FontGuiElement";
-import { FontGuiElementJSON } from "gui/font/FontGuiElementJSON";
-import { DropElementJSON } from "gui/DropElementJSON";
-import { GuiElementJSON } from "gui/GuiElementJSON";
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { GuiElement } from "classes/gui/GuiElement";
+import { ImageGuiElement } from "classes/gui/ImageGuiElement";
+import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
+import { FontGuiElement } from "classes/gui/FontGuiElement";
+
+import { ImageGuiElementJSON } from "interfaces/gui/ImageGuiElementJSON";
+import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
+import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
+import { DropElementJSON } from "interfaces/gui/DropElementJSON";
+import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
 const imageScale = 5;
 

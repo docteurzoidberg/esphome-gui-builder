@@ -8,12 +8,12 @@ import "./my-toolbox";
 import "./my-section";
 import "./my-tabs";
 
-import { EspHomeFont } from "esphome/font/EspHomeFont";
-import { EspHomeFontJSON } from "esphome/font/EspHomeFontJSON";
-import { GuiElement } from "gui/GuiElement";
-import { ImageGuiElement } from "gui/image/ImageGuiElement";
-import { AnimationGuiElement } from "gui/animation/AnimationGuiElement";
-import { FontGuiElement } from "gui/font/FontGuiElement";
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
+import { GuiElement } from "classes/gui/GuiElement";
+import { ImageGuiElement } from "classes/gui/ImageGuiElement";
+import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
+import { FontGuiElement } from "classes/gui/FontGuiElement";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
