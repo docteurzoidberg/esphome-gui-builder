@@ -4,10 +4,10 @@ import { customElement, property } from "lit/decorators.js";
 @customElement("my-tabs")
 class MyTabs extends LitElement {
   @property()
-  _tabs: Array<Element> = [];
+  _tabs: Element[] = [];
 
   @property()
-  _panels: Array<Element> = [];
+  _panels: Element[] = [];
 
   static styles = css`
     nav {

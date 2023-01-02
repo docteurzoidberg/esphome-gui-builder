@@ -12,7 +12,7 @@ import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 @customElement("my-font-list")
 export class MyFontList extends LitElement {
   @property({ type: Array })
-  fonts: Array<EspHomeFont> = [];
+  fonts: EspHomeFont[] = [];
 
   @property({ type: Object })
   selectedFont?: EspHomeFont;
@@ -55,8 +55,8 @@ export class MyFontList extends LitElement {
   loadXhrData() {
     fetch("./fonts.json")
       .then((response) => response.json())
-      .then((json: Array<EspHomeFontJSON>) => {
-        this.fonts = json.map((font: EspHomeFontJSON) => new EspHomeFont(font));
+      .then((json: EspHomeFontJSON[]) => {
+        this.fonts = json.map((fontjson) => new EspHomeFont(fontjson));
         this.fontsLoaded = true;
         this.raiseFontsLoaded();
         //console.dir(json);

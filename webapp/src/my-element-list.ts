@@ -9,7 +9,7 @@ export class MyElementList extends LitElement {
   selectedElement?: GuiElement;
 
   @property()
-  guiElements: Array<GuiElement> = [];
+  guiElements: GuiElement[] = [];
 
   connectedCallback(): void {
     super.connectedCallback();

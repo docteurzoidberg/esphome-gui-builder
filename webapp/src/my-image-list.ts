@@ -8,7 +8,7 @@ import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 @customElement("my-image-list")
 export class MyImageList extends LitElement {
   @property({ type: Array })
-  images: Array<EspHomeImage> = [];
+  images: EspHomeImage[] = [];
 
   @property({ type: Object })
   selectedImage?: EspHomeImage;
@@ -63,9 +63,9 @@ export class MyImageList extends LitElement {
     this.dragImg.src = "drag_png.png";
     fetch("./images.json")
       .then((response) => response.json())
-      .then((json: Array<EspHomeImageJSON>) => {
-        this.images = json.map((image) => {
-          return new EspHomeImage(image);
+      .then((json: EspHomeImageJSON[]) => {
+        this.images = json.map((imagejson) => {
+          return new EspHomeImage(imagejson);
         });
         this.raiseImagesLoaded();
         //console.dir(json);

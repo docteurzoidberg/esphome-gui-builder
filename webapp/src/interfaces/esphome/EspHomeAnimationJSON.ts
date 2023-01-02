@@ -3,6 +3,6 @@ export interface EspHomeAnimationJSON {
   height: number;
   name: string;
   frames: number;
-  data: Array<number>;
+  data: number[];
   dataurl: string;
 }

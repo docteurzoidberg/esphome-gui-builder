@@ -8,7 +8,7 @@ import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 @customElement("my-animation-list")
 export class MyAnimationList extends LitElement {
   @property({ type: Array })
-  animations: Array<EspHomeAnimation> = [];
+  animations: EspHomeAnimation[] = [];
 
   @property({ type: Boolean })
   animationsLoaded = false;
@@ -52,9 +52,9 @@ export class MyAnimationList extends LitElement {
     this.dragImg.src = "drag_gif.png";
     fetch("./animations.json")
       .then((response) => response.json())
-      .then((json: Array<EspHomeAnimationJSON>) => {
-        this.animations = json.map((animation) => {
-          return new EspHomeAnimation(animation);
+      .then((json: EspHomeAnimationJSON[]) => {
+        this.animations = json.map((animationjson) => {
+          return new EspHomeAnimation(animationjson);
         });
         this.raiseAnimationsLoaded();
         //console.dir(json);

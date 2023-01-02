@@ -2,8 +2,8 @@ export interface EspHomeFontJSON {
   name: string;
   height: number;
   glyphstr: string;
-  glyphs: Array<EspHomeFontGlyph>;
-  data: Array<number>;
+  glyphs: EspHomeFontGlyph[];
+  data: number[];
 }
 
 export interface EspHomeFontGlyph {

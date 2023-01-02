@@ -158,7 +158,7 @@ export class MyApp extends LitElement {
   toolboxScale: number = 3;
 
   @property()
-  guiElements: Array<GuiElement> = [];
+  guiElements: GuiElement[] = [];
 
   @property()
   selectedElement?: GuiElement;

@@ -24,7 +24,7 @@ export class MyCanvasDisplay extends LitElement {
   canvas!: HTMLCanvasElement;
 
   @property()
-  elements: Array<GuiElement> = [];
+  elements: GuiElement[] = [];
 
   @property()
   selectedElement?: GuiElement;
