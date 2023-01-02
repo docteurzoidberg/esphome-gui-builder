@@ -1,8 +1,9 @@
 # webapp
 
 - [ ] generate unique ids and clean name for gui elements
-- [ ] new element dialog for setting parameters
 - [ ] drop element at mouse coordinates, not 0,0
-- [ ] css styling !!!
-- [ ] import other assets from json
+- [ ] add screen presets
+- [ ] new element dialog for setting parameters (text. color, fps. etc)
 - [ ] load/save current screen
+- [ ] css styling !!!
+- [ ] import other asset library from json

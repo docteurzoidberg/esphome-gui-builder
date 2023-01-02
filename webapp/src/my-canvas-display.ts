@@ -1,8 +1,6 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { Coord } from "types/Coord";
-
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
@@ -12,12 +10,17 @@ import { FontGuiElement } from "classes/gui/FontGuiElement";
 import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
+import { Size } from "types/Size";
+import { Rect } from "types/Rect";
+import { Coord } from "types/Coord";
+import { ElementSelectedEvent } from "types/ElementSelectedEvent";
+
 const imageScale = 5;
 
 @customElement("my-canvas-display")
 export class MyCanvasDisplay extends LitElement {
   @query("#display")
-  canvas!: HTMLCanvasElement;
+  canvasElement!: HTMLCanvasElement;
 
   @property()
   elements: GuiElement[] = [];
@@ -41,33 +44,28 @@ export class MyCanvasDisplay extends LitElement {
   showGrid: boolean = true;
 
   mouse_pixel_coord: Coord = { x: 0, y: 0 };
-  width: number = 0;
-  height: number = 0;
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
+
+  displaySize: Size = {
+    width: 0,
+    height: 0,
+  };
+
+  canvasSize: Size = {
+    width: 0,
+    height: 0,
+  };
+
   canvasCalcScaleX: number = 0;
   canvasCalcScaleY: number = 0;
-  ctx: CanvasRenderingContext2D | null = null;
 
-  //arrayBuffer!: ArrayBuffer;
-  //typedArray!: Uint8Array;
-
+  //rendering
+  ctx?: CanvasRenderingContext2D | null;
   lastFrameTs: number = 0;
   lastAnimationRequest = 0;
 
-  isMovingElement: boolean = false;
-  elementStartMoveCoord: Coord = { x: 0, y: 0 };
-  dragOverEvent: DragEvent | null = null;
-  dragOverElement: GuiElement | null = null;
-
-  //_clearBuffer(rgb: RGB = { r: 0, g: 0, b: 0 }) {
-  //  for (let i = 0; i < this.typedArray.length; i += 4) {
-  //    this.typedArray[i + 0] = rgb.r;
-  //    this.typedArray[i + 1] = rgb.g;
-  //    this.typedArray[i + 2] = rgb.b;
-  //    this.typedArray[i + 3] = 0;
-  //  }
-  //}
+  //when there is a dragover event
+  dragOverEvent?: DragEvent;
+  dragOverElement?: GuiElement;
 
   _draw(ts: number) {
     //todo: limit fps?
@@ -76,7 +74,7 @@ export class MyCanvasDisplay extends LitElement {
     this.lastFrameTs = ts;
     if (this.ctx) {
       this.ctx.save();
-      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
       this._drawCanvas();
       this.ctx.restore();
     }
@@ -90,33 +88,19 @@ export class MyCanvasDisplay extends LitElement {
       window.cancelAnimationFrame(this.lastAnimationRequest);
     }
 
-    this.width = width;
-    this.height = height;
-    //this.arrayBuffer = new ArrayBuffer(width * height * 4);
-    //this.typedArray = new Uint8Array(this.arrayBuffer);
-    this.canvasWidth =
-      width * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (width + 1) : 0);
-    this.canvasHeight =
-      height * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (height + 1) : 0);
-    this.canvasCalcScaleX = this.canvasWidth / width;
-    this.canvasCalcScaleY = this.canvasHeight / height;
-    this.canvas.width = this.canvasWidth;
-    this.canvas.height = this.canvasHeight;
+    this.displaySize.width = width;
+    this.displaySize.height = height;
 
-    //this._clearBuffer({ r: 0, g: 255, b: 0 });
-    this._draw(this.lastFrameTs);
+    this._calcCanvasSize(width, height);
 
     //dispatch init-canvas event
     this.dispatchEvent(
       new CustomEvent("init-canvas", {
-        detail: {
-          width: width,
-          height: height,
-        },
+        detail: this.displaySize,
       })
     );
+
+    this._draw(this.lastFrameTs);
 
     //dispatch drawing-update event
     //this.dispatchEvent(
@@ -131,46 +115,52 @@ export class MyCanvasDisplay extends LitElement {
     ctx.lineWidth = this.canvasGridWidth;
     for (
       let x = this.canvasGridWidth / 2;
-      x < this.canvasWidth;
+      x < this.canvasSize.width;
       x += this.canvasScale + this.canvasGridWidth
     ) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, this.canvasHeight);
+      ctx.lineTo(x, this.canvasSize.height);
       ctx.stroke();
     }
     for (
       let y = this.canvasGridWidth / 2;
-      y < this.canvasHeight;
+      y < this.canvasSize.height;
       y += this.canvasScale + this.canvasGridWidth
     ) {
       ctx.beginPath();
       ctx.moveTo(0, y);
-      ctx.lineTo(this.canvasWidth, y);
+      ctx.lineTo(this.canvasSize.width, y);
       ctx.stroke();
     }
   }
 
+  _calcCanvasSize(width: number, height: number) {
+    this.canvasSize = {
+      width:
+        width * this.canvasScale +
+        (this.showGrid ? this.canvasGridWidth * (width + 1) : 0),
+      height:
+        height * this.canvasScale +
+        (this.showGrid ? this.canvasGridWidth * (height + 1) : 0),
+    };
+
+    this.canvasCalcScaleX = this.canvasSize.width / width;
+    this.canvasCalcScaleY = this.canvasSize.height / height;
+    this.canvasElement.width = this.canvasSize.width;
+    this.canvasElement.height = this.canvasSize.height;
+  }
+
   _drawCanvas() {
     //TODO: check if cnvas size changed?
-    this.canvasWidth =
-      this.displayWidth * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (this.displayWidth + 1) : 0);
-    this.canvasHeight =
-      this.displayHeight * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (this.displayHeight + 1) : 0);
-    this.canvasCalcScaleX = this.canvasWidth / this.displayWidth;
-    this.canvasCalcScaleY = this.canvasHeight / this.displayHeight;
-    this.canvas.width = this.canvasWidth;
-    this.canvas.height = this.canvasHeight;
-    //-
+    this._calcCanvasSize(this.displayWidth, this.displayHeight);
 
     const ctx = this.ctx;
     if (!ctx) return;
 
     //fill with white backgound (for transparency)
     ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    ctx.fillRect(0, 0, this.canvasSize.width, this.canvasSize.height);
 
     //draw grid
     if (this.showGrid) {
@@ -235,73 +225,69 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
+  _getElementScaledRect(
+    guielement: GuiElement,
+    x: number,
+    y: number,
+    canvasscale: number,
+    gridwidth: number = 0
+  ): Rect {
+    const elemWidth = guielement.getWidth();
+    const elemHeight = guielement.getHeight();
+    const elemScaledWidth =
+      (elemWidth + 1) * canvasscale + gridwidth * elemWidth;
+    const elemScaledHeight =
+      (elemHeight + 1) * canvasscale + gridwidth * elemHeight;
+    return {
+      x: x * canvasscale + gridwidth * (x + 1),
+      y: y * canvasscale + gridwidth * (y + 1),
+      w: elemScaledWidth,
+      h: elemScaledHeight,
+    };
+  }
+
   _drawSelectedElementRectBorder(ctx: CanvasRenderingContext2D) {
     if (!this.selectedElement) return;
-
-    const elemWidth = this.selectedElement.getWidth();
-    const elemHeight = this.selectedElement.getHeight();
-
-    const elemCanvasX =
-      this.selectedElement.x * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (this.selectedElement.x + 1) : 0);
-    const elemCanvasY =
-      this.selectedElement.y * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (this.selectedElement.y + 1) : 0);
-
-    const elemScaledWidth =
-      (elemWidth + 1) * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * elemWidth : 0);
-    const elemScaledHeight =
-      (elemHeight + 1) * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * elemHeight : 0);
-
+    const rect = this._getElementScaledRect(
+      this.selectedElement,
+      this.selectedElement.x,
+      this.selectedElement.y,
+      this.canvasScale,
+      this.showGrid ? this.canvasGridWidth : 0
+    );
     const selectedLineWidth = 8;
     ctx.strokeStyle = "rgba(" + 255 + "," + 0 + "," + 0 + ", 1)";
     ctx.lineWidth = selectedLineWidth;
     ctx.strokeRect(
-      elemCanvasX - selectedLineWidth / 2,
-      elemCanvasY - selectedLineWidth / 2,
-      elemScaledWidth,
-      elemScaledHeight
+      rect.x - selectedLineWidth / 2,
+      rect.y - selectedLineWidth / 2,
+      rect.w,
+      rect.h
     );
   }
 
   _drawDragOverElementRectBorder(ctx: CanvasRenderingContext2D) {
     if (!this.dragOverElement) return;
-
     //TODO: mouseXY?
-    let mouseX = this.dragOverEvent!.clientX - this.canvas.offsetLeft;
-    let mouseY = this.dragOverEvent!.clientY - this.canvas.offsetTop;
-    let pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
-    let pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
-
-    let elemX = pixelX;
-    let elemY = pixelY;
-    let elemWidth = this.dragOverElement.getWidth();
-    let elemHeight = this.dragOverElement.getHeight();
-
-    const elemCanvasX =
-      elemX * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (elemX + 1) : 0);
-    const elemCanvasY =
-      elemY * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * (elemY + 1) : 0);
-
-    const elemScaledWidth =
-      (elemWidth + 1) * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * elemWidth : 0);
-    const elemScaledHeight =
-      (elemHeight + 1) * this.canvasScale +
-      (this.showGrid ? this.canvasGridWidth * elemHeight : 0);
-
+    const mouseX = this.dragOverEvent!.clientX - this.canvasElement.offsetLeft;
+    const mouseY = this.dragOverEvent!.clientY - this.canvasElement.offsetTop;
+    const pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
+    const pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
+    const rect = this._getElementScaledRect(
+      this.dragOverElement,
+      pixelX,
+      pixelY,
+      this.canvasScale,
+      this.showGrid ? this.canvasGridWidth : 0
+    );
     const selectedLineWidth = 8;
     ctx.strokeStyle = "rgba(" + 0 + "," + 0 + "," + 255 + ", 1)";
     ctx.lineWidth = selectedLineWidth;
     ctx.strokeRect(
-      elemCanvasX - selectedLineWidth / 2,
-      elemCanvasY - selectedLineWidth / 2,
-      elemScaledWidth,
-      elemScaledHeight
+      rect.x - selectedLineWidth / 2,
+      rect.y - selectedLineWidth / 2,
+      rect.w,
+      rect.h
     );
   }
 
@@ -309,15 +295,11 @@ export class MyCanvasDisplay extends LitElement {
     if (!this.dragOverElement) return;
 
     //TODO: mouseXY?
-    let mouseX = this.dragOverEvent!.clientX - this.canvas.offsetLeft;
-    let mouseY = this.dragOverEvent!.clientY - this.canvas.offsetTop;
+    let mouseX = this.dragOverEvent!.clientX - this.canvasElement.offsetLeft;
+    let mouseY = this.dragOverEvent!.clientY - this.canvasElement.offsetTop;
     let pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
     let pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
-    if (this.dragOverElement instanceof ImageGuiElement) {
-      let img = new Image();
-      img.src = this.dragOverElement.image.dataurl;
-      ctx.drawImage(img, pixelX, pixelY);
-    }
+    this.dragOverElement.drawGhostToCanvas(ctx, { x: pixelX, y: pixelY });
   }
 
   _setMouseXY(e: MouseEvent) {
@@ -329,25 +311,6 @@ export class MyCanvasDisplay extends LitElement {
       this.mouse_pixel_coord.x = this.displayWidth;
     if (this.mouse_pixel_coord.y > this.displayHeight)
       this.mouse_pixel_coord.y = this.displayHeight;
-  }
-
-  _startMoving() {
-    this.isMovingElement = true;
-
-    //console.log(
-    //  "start moving",
-    //  this.mouse_pixel_coord.x,
-    //  this.mouse_pixel_coord.y
-    //);
-
-    this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
-    this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
-  }
-
-  _stopMoving() {
-    //console.log("stop moving");
-    this.isMovingElement = false;
-    this._elementMoved();
   }
 
   _elementMoved() {
@@ -398,7 +361,7 @@ export class MyCanvasDisplay extends LitElement {
       });
     } else {
       console.error("unknown type:", dragOverElementJSON.type);
-      this.dragOverElement = null;
+      this.dragOverElement = undefined;
     }
   }
 
@@ -411,46 +374,52 @@ export class MyCanvasDisplay extends LitElement {
     atcoords.sort((a, b) =>
       a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
     );
+
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
-    //trigger selection chnge
-    if (selected?.id != this.selectedElement?.id) {
+
+    //trigger selection change if any
+    if (selected != this.selectedElement) {
       this.dispatchEvent(
         new CustomEvent("element-selected", {
-          detail: selected,
+          detail: { element: selected } as ElementSelectedEvent,
         })
       );
+      this.selectedElement = selected;
     }
-    //start moving selected element
-    if (selected && e.button === 0 && !this.isMovingElement) {
-      this._startMoving();
+
+    if (
+      this.selectedElement &&
+      e.button === 0 &&
+      !this.selectedElement.isMoving
+    ) {
+      this.selectedElement.beginMove(this.mouse_pixel_coord);
     }
   }
 
   handleMouseUp() {
-    if (this.isMovingElement) this._stopMoving();
+    if (this.selectedElement?.isMoving) {
+      this.selectedElement.endMove();
+    }
   }
 
   handleMouseLeave() {
-    if (this.isMovingElement) this._stopMoving();
+    if (this.selectedElement?.isMoving) this.selectedElement.endMove();
   }
 
   handleMouseMove(e: MouseEvent) {
     this._setMouseXY(e);
-    if (this.isMovingElement && this.selectedElement) {
-      const movex = this.mouse_pixel_coord.x - this.elementStartMoveCoord.x;
-      const movey = this.mouse_pixel_coord.y - this.elementStartMoveCoord.y;
-      //console.log("moving element", movex, movey);
-      this.selectedElement.x += movex;
-      this.selectedElement.y += movey;
-      this.elementStartMoveCoord.x = this.mouse_pixel_coord.x;
-      this.elementStartMoveCoord.y = this.mouse_pixel_coord.y;
+    if (this.selectedElement?.isMoving) {
+      this.selectedElement.move({
+        x: this.mouse_pixel_coord.x,
+        y: this.mouse_pixel_coord.y,
+      });
     }
   }
 
   handleDrop(ev: DragEvent) {
-    this.dragOverEvent = null;
-    this.dragOverElement = null;
+    this.dragOverEvent = undefined;
+    this.dragOverElement = undefined;
 
     const data = ev.dataTransfer!.getData("application/gui-element-json");
     const dropElementJSON: DropElementJSON = JSON.parse(
@@ -509,8 +478,8 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   handleDragLeave() {
-    this.dragOverEvent = null;
-    this.dragOverElement = null;
+    this.dragOverEvent = undefined;
+    this.dragOverElement = undefined;
   }
 
   connectedCallback() {
@@ -520,7 +489,7 @@ export class MyCanvasDisplay extends LitElement {
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = this.canvasElement.getContext("2d");
     this._initCanvas(this.displayWidth, this.displayHeight);
   }
 

@@ -14,6 +14,8 @@ import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
 import { FontGuiElement } from "classes/gui/FontGuiElement";
+import { ElementRemovedEvent } from "types/ElementRemovedEvent";
+import { ElementSelectedEvent } from "types/ElementSelectedEvent";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -1413,24 +1415,31 @@ export class MyApp extends LitElement {
 
   handleElementSelected(e: CustomEvent) {
     console.log("element-selected", e.detail);
-    const element = e.detail as GuiElement;
-    this.selectedElement = element;
-    //this.requestUpdate();
+    const selectedEvent = e.detail as ElementSelectedEvent;
+    this.selectedElement = selectedEvent.element;
   }
 
   handleElementMoved(e: CustomEvent) {
     console.log("element moved");
     const element = e.detail;
     this.selectedElement = element;
-    this.requestUpdate();
   }
 
   handleElementRemoved(e: CustomEvent) {
     console.log("element-removed", e.detail);
-    const elementToRemove = e.detail as GuiElement;
-    this.guiElements = this.guiElements.filter((element: GuiElement) => {
-      return element.internalId !== elementToRemove.internalId;
-    });
+
+    //const elementToRemove = e.detail as GuiElement;
+    const details = e.detail as ElementRemovedEvent;
+
+    //this.myArray = this.myArray.filter((_, i) => i !== indexToRemove);
+    this.guiElements = [
+      ...this.guiElements.slice(0, details.index),
+      ...this.guiElements.slice(details.index + 1),
+    ];
+    //this.guiElements = this.guiElements.filter((element: GuiElement, index) => {
+    //return element.id !== elementToRemove.id;
+    //  return index != details.index;
+    //});
   }
 
   handleElementDropped(e: CustomEvent) {

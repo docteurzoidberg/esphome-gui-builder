@@ -2,6 +2,7 @@ import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { GuiElement } from "classes/gui/GuiElement";
 import { EspHomeFontTextBound } from "interfaces/esphome/EspHomeFontJSON";
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
+import { Coord } from "types/Coord";
 
 export class FontGuiElement extends GuiElement {
   font: EspHomeFont;
@@ -30,5 +31,16 @@ export class FontGuiElement extends GuiElement {
     const result = this.font.render(this.text);
     if (!result) return;
     ctx.putImageData(result.image, this.x, this.y);
+  }
+  drawGhostToCanvas(ctx: CanvasRenderingContext2D, coords: Coord): void {
+    const result = this.font.render(this.text);
+    if (!result) return;
+    ctx.putImageData(result.image, coords.x, coords.y);
+  }
+  toYAML(): string {
+    throw new Error("Method not implemented.");
+  }
+  toCPP(): string {
+    throw new Error("Method not implemented.");
   }
 }

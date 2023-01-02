@@ -3,9 +3,8 @@ import { GuiElementType } from "types/GuiElementType";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
 export abstract class GuiElement implements Coord {
+  type: GuiElementType;
   originalData: GuiElementJSON;
-  internalId: number;
-
   id: string;
   name: string;
   data?: any;
@@ -13,13 +12,17 @@ export abstract class GuiElement implements Coord {
   x: number;
   y: number;
   zorder: number;
-  type: GuiElementType;
+
+  isMoving: boolean = false;
+
+  //private internalId: number;
+  private startedMovingAt: Coord = { x: 0, y: 0 };
 
   constructor(guielementjson: GuiElementJSON) {
     if (!guielementjson.type) {
       throw new Error("type must be set");
     }
-    this.internalId = new Date().getTime();
+    //this.internalId = new Date().getTime();
     this.originalData = guielementjson;
     this.id = guielementjson.id;
     this.name = guielementjson.name;
@@ -32,11 +35,33 @@ export abstract class GuiElement implements Coord {
   abstract getWidth(): number;
   abstract getHeight(): number;
   abstract drawToCanvas(ctx: CanvasRenderingContext2D): void;
+  abstract drawGhostToCanvas(
+    ctx: CanvasRenderingContext2D,
+    coords: Coord
+  ): void;
+
+  abstract toYAML(): string;
+  abstract toCPP(): string;
 
   isAt(coords: Coord) {
     if (coords.x >= this.x && coords.x < this.x + this.getWidth())
       if (coords.y >= this.y && coords.y < this.y + this.getHeight())
         return true;
     return false;
+  }
+
+  beginMove(coords: Coord) {
+    this.isMoving = true;
+    this.startedMovingAt = coords;
+  }
+
+  move(offset: Coord) {
+    this.x += offset.x - this.startedMovingAt.x;
+    this.y += offset.y - this.startedMovingAt.y;
+    this.startedMovingAt = offset;
+  }
+
+  endMove() {
+    this.isMoving = false;
   }
 }

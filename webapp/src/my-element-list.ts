@@ -2,6 +2,8 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "classes/gui/GuiElement";
+import { ElementRemovedEvent } from "types/ElementRemovedEvent";
+import { ElementSelectedEvent } from "types/ElementSelectedEvent";
 
 @customElement("my-element-list")
 export class MyElementList extends LitElement {
@@ -15,25 +17,32 @@ export class MyElementList extends LitElement {
     super.connectedCallback();
   }
 
-  selectElement(element: GuiElement | undefined) {
+  selectElement(
+    element: GuiElement | undefined = undefined,
+    index: number | undefined = undefined
+  ) {
     this.selectedElement = element;
     this.dispatchEvent(
-      new CustomEvent("element-selected", { detail: element })
+      new CustomEvent("element-selected", {
+        detail: { element: element, index: index } as ElementSelectedEvent,
+      })
     );
   }
 
-  removeElement(elementToRemove: GuiElement) {
-    this.selectElement(undefined);
+  removeElement(elementToRemove: GuiElement, index: number) {
+    this.selectElement();
     this.dispatchEvent(
-      new CustomEvent("element-removed", { detail: elementToRemove })
+      new CustomEvent("element-removed", {
+        detail: {
+          element: elementToRemove,
+          index: index,
+        } as ElementRemovedEvent,
+      })
     );
   }
 
   handleClick() {
-    this.selectedElement = undefined;
-    this.dispatchEvent(
-      new CustomEvent("element-selected", { detail: undefined })
-    );
+    this.selectElement();
   }
 
   renderTypeIcon(element: GuiElement) {
@@ -46,14 +55,14 @@ export class MyElementList extends LitElement {
     return html`<span class="type type-unknown">[?]</span>`;
   }
 
-  renderControls(element: GuiElement) {
+  renderControls(element: GuiElement, index: number) {
     if (element.id !== this.selectedElement?.id) return html``;
     return html`
       <button
         class="delete"
         type="button"
         @click="${(e: Event) => {
-          this.removeElement(element);
+          this.removeElement(element, index);
           e.stopPropagation();
         }}"
       >
@@ -63,7 +72,7 @@ export class MyElementList extends LitElement {
   }
 
   renderElements() {
-    return this.guiElements.map((element: GuiElement) => {
+    return this.guiElements.map((element: GuiElement, index: number) => {
       return html`
         <div
           class="element"
@@ -73,12 +82,12 @@ export class MyElementList extends LitElement {
           <span
             class="elementname"
             @click="${(e: Event) => {
-              this.selectElement(element);
+              this.selectElement(element, index);
               e.stopPropagation();
             }}"
             >${element.name}</span
           >
-          ${this.renderControls(element)}
+          ${this.renderControls(element, index)}
         </div>
       `;
     });

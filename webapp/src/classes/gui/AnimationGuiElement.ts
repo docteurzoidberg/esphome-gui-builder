@@ -1,6 +1,7 @@
 import { EspHomeAnimation } from "classes/esphome/EspHomeAnimation";
 import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
 import { GuiElement } from "classes/gui/GuiElement";
+import { Coord } from "types/Coord";
 
 export class AnimationGuiElement extends GuiElement {
   animation: EspHomeAnimation;
@@ -26,5 +27,17 @@ export class AnimationGuiElement extends GuiElement {
     const image = this.animation.getImageData();
     if (!image) return;
     ctx.putImageData(image, this.x, this.y);
+  }
+  drawGhostToCanvas(ctx: CanvasRenderingContext2D, coords: Coord): void {
+    this.animation.update();
+    const image = this.animation.getImageData();
+    if (!image) return;
+    ctx.putImageData(image, coords.x, coords.y);
+  }
+  toYAML(): string {
+    throw new Error("Method not implemented.");
+  }
+  toCPP(): string {
+    throw new Error("Method not implemented.");
   }
 }
