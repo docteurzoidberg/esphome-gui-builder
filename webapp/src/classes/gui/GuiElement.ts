@@ -64,4 +64,8 @@ export abstract class GuiElement implements Coord {
   endMove() {
     this.isMoving = false;
   }
+
+  order(index: number) {
+    this.zorder = index;
+  }
 }

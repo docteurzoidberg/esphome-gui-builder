@@ -2,8 +2,9 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "classes/gui/GuiElement";
-import { ElementRemovedEvent } from "types/ElementRemovedEvent";
-import { ElementSelectedEvent } from "types/ElementSelectedEvent";
+import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
+
+import "./my-icon-button";
 
 @customElement("my-element-list")
 export class MyElementList extends LitElement {
@@ -41,6 +42,37 @@ export class MyElementList extends LitElement {
     );
   }
 
+  moveUp(index: number) {
+    if (index > 0) {
+      // Use the spread operator (...) to create a new array
+      // with the items in the correct order
+
+      //this.guiElements[index].order(index - 1);
+
+      this.guiElements = [
+        ...this.guiElements.slice(0, index - 1),
+        this.guiElements[index],
+        this.guiElements[index - 1],
+        ...this.guiElements.slice(index + 1),
+      ];
+    }
+  }
+
+  moveDown(index: number) {
+    if (index < this.guiElements.length - 1) {
+      // Use the spread operator (...) to create a new array
+      // with the items in the correct order
+      //this.guiElements[index].order(index + 1);
+
+      this.guiElements = [
+        ...this.guiElements.slice(0, index),
+        this.guiElements[index + 1],
+        this.guiElements[index],
+        ...this.guiElements.slice(index + 2),
+      ];
+    }
+  }
+
   handleClick() {
     this.selectElement();
   }
@@ -58,16 +90,35 @@ export class MyElementList extends LitElement {
   renderControls(element: GuiElement, index: number) {
     if (element.id !== this.selectedElement?.id) return html``;
     return html`
-      <button
+      <my-icon-button
         class="delete"
-        type="button"
+        text="✖ Remove item"
+        color="red"
+        icon="✖"
         @click="${(e: Event) => {
           this.removeElement(element, index);
           e.stopPropagation();
         }}"
       >
-        ✖
-      </button>
+      </my-icon-button>
+      <my-icon-button
+        text="⇧ Move item up (front)"
+        icon="⇧"
+        color="yellow"
+        @click="${(e: Event) => {
+          this.moveUp(index);
+          e.stopPropagation();
+        }}"
+      ></my-icon-button>
+      <my-icon-button
+        text="⇩ Move item down (back)"
+        icon="⇩"
+        color="yellow"
+        @click="${(e: Event) => {
+          this.moveDown(index);
+          e.stopPropagation();
+        }}"
+      ></my-icon-button>
     `;
   }
 
@@ -125,6 +176,11 @@ export class MyElementList extends LitElement {
     }
     .delete {
       color: red;
+    }
+    .moveup,
+    .movedown {
+      color: yellow;
+      font-weight: bold;
     }
     .elements {
       height: 100vh;

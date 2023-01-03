@@ -13,7 +13,7 @@ import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 import { Size } from "types/Size";
 import { Rect } from "types/Rect";
 import { Coord } from "types/Coord";
-import { ElementSelectedEvent } from "types/ElementSelectedEvent";
+import { ElementSelectedEvent } from "types/Events";
 
 const imageScale = 5;
 
@@ -173,10 +173,11 @@ export class MyCanvasDisplay extends LitElement {
     if (!newctx) return;
     newcanvas.width = this.displayWidth;
     newcanvas.height = this.displayHeight;
-    this.elements.sort((a, b) => a.zorder - b.zorder);
+
+    const sortedElements = [...this.elements].reverse();
 
     //draw each guielement
-    this.elements.forEach((element) => {
+    sortedElements.forEach((element) => {
       element.drawToCanvas(newctx);
     });
 
@@ -371,9 +372,9 @@ export class MyCanvasDisplay extends LitElement {
       element.isAt(this.mouse_pixel_coord)
     );
     //sort elements by z order desc
-    atcoords.sort((a, b) =>
-      a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
-    );
+    // atcoords.sort((a, b) =>
+    //   a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
+    // );
 
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
