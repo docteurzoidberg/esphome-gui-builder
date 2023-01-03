@@ -1288,18 +1288,7 @@ export class StorageManager {
   //load esphome images, animations, fonts
   static loadToolbox() {}
 
-  //load screen settings, gui scale, etc
-  static loadSettings(): Settings {
-    const localStorageData = localStorage.getItem("settings");
-    if (!localStorageData) {
-      console.log("No data in localstorage, loading default settings");
-      const settings = StorageManager.getDefaultSettings();
-      StorageManager.saveSettings(settings);
-      return settings;
-    }
-    const parsedData: Settings = JSON.parse(localStorageData);
-    return parsedData;
-  }
+  static saveToolbox() {}
 
   //load gui elements
   static async loadScene(): Promise<GuiElement[]> {
@@ -1335,6 +1324,19 @@ export class StorageManager {
       jsonElements.push(elem.toGuiElementJSON());
     });
     localStorage.setItem("scene", JSON.stringify(jsonElements));
+  }
+
+  //load screen settings, gui scale, etc
+  static loadSettings(): Settings {
+    const localStorageData = localStorage.getItem("settings");
+    if (!localStorageData) {
+      console.log("No data in localstorage, loading default settings");
+      const settings = StorageManager.getDefaultSettings();
+      StorageManager.saveSettings(settings);
+      return settings;
+    }
+    const parsedData: Settings = JSON.parse(localStorageData);
+    return parsedData;
   }
 
   //save screen settings, gui scale, etc
