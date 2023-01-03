@@ -1,5 +1,7 @@
 # GUI helper for ESPHome
 
+# /!\ WARNING: early POC / developpement stage !!!
+
 ## What is it ?
 
 Inspired from the flipper zero gui editor: https://ilin.pt/stuff/fui-editor/
