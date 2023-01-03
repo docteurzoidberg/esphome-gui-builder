@@ -315,7 +315,7 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _elementMoved() {
-    window.dispatchEvent(
+    this.dispatchEvent(
       new CustomEvent("element-moved", { detail: this.selectedElement })
     );
   }
@@ -401,11 +401,15 @@ export class MyCanvasDisplay extends LitElement {
   handleMouseUp() {
     if (this.selectedElement?.isMoving) {
       this.selectedElement.endMove();
+      this._elementMoved();
     }
   }
 
   handleMouseLeave() {
-    if (this.selectedElement?.isMoving) this.selectedElement.endMove();
+    if (this.selectedElement?.isMoving) {
+      this.selectedElement.endMove();
+      this._elementMoved();
+    }
   }
 
   handleMouseMove(e: MouseEvent) {

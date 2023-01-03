@@ -6,9 +6,17 @@ screens:
     background: "000000" #rgb color (hex)
     showgrid: true #show grid [true|false]
     gridsize: 2 #grid size [number]
-    scale: 2 #pixels per pixel [number]
+    scale: 4 #pixels per pixel [number]
     refresh: 16 #ms
-
+  - name: "tinyled16x16"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 16
+    height: 16
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 2 #grid size [number]
+    scale: 10 #pixels per pixel [number]
+    refresh: 16 #ms
 fonts:
   - name: "5x5"
     file: "data/fonts/5x5_pixel.ttf"

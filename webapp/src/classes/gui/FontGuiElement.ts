@@ -43,4 +43,17 @@ export class FontGuiElement extends GuiElement {
   toCPP(): string {
     throw new Error("Method not implemented.");
   }
+  toGuiElementJSON(): FontGuiElementJSON {
+    return {
+      id: this.id,
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      type: "text",
+      zorder: this.zorder,
+      font: this.font.originalData,
+      text: this.text,
+      bounds: this.bounds,
+    };
+  }
 }

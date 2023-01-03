@@ -42,6 +42,7 @@ export abstract class GuiElement implements Coord {
 
   abstract toYAML(): string;
   abstract toCPP(): string;
+  abstract toGuiElementJSON(): GuiElementJSON;
 
   isAt(coords: Coord) {
     if (coords.x >= this.x && coords.x < this.x + this.getWidth())

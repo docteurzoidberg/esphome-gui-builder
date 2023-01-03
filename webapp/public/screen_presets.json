@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Default",
+        "width": 128,
+        "height": 64,
+        "showgrid": true,
+        "scale": 4,
+        "gridsize": 2,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "tinyled16x16",
+        "width": 16,
+        "height": 16,
+        "showgrid": true,
+        "scale": 10,
+        "gridsize": 2,
+        "colormode": "RGB24",
+        "background": "000000"
+    }
+]

@@ -38,4 +38,15 @@ export class ImageGuiElement extends GuiElement {
   toCPP(): string {
     throw new Error("Method not implemented.");
   }
+  toGuiElementJSON(): ImageGuiElementJSON {
+    return {
+      id: this.id,
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      type: "image",
+      zorder: this.zorder,
+      image: this.image.originalData,
+    };
+  }
 }

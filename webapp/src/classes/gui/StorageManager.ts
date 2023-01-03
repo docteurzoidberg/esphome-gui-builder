@@ -1,15 +1,20 @@
-import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
-import { ScreenPreset } from "types/ScreenPreset";
-
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
 import { FontGuiElement } from "classes/gui/FontGuiElement";
 
-export class AssetManager {
-  //load screen presets
+import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
+import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
+import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
+import { ImageGuiElementJSON } from "interfaces/gui/ImageGuiElementJSON";
+import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 
+import { Settings } from "types/Settings";
+import { ScreenPreset } from "types/ScreenPreset";
+
+export class StorageManager {
+  //default, hardcoded screen presets
   static getDefaultScreenPreset(): ScreenPreset {
     return {
       name: "128x64",
@@ -22,27 +27,23 @@ export class AssetManager {
       background: { r: 0, g: 0, b: 0 },
     };
   }
-  static loadScreenPresets(): ScreenPreset[] {
-    //TODO: load from file or localstorage
-    return [
-      this.getDefaultScreenPreset(),
-      {
-        name: "tinyleds16x16",
-        width: 16,
-        height: 16,
-        scale: 4,
-        showgrid: true,
-        gridsize: 2,
-        colormode: "rgb",
-        background: { r: 0, g: 0, b: 0 },
-      },
-    ];
-  }
-  //load esphome images, animations, fonts
-  static loadToolbox() {}
-  //load gui elements
 
-  static loadHardcodedScene(): GuiElement[] {
+  //default, hardcoded settings
+  static getDefaultSettings(): Settings {
+    const defaultScreenPreset = StorageManager.getDefaultScreenPreset();
+    return {
+      screenWidth: defaultScreenPreset.width,
+      screenHeight: defaultScreenPreset.height,
+      guiScale: 3,
+      screenScale: defaultScreenPreset.scale,
+      showGrid: defaultScreenPreset.showgrid,
+      gridSize: defaultScreenPreset.gridsize,
+      currentPresetIndex: 0,
+    };
+  }
+
+  //default, hardcoded gui elements
+  static getDefaultScene(): GuiElement[] {
     const fontJson: EspHomeFontJSON = {
       name: "data/fonts/8-bit-hud.ttf",
       height: 5,
@@ -1275,5 +1276,69 @@ export class AssetManager {
 
     elements.sort((a, b) => a.zorder - b.zorder);
     return elements;
+  }
+
+  //load screen presets
+  static async loadScreenPresets(): Promise<ScreenPreset[]> {
+    //TODO: load from file or localstorage
+    const jsonPresets = await fetch("/screen_presets.json");
+    return jsonPresets.json();
+  }
+
+  //load esphome images, animations, fonts
+  static loadToolbox() {}
+
+  //load screen settings, gui scale, etc
+  static loadSettings(): Settings {
+    const localStorageData = localStorage.getItem("settings");
+    if (!localStorageData) {
+      console.log("No data in localstorage, loading default settings");
+      const settings = StorageManager.getDefaultSettings();
+      StorageManager.saveSettings(settings);
+      return settings;
+    }
+    const parsedData: Settings = JSON.parse(localStorageData);
+    return parsedData;
+  }
+
+  //load gui elements
+  static async loadScene(): Promise<GuiElement[]> {
+    const localStorageData = localStorage.getItem("scene");
+    const returnPromise = new Promise<GuiElement[]>((resolve, _reject) => {
+      if (!localStorageData) {
+        console.log("No data in localstorage, loading hardcoded scene");
+        const guiElements = StorageManager.getDefaultScene();
+        StorageManager.saveScene(guiElements);
+        return resolve(guiElements);
+      }
+      const parsedData: GuiElementJSON[] = JSON.parse(localStorageData);
+      const guiElements: GuiElement[] = [];
+      parsedData.forEach((elem) => {
+        if (elem.type == "image")
+          guiElements.push(new ImageGuiElement(elem as ImageGuiElementJSON));
+        else if (elem.type == "animation")
+          guiElements.push(
+            new AnimationGuiElement(elem as AnimationGuiElementJSON)
+          );
+        else if (elem.type == "text")
+          guiElements.push(new FontGuiElement(elem as FontGuiElementJSON));
+      });
+      resolve(guiElements);
+    });
+    return returnPromise;
+  }
+
+  //save gui elements
+  static async saveScene(guiElements: GuiElement[]) {
+    const jsonElements: GuiElementJSON[] = [];
+    guiElements.forEach((elem) => {
+      jsonElements.push(elem.toGuiElementJSON());
+    });
+    localStorage.setItem("scene", JSON.stringify(jsonElements));
+  }
+
+  //save screen settings, gui scale, etc
+  static async saveSettings(settings: Settings) {
+    localStorage.setItem("settings", JSON.stringify(settings));
   }
 }

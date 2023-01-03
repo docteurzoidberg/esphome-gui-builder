@@ -4,6 +4,17 @@ import { GuiElement } from "classes/gui/GuiElement";
 import { Coord } from "types/Coord";
 
 export class AnimationGuiElement extends GuiElement {
+  toGuiElementJSON(): AnimationGuiElementJSON {
+    return {
+      id: this.id,
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      type: "animation",
+      zorder: this.zorder,
+      animation: this.animation.originalData,
+    };
+  }
   animation: EspHomeAnimation;
   constructor(json: AnimationGuiElementJSON) {
     super({

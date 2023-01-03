@@ -8,7 +8,7 @@ import "my-toolbox";
 import "my-section";
 import "my-tabs";
 
-import { AssetManager } from "classes/gui/AssetManager";
+import { StorageManager } from "classes/gui/StorageManager";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 import { ScreenPreset } from "types/ScreenPreset";
@@ -167,25 +167,66 @@ export class MyApp extends LitElement {
   @property()
   selectedElement?: GuiElement;
 
-  _loadScreenPresets() {
-    console.log("load screen presets");
-    this.screenPresets = AssetManager.loadScreenPresets();
-    if (this.screenPresets.length > 0)
-      this.currentScreenPreset = this.screenPresets[0];
-    else this.currentScreenPreset = AssetManager.getDefaultScreenPreset();
-    if (this.currentScreenPreset) {
-      this.screenWidth = this.currentScreenPreset.width;
-      this.screenHeight = this.currentScreenPreset.height;
-      this.showGrid = this.currentScreenPreset.showgrid;
-      this.canvasGridWidth = this.currentScreenPreset.gridsize;
-      this.canvasScale = this.currentScreenPreset.scale;
-    }
-    console.log(this.screenPresets, this.currentScreenPreset);
+  @property()
+  currentScreenPresetIndex: number = 0;
+
+  async _loadScreenPresets() {
+    //console.log("load screen presets");
+    return StorageManager.loadScreenPresets()
+      .then((presets) => {
+        this.screenPresets = presets;
+      })
+      .catch((err) => {
+        //fallbck if json not ok
+        console.error(err);
+        this.screenPresets = [{ ...StorageManager.getDefaultScreenPreset() }];
+      });
+  }
+
+  _loadScene() {
+    console.log("load scene");
+    StorageManager.loadScene()
+      .then((elements: GuiElement[]) => {
+        this.guiElements = elements;
+      })
+      .catch((err: any) => {
+        //fallback if json not ok
+        console.error(err);
+        this.guiElements = [];
+      });
+  }
+
+  _loadSettings() {
+    console.log("load settings");
+    const settings = StorageManager.loadSettings();
+    this.toolboxScale = settings.guiScale;
+    this.screenWidth = settings.screenWidth;
+    this.screenHeight = settings.screenHeight;
+    this.canvasScale = settings.screenScale;
+    this.showGrid = settings.showGrid;
+    this.canvasGridWidth = settings.gridSize;
+    this.currentScreenPresetIndex = settings.currentPresetIndex || 0;
+  }
+
+  _saveSettings() {
+    console.log("saving settings");
+    const settings = {
+      screenWidth: this.screenWidth,
+      screenHeight: this.screenHeight,
+      screenScale: this.canvasScale,
+      showGrid: this.showGrid,
+      gridSize: this.canvasGridWidth,
+      guiScale: this.toolboxScale,
+      currentPresetIndex: this.currentScreenPresetIndex,
+    };
+    StorageManager.saveSettings(settings);
   }
 
   connectedCallback(): void {
     super.connectedCallback();
-    this._loadScreenPresets();
+    this._loadScreenPresets().then(() => {
+      this._loadSettings();
+    });
   }
 
   handleInitCanvas() {
@@ -193,21 +234,21 @@ export class MyApp extends LitElement {
   }
 
   handleScreenPresetsChanged(e: CustomEvent) {
-    console.log("screen-presets-changed");
+    console.log("screen-preset-changed");
     const select = e.target as HTMLSelectElement;
-    console.log(select.value);
+    const index = Number(select.value);
+    this.currentScreenPresetIndex = index;
     this.currentScreenPreset = this.screenPresets.find(
-      (_option, index) => index === Number(select.value)
+      (_option, _index) => index === _index
     );
-
     if (this.currentScreenPreset) {
-      console.log(this.currentScreenPreset);
       this.screenWidth = this.currentScreenPreset.width;
       this.screenHeight = this.currentScreenPreset.height;
       this.showGrid = this.currentScreenPreset.showgrid;
       this.canvasGridWidth = this.currentScreenPreset.gridsize;
       this.canvasScale = this.currentScreenPreset.scale;
     }
+    this._saveSettings();
   }
 
   handleDrawingUpdate() {
@@ -224,6 +265,7 @@ export class MyApp extends LitElement {
     console.log("element moved");
     const element = e.detail;
     this.selectedElement = element;
+    StorageManager.saveScene(this.guiElements);
   }
 
   handleElementRemoved(e: CustomEvent) {
@@ -233,18 +275,41 @@ export class MyApp extends LitElement {
       ...this.guiElements.slice(0, details.index),
       ...this.guiElements.slice(details.index + 1),
     ];
+    StorageManager.saveScene(this.guiElements);
   }
 
   handleElementDropped(e: CustomEvent) {
     console.log("element-dropped", e.detail);
     const elementToAdd = e.detail as GuiElement;
     this.guiElements = [...this.guiElements, elementToAdd];
+    StorageManager.saveScene(this.guiElements);
   }
 
   handleToolboxLoaded(e: CustomEvent) {
     console.log("toolbox-loaded", e.detail);
-    //TODO! load scene from storage if any
-    this.guiElements = AssetManager.loadHardcodedScene();
+    this._loadScene();
+  }
+
+  handleScreenWidthChanged(e: Event) {
+    console.log("screen-width-changed", e.target);
+    this.screenWidth = parseInt((e.target as HTMLInputElement).value, 10);
+    if (this.currentScreenPresetIndex !== -1) {
+      this.currentScreenPresetIndex = -1;
+      this.currentScreenPreset = undefined;
+      this.requestUpdate();
+    }
+    this._saveSettings();
+  }
+
+  handleScreenHeightChanged(e: Event) {
+    console.log("screen-height-changed", e.target);
+    this.screenHeight = parseInt((e.target as HTMLInputElement).value, 10);
+    if (this.currentScreenPresetIndex !== -1) {
+      this.currentScreenPresetIndex = -1;
+      this.currentScreenPreset = undefined;
+      this.requestUpdate();
+    }
+    this._saveSettings();
   }
 
   onKonamiCode(cb: Function) {
@@ -338,12 +403,17 @@ export class MyApp extends LitElement {
                       id="screenpreset"
                       @change="${this.handleScreenPresetsChanged}"
                     >
+                      <option
+                        value="-1"
+                        ?selected=${this.currentScreenPresetIndex === -1}
+                      >
+                        Custom
+                      </option>
                       ${this.screenPresets.map(
                         (option, index) => html`
                           <option
                             value=${index}
-                            ?selected=${option.name ===
-                            this.currentScreenPreset?.name}
+                            ?selected=${index === this.currentScreenPresetIndex}
                           >
                             ${option.name}
                           </option>
@@ -358,12 +428,7 @@ export class MyApp extends LitElement {
                       type="number"
                       min="1"
                       value="${this.screenWidth}"
-                      @change="${(e: Event) => {
-                        this.screenWidth = parseInt(
-                          (e.target as HTMLInputElement).value,
-                          10
-                        );
-                      }}"
+                      @change="${this.handleScreenWidthChanged}"
                     />
                   </div>
                   <div>
@@ -373,12 +438,7 @@ export class MyApp extends LitElement {
                       type="number"
                       min="1"
                       value="${this.screenHeight}"
-                      @change="${(e: Event) => {
-                        this.screenHeight = parseInt(
-                          (e.target as HTMLInputElement).value,
-                          10
-                        );
-                      }}"
+                      @change="${this.handleScreenHeightChanged}"
                     />
                   </div>
                   <div>
