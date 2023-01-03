@@ -1,22 +1,38 @@
-import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
 import { ScreenPreset } from "types/ScreenPreset";
-import { AnimationGuiElement } from "./AnimationGuiElement";
-import { FontGuiElement } from "./FontGuiElement";
-import { GuiElement } from "./GuiElement";
-import { ImageGuiElement } from "./ImageGuiElement";
+
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { GuiElement } from "classes/gui/GuiElement";
+import { ImageGuiElement } from "classes/gui/ImageGuiElement";
+import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
+import { FontGuiElement } from "classes/gui/FontGuiElement";
 
 export class AssetManager {
   //load screen presets
+
+  static getDefaultScreenPreset(): ScreenPreset {
+    return {
+      name: "128x64",
+      width: 128,
+      height: 64,
+      scale: 3,
+      showgrid: true,
+      gridsize: 1,
+      colormode: "rgb",
+      background: { r: 0, g: 0, b: 0 },
+    };
+  }
   static loadScreenPresets(): ScreenPreset[] {
+    //TODO: load from file or localstorage
     return [
+      this.getDefaultScreenPreset(),
       {
-        name: "320x240",
-        width: 320,
-        height: 240,
-        scale: 1,
+        name: "tinyleds16x16",
+        width: 16,
+        height: 16,
+        scale: 4,
         showgrid: true,
-        gridsize: 8,
+        gridsize: 2,
         colormode: "rgb",
         background: { r: 0, g: 0, b: 0 },
       },

@@ -14,6 +14,18 @@ class HexInt(int):
             return f"{sign}0x{value:02X}"
         return f"{sign}0x{value:X}"
 
+
+class ScreenPresetJson:
+    def __init__(self, name, colormode, background, width, height, scale, showgrid, gridsize) -> None:
+        self.name = name
+        self.width = width
+        self.height = height
+        self.showgrid = showgrid
+        self.scale = scale
+        self.gridsize = gridsize
+        self.colormode = colormode
+        self.background = background
+
 class ImageJson:
     def __init__(self, name, width, height, dataurl) -> None:
         self.name = name
@@ -69,6 +81,26 @@ class AssetsBuilder:
         self.generate_images_json()
         self.generate_animations_json()
         self.generate_fonts_json()
+        self.generate_screen_presets_json()
+
+    def generate_screen_presets_json(self):
+        jsonout = list()
+        for preset in self.yaml_content['screens']:
+            name = preset['name']
+            colormode = preset['colormode']
+            background = preset['background']
+            width = preset['width']
+            height = preset['height']
+            scale = preset['scale']
+            showgrid = preset['showgrid']
+            gridsize = preset['gridsize']
+            jsonout.append(ScreenPresetJson(name, colormode, background, width, height, scale, showgrid, gridsize))
+        with open('data/screen_presets.json', 'w') as outfile:
+            jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
+            outfile.write(jsonStr)
+            outfile.close()
+        return jsonout
+
 
     def generate_images_json(self):
         jsonout = list()
@@ -226,6 +258,8 @@ def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJK
 
     return FontJson(name, path, size, glyphs, rhs, glyph_initializer)
 
+
+
 def validate_pillow_installed():
     try:
         import PIL
@@ -243,6 +277,10 @@ def validate_pillow_installed():
 
 def main():
     AssetsBuilder()
+
+    file_size = os.path.getsize('data/screen_presets.json')
+    print(f'screen_presets.json is {file_size/ (1024)} kB')
+    shutil.copy('data/screen_presets.json', 'webapp/public/screen_presets.json')
 
     file_size = os.path.getsize('data/images.json')
     print(f'images.json is {file_size/ (1024)} kB')

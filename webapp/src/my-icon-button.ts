@@ -1,6 +1,6 @@
 import { LitElement, html, property, customElement } from "lit-element";
 
-import "./my-tooltip";
+import "my-tooltip";
 
 @customElement("my-icon-button")
 class MyIconButton extends LitElement {

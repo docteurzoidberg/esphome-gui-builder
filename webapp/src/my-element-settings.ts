@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "classes/gui/GuiElement";
 
-import "./my-section";
+import "my-section";
 
 @customElement("my-element-settings")
 export class MyElementSettings extends LitElement {

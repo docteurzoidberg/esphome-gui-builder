@@ -1,10 +1,10 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "./my-image-list";
-import "./my-animation-list";
-import "./my-font-list";
-import "./my-section";
+import "my-image-list";
+import "my-animation-list";
+import "my-font-list";
+import "my-section";
 
 @customElement("my-toolbox")
 export class MyToolbox extends LitElement {

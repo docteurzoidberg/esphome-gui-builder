@@ -1,3 +1,14 @@
+screens:
+  - name: "Default"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 128
+    height: 64
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 2 #grid size [number]
+    scale: 2 #pixels per pixel [number]
+    refresh: 16 #ms
+
 fonts:
   - name: "5x5"
     file: "data/fonts/5x5_pixel.ttf"

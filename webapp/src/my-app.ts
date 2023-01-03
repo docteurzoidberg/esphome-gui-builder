@@ -1,16 +1,17 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "./my-element-list";
-import "./my-element-settings";
-import "./my-canvas-display";
-import "./my-toolbox";
-import "./my-section";
-import "./my-tabs";
+import "my-element-list";
+import "my-element-settings";
+import "my-canvas-display";
+import "my-toolbox";
+import "my-section";
+import "my-tabs";
 
 import { AssetManager } from "classes/gui/AssetManager";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
+import { ScreenPreset } from "types/ScreenPreset";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -154,18 +155,59 @@ export class MyApp extends LitElement {
   @property({ type: Number })
   toolboxScale: number = 3;
 
+  @property({ type: Object })
+  currentScreenPreset?: ScreenPreset;
+
+  @property()
+  screenPresets: ScreenPreset[] = [];
+
   @property()
   guiElements: GuiElement[] = [];
 
   @property()
   selectedElement?: GuiElement;
 
+  _loadScreenPresets() {
+    console.log("load screen presets");
+    this.screenPresets = AssetManager.loadScreenPresets();
+    if (this.screenPresets.length > 0)
+      this.currentScreenPreset = this.screenPresets[0];
+    else this.currentScreenPreset = AssetManager.getDefaultScreenPreset();
+    if (this.currentScreenPreset) {
+      this.screenWidth = this.currentScreenPreset.width;
+      this.screenHeight = this.currentScreenPreset.height;
+      this.showGrid = this.currentScreenPreset.showgrid;
+      this.canvasGridWidth = this.currentScreenPreset.gridsize;
+      this.canvasScale = this.currentScreenPreset.scale;
+    }
+    console.log(this.screenPresets, this.currentScreenPreset);
+  }
+
   connectedCallback(): void {
     super.connectedCallback();
+    this._loadScreenPresets();
   }
 
   handleInitCanvas() {
     console.log("init-canvas");
+  }
+
+  handleScreenPresetsChanged(e: CustomEvent) {
+    console.log("screen-presets-changed");
+    const select = e.target as HTMLSelectElement;
+    console.log(select.value);
+    this.currentScreenPreset = this.screenPresets.find(
+      (_option, index) => index === Number(select.value)
+    );
+
+    if (this.currentScreenPreset) {
+      console.log(this.currentScreenPreset);
+      this.screenWidth = this.currentScreenPreset.width;
+      this.screenHeight = this.currentScreenPreset.height;
+      this.showGrid = this.currentScreenPreset.showgrid;
+      this.canvasGridWidth = this.currentScreenPreset.gridsize;
+      this.canvasScale = this.currentScreenPreset.scale;
+    }
   }
 
   handleDrawingUpdate() {
@@ -290,6 +332,25 @@ export class MyApp extends LitElement {
               <div class="screen-settings-container">
                 <my-section class="settings">
                   <span slot="title">Screen settings</span>
+                  <div>
+                    <label for="screenpreset">Screen Preset</label>
+                    <select
+                      id="screenpreset"
+                      @change="${this.handleScreenPresetsChanged}"
+                    >
+                      ${this.screenPresets.map(
+                        (option, index) => html`
+                          <option
+                            value=${index}
+                            ?selected=${option.name ===
+                            this.currentScreenPreset?.name}
+                          >
+                            ${option.name}
+                          </option>
+                        `
+                      )}
+                    </select>
+                  </div>
                   <div>
                     <label for="screenwidth">Display Width</label>
                     <input

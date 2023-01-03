@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
-import "./my-icon-button";
+import "my-icon-button";
 
 @customElement("my-element-list")
 export class MyElementList extends LitElement {
