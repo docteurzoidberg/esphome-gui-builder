@@ -1,5 +1,5 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 
 import "my-element-list";
 import "my-element-settings";
@@ -7,11 +7,13 @@ import "my-canvas-display";
 import "my-toolbox";
 import "my-section";
 import "my-tabs";
+import "dialog-load-preset";
 
 import { StorageManager } from "classes/gui/StorageManager";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 import { ScreenPreset } from "types/ScreenPreset";
+import { DialogLoadPreset } from "dialog-load-preset";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
@@ -170,6 +172,12 @@ export class MyApp extends LitElement {
   @property()
   currentScreenPresetIndex: number = 0;
 
+  @query("#screenpreset")
+  selectScreenPreset?: HTMLSelectElement;
+
+  @query("#loadPresetDialog")
+  dialogLoadPreset?: DialogLoadPreset;
+
   async _loadScreenPresets() {
     //console.log("load screen presets");
     return StorageManager.loadScreenPresets()
@@ -251,6 +259,30 @@ export class MyApp extends LitElement {
     this._saveSettings();
   }
 
+  handleLoadPresetDialogClosed(e: CustomEvent) {
+    console.log("load-preset-dialog-closed", e.detail);
+    const preset = e.detail as ScreenPreset | undefined;
+    if (preset) {
+      this.currentScreenPreset = preset;
+      if (!this.selectScreenPreset) return;
+
+      for (let i = 0; i < this.screenPresets.length; i++) {
+        console.log(this.selectScreenPreset.options[i].value);
+        if (this.screenPresets[i].name === preset.name) {
+          this.currentScreenPresetIndex = i;
+          this.selectScreenPreset.value = i.toString();
+        }
+      }
+
+      this.screenWidth = preset.width;
+      this.screenHeight = preset.height;
+      this.showGrid = preset.showgrid;
+      this.canvasGridWidth = preset.gridsize;
+      this.canvasScale = preset.scale;
+      this._saveSettings();
+    }
+  }
+
   handleDrawingUpdate() {
     console.log("drawing-update");
   }
@@ -296,6 +328,7 @@ export class MyApp extends LitElement {
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
       this.currentScreenPreset = undefined;
+      if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
       this.requestUpdate();
     }
     this._saveSettings();
@@ -307,6 +340,7 @@ export class MyApp extends LitElement {
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
       this.currentScreenPreset = undefined;
+      if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
       this.requestUpdate();
     }
     this._saveSettings();
@@ -325,26 +359,26 @@ export class MyApp extends LitElement {
     });
   }
 
-  getBox(width: number, height: number) {
-    return {
-      string: "+",
-      style:
-        "font-size: 10px; padding: " +
-        Math.floor(height / 2) +
-        "px " +
-        Math.floor(width / 2) +
-        "px; line-height: " +
-        height +
-        "px;",
-    };
-  }
-
   consoleImage(url: string, scale: number) {
     scale = scale || 1;
     const img = new Image();
-    const self = this;
+
+    const getBox = (width: number, height: number) => {
+      return {
+        string: "+",
+        style:
+          "font-size: 10px; padding: " +
+          Math.floor(height / 2) +
+          "px " +
+          Math.floor(width / 2) +
+          "px; line-height: " +
+          height +
+          "px;",
+      };
+    };
+
     img.onload = () => {
-      const dim = self.getBox(img.width * scale, img.height * scale);
+      const dim = getBox(img.width * scale, img.height * scale);
       console.log(
         "%c" + dim.string,
         dim.style +
@@ -398,6 +432,18 @@ export class MyApp extends LitElement {
                 <my-section class="settings">
                   <span slot="title">Screen settings</span>
                   <div>
+                    <dialog-load-preset
+                      @close="${this.handleLoadPresetDialogClosed}"
+                      id="loadPresetDialog"
+                    ></dialog-load-preset>
+                    <button
+                      type="button"
+                      @click="${() => this.dialogLoadPreset?.open()}"
+                    >
+                      Presets
+                    </button>
+                  </div>
+                  <div>
                     <label for="screenpreset">Screen Preset</label>
                     <select
                       id="screenpreset"
@@ -427,7 +473,7 @@ export class MyApp extends LitElement {
                       id="screenwidth"
                       type="number"
                       min="1"
-                      value="${this.screenWidth}"
+                      .value="${this.screenWidth.toString()}"
                       @change="${this.handleScreenWidthChanged}"
                     />
                   </div>
@@ -437,7 +483,7 @@ export class MyApp extends LitElement {
                       id="screenheight"
                       type="number"
                       min="1"
-                      value="${this.screenHeight}"
+                      .value="${this.screenHeight.toString()}"
                       @change="${this.handleScreenHeightChanged}"
                     />
                   </div>
@@ -459,7 +505,7 @@ export class MyApp extends LitElement {
                       id="gridwidth"
                       type="number"
                       min="1"
-                      value="${this.canvasGridWidth}"
+                      .value="${this.canvasGridWidth.toString()}"
                       @change="${(e: Event) => {
                         this.canvasGridWidth = parseInt(
                           (e.target as HTMLInputElement).value,
@@ -474,7 +520,7 @@ export class MyApp extends LitElement {
                       id="displayscale"
                       type="number"
                       min="1"
-                      value="${this.canvasScale}"
+                      .value="${this.canvasScale.toString()}"
                       @change="${(e: Event) => {
                         this.canvasScale = parseInt(
                           (e.target as HTMLInputElement).value,
@@ -490,7 +536,7 @@ export class MyApp extends LitElement {
                       type="number"
                       min="1"
                       min="5"
-                      value="${this.toolboxScale}"
+                      .value="${this.toolboxScale.toString()}"
                       @change="${(e: Event) => {
                         this.toolboxScale = parseInt(
                           (e.target as HTMLInputElement).value,
