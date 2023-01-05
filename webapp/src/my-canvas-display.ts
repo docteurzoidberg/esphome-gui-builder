@@ -334,8 +334,6 @@ export class MyCanvasDisplay extends LitElement {
 
     //base object
     const newGuiElementJSON: GuiElementJSON = {
-      id: dragOverElementJSON.id,
-      name: dragOverElementJSON.name,
       x: 0, //TODO: coordinates
       y: 0, //TODO: coordinates
       zorder: 0,
@@ -431,43 +429,15 @@ export class MyCanvasDisplay extends LitElement {
       data
     ) as DropElementJSON;
 
-    let element: GuiElement | null = null;
-
-    let elementJson: GuiElementJSON = {
-      id: dropElementJSON.id,
-      name: dropElementJSON.name,
+    let elementJson: any = {
       x: 0, //TODO: coordinates
       y: 0, //TODO: coordinates
       zorder: 0,
     };
 
-    if (dropElementJSON.type == "image") {
-      element = new ImageGuiElement({
-        ...elementJson,
-        image: dropElementJSON.originalData,
-      });
-    } else if (dropElementJSON.type == "animation") {
-      element = new AnimationGuiElement({
-        ...elementJson,
-        animation: dropElementJSON.originalData,
-      });
-    } else if (dropElementJSON.type == "text") {
-      const font = new EspHomeFont(dropElementJSON.originalData);
-      element = new FontGuiElement({
-        ...elementJson,
-        font: dropElementJSON.originalData,
-        text: "TOTO",
-        bounds: font.getBoundingBox("TOTO"),
-      });
-    } else {
-      console.error("unknow type", dropElementJSON.type);
-    }
-
-    if (!element) return;
-
     this.dispatchEvent(
       new CustomEvent("element-dropped", {
-        detail: element,
+        detail: { elementJson: elementJson, dropElementJSON: dropElementJSON },
       })
     );
   }

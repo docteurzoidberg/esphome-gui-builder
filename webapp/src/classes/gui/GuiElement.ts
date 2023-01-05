@@ -2,18 +2,33 @@ import { Coord } from "types/Coord";
 import { GuiElementType } from "types/GuiElementType";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
+//generate a random uuid
+const uuid = () => {
+  let dt = new Date().getTime();
+  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+    /[xy]/g,
+    function (c) {
+      const r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
+    }
+  );
+  return uuid;
+};
+
 export abstract class GuiElement implements Coord {
   type: GuiElementType;
   originalData: GuiElementJSON;
-  id: string;
-  name: string;
+  internalId: string; //unique id for this element
+  esphomeId: string; //esphome id of the animation/image. or font
+  name: string; //user choosen name
   data?: any;
   params?: any;
   x: number;
   y: number;
   zorder: number;
 
-  isMoving: boolean = false;
+  isMoving: boolean = false; //is element actually being moved on canvas?
 
   //private internalId: number;
   private startedMovingAt: Coord = { x: 0, y: 0 };
@@ -22,10 +37,10 @@ export abstract class GuiElement implements Coord {
     if (!guielementjson.type) {
       throw new Error("type must be set");
     }
-    //this.internalId = new Date().getTime();
+    this.internalId = guielementjson.internalId || uuid();
+    this.esphomeId = guielementjson.esphomeId || "noesphomeid";
+    this.name = guielementjson.name || "noname";
     this.originalData = guielementjson;
-    this.id = guielementjson.id;
-    this.name = guielementjson.name;
     this.x = guielementjson.x;
     this.y = guielementjson.y;
     this.zorder = guielementjson.zorder;

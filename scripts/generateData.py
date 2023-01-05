@@ -27,15 +27,19 @@ class ScreenPresetJson:
         self.background = background
 
 class ImageJson:
-    def __init__(self, name, width, height, dataurl) -> None:
+    def __init__(self, id, name, path, width, height, dataurl) -> None:
+        self.id = id
         self.name = name
+        self.path = path
         self.width = width
         self.height = height
         self.dataurl = dataurl
 
 class AnimationJson:
-    def __init__(self, name, width, height, frames, data, dataurl) -> None:
+    def __init__(self, id, name, path,  width, height, frames, data, dataurl) -> None:
+        self.id = id
         self.name = name
+        self.path = path
         self.width = width
         self.height = height
         self.frames = frames
@@ -52,7 +56,8 @@ class FontGlyph:
         self.start = start
 
 class FontJson:
-    def __init__(self, name, path, height=20, glyphstr="", fontdata=[], glyphs=[]) -> None:
+    def __init__(self, id, name, path, height=20, glyphstr="", fontdata=[], glyphs=[]) -> None:
+        self.id = id
         self.name = name
         self.path = path
         self.height = height
@@ -177,7 +182,11 @@ def get_image_json(path):
     base64_utf8_str = base64.b64encode(binary_fc).decode('utf-8')
     dataurl = f'data:image/png;base64,{base64_utf8_str}'
     file.close()
-    return ImageJson(path, width, height, dataurl)
+
+    basename = os.path.basename(path).split('.')[0]
+    id = "img_" + basename
+    name = basename
+    return ImageJson(id, name, path, width, height, dataurl)
 
 def get_animation_json(path):
     #path = CORE.relative_config_path(config[CONF_FILE])
@@ -216,7 +225,11 @@ def get_animation_json(path):
 
     rhs = [HexInt(x) for x in data]
     #print(rhs)
-    return AnimationJson(path,width, height,frames, rhs, dataurl)
+
+    basename = os.path.basename(path).split('.')[0]
+    id = "anim_" + basename
+    name = basename
+    return AnimationJson(id, name, path, width, height, frames, rhs, dataurl)
 
 def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
     font = load_ttf_font(path, size)
@@ -256,7 +269,9 @@ def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJK
         glyphobj = FontGlyph(glyph, offset_x, offset_y, width, height, start)
         glyph_initializer.append(glyphobj)
 
-    return FontJson(name, path, size, glyphs, rhs, glyph_initializer)
+    #id= name of the file without extension
+    id = "font_" + os.path.basename(path).split('.')[0]
+    return FontJson(id, name, path, size, glyphs, rhs, glyph_initializer)
 
 
 

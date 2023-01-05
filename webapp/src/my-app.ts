@@ -8,13 +8,24 @@ import "my-toolbox";
 import "my-section";
 import "my-tabs";
 import "dialog-load-preset";
+import "dialog-add-text";
+
+import { DialogLoadPreset } from "dialog-load-preset";
+import { DialogAddText } from "dialog-add-text";
+
+import { ScreenPreset } from "types/ScreenPreset";
+import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
 import { StorageManager } from "classes/gui/StorageManager";
 import { GuiElement } from "classes/gui/GuiElement";
-import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
-import { ScreenPreset } from "types/ScreenPreset";
-import { DialogLoadPreset } from "dialog-load-preset";
+import { ImageGuiElement } from "classes/gui/ImageGuiElement";
+import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { FontGuiElement } from "classes/gui/FontGuiElement";
 
+import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
+import { DropElementJSON } from "interfaces/gui/DropElementJSON";
+import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 @customElement("my-app")
 export class MyApp extends LitElement {
   static styles = [
@@ -175,6 +186,9 @@ export class MyApp extends LitElement {
   @query("#screenpreset")
   selectScreenPreset?: HTMLSelectElement;
 
+  @query("#addTextDialog")
+  dialogAddText?: DialogAddText;
+
   @query("#loadPresetDialog")
   dialogLoadPreset?: DialogLoadPreset;
 
@@ -239,6 +253,13 @@ export class MyApp extends LitElement {
 
   handleInitCanvas() {
     console.log("init-canvas");
+  }
+
+  handleAddTextDialogClosed(e: CustomEvent) {
+    console.log("add-text-dialog-closed", e.detail);
+    const json = e.detail as FontGuiElementJSON;
+    const element = new FontGuiElement(json);
+    this.guiElements = [...this.guiElements, element];
   }
 
   handleScreenPresetsChanged(e: CustomEvent) {
@@ -310,10 +331,64 @@ export class MyApp extends LitElement {
     StorageManager.saveScene(this.guiElements);
   }
 
+  _getNewElementName(type: string) {
+    const elements = this.guiElements.filter((element) => {
+      return element.type === type;
+    });
+    return type + (elements.length + 1);
+  }
+
   handleElementDropped(e: CustomEvent) {
     console.log("element-dropped", e.detail);
-    const elementToAdd = e.detail as GuiElement;
-    this.guiElements = [...this.guiElements, elementToAdd];
+
+    const elementToAdd = e.detail as {
+      elementJson: GuiElementJSON;
+      dropElementJSON: DropElementJSON;
+    };
+    const dropElementJSON = elementToAdd.dropElementJSON;
+    const elementJson = elementToAdd.elementJson;
+
+    let newGuiElement: GuiElement | null = null;
+
+    //TODO: generate name elsewhere?
+    const name = this._getNewElementName(dropElementJSON.type);
+    elementJson.name = name;
+
+    if (dropElementJSON.type == "image") {
+      //const name = "img" +
+      newGuiElement = new ImageGuiElement({
+        ...elementJson,
+        image: dropElementJSON.originalData,
+      });
+    } else if (dropElementJSON.type == "animation") {
+      newGuiElement = new AnimationGuiElement({
+        ...elementJson,
+        animation: dropElementJSON.originalData,
+      });
+    } else if (dropElementJSON.type == "text") {
+      const font = new EspHomeFont(dropElementJSON.originalData);
+
+      //TODO: dialog or not dialog?
+      this.dialogAddText?.open({
+        ...elementJson,
+        font: dropElementJSON.originalData,
+        text: "TOTO",
+        bounds: font.getBoundingBox("TOTO"),
+      });
+      /*
+      element = new FontGuiElement({
+        ...elementJson,
+        font: dropElementJSON.originalData,
+        text: "TOTO",
+        bounds: font.getBoundingBox("TOTO"),
+      });
+      */
+    } else {
+      console.error("unknow type", dropElementJSON.type);
+    }
+
+    if (!newGuiElement) return;
+    this.guiElements = [...this.guiElements, newGuiElement];
     StorageManager.saveScene(this.guiElements);
   }
 
@@ -405,6 +480,10 @@ export class MyApp extends LitElement {
 
   render() {
     return html`
+      <dialog-add-text
+        id="addTextDialog"
+        @close="${this.handleAddTextDialogClosed}"
+      ></dialog-add-text>
       <div class="container two-rows-row">
         <div class="first-row header">
           <div class="title">GUI Helper for ESPHome</div>
@@ -438,7 +517,10 @@ export class MyApp extends LitElement {
                     ></dialog-load-preset>
                     <button
                       type="button"
-                      @click="${() => this.dialogLoadPreset?.open()}"
+                      @click="${() => {
+                        console.log(this.dialogLoadPreset);
+                        this.dialogLoadPreset?.open();
+                      }}"
                     >
                       Presets
                     </button>

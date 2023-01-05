@@ -10,7 +10,8 @@ export class FontGuiElement extends GuiElement {
   bounds: EspHomeFontTextBound;
   constructor(json: FontGuiElementJSON) {
     super({
-      id: json.id,
+      internalId: json.internalId,
+      esphomeId: json.font.id,
       name: json.name,
       x: json.x,
       y: json.y,
@@ -45,7 +46,8 @@ export class FontGuiElement extends GuiElement {
   }
   toGuiElementJSON(): FontGuiElementJSON {
     return {
-      id: this.id,
+      internalId: this.internalId,
+      esphomeId: this.esphomeId,
       name: this.name,
       x: this.x,
       y: this.y,

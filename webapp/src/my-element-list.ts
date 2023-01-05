@@ -46,9 +46,6 @@ export class MyElementList extends LitElement {
     if (index > 0) {
       // Use the spread operator (...) to create a new array
       // with the items in the correct order
-
-      //this.guiElements[index].order(index - 1);
-
       this.guiElements = [
         ...this.guiElements.slice(0, index - 1),
         this.guiElements[index],
@@ -62,8 +59,6 @@ export class MyElementList extends LitElement {
     if (index < this.guiElements.length - 1) {
       // Use the spread operator (...) to create a new array
       // with the items in the correct order
-      //this.guiElements[index].order(index + 1);
-
       this.guiElements = [
         ...this.guiElements.slice(0, index),
         this.guiElements[index + 1],
@@ -88,7 +83,7 @@ export class MyElementList extends LitElement {
   }
 
   renderControls(element: GuiElement, index: number) {
-    if (element.id !== this.selectedElement?.id) return html``;
+    if (element.internalId !== this.selectedElement?.internalId) return html``;
     return html`
       <my-icon-button
         class="delete"
@@ -127,7 +122,8 @@ export class MyElementList extends LitElement {
       return html`
         <div
           class="element"
-          is-selected="${element.id === this.selectedElement?.id}"
+          is-selected="${element.internalId ===
+          this.selectedElement?.internalId}"
         >
           ${this.renderTypeIcon(element)}
           <span

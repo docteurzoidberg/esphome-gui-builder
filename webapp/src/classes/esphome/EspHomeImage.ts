@@ -1,12 +1,14 @@
 import { EspHomeImageJSON } from "interfaces/esphome/EspHomeImageJSON";
 
 export class EspHomeImage implements EspHomeImageJSON {
+  id: string; //esphome id
   originalData: EspHomeImageJSON;
   width: number;
   height: number;
   name: string;
   dataurl: string;
   constructor(imagejson: EspHomeImageJSON) {
+    this.id = imagejson.id;
     this.originalData = imagejson;
     this.width = imagejson.width;
     this.height = imagejson.height;

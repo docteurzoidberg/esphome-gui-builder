@@ -7,7 +7,8 @@ export class ImageGuiElement extends GuiElement {
   image: EspHomeImage;
   constructor(json: ImageGuiElementJSON) {
     super({
-      id: json.id,
+      internalId: json.internalId,
+      esphomeId: json.image.id,
       name: json.name,
       x: json.x,
       y: json.y,
@@ -40,7 +41,8 @@ export class ImageGuiElement extends GuiElement {
   }
   toGuiElementJSON(): ImageGuiElementJSON {
     return {
-      id: this.id,
+      internalId: this.internalId,
+      esphomeId: this.esphomeId,
       name: this.name,
       x: this.x,
       y: this.y,

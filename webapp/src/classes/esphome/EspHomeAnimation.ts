@@ -4,6 +4,7 @@ export class EspHomeAnimation implements EspHomeAnimationJSON {
   originalData: EspHomeAnimationJSON;
   fps: number = 16; //Math.ceil(1000 / 16); //default esphome refresh rate
 
+  id: string; //esphome id
   name: string;
   frames: number;
   data: number[];
@@ -77,6 +78,7 @@ export class EspHomeAnimation implements EspHomeAnimationJSON {
 
   constructor(animationjson: EspHomeAnimationJSON) {
     this.originalData = animationjson;
+    this.id = animationjson.id;
     this.name = animationjson.name;
     this.frames = animationjson.frames;
     this.dataurl = animationjson.dataurl;

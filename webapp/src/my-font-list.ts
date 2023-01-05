@@ -65,8 +65,6 @@ export class MyFontList extends LitElement {
 
   handleDragStart(ev: DragEvent, font: EspHomeFont) {
     const elem: DropElementJSON = {
-      id: "id_" + font.name, //TODO: generate uniques ids !
-      name: font.name,
       type: "text",
       originalData: font.originalData,
     };
@@ -109,7 +107,7 @@ export class MyFontList extends LitElement {
       return html`<div
         class="font"
         @click="${() => (this.selectedFont = font)}"
-        is-selected="${this.selectedFont?.name === font.name}"
+        is-selected="${this.selectedFont?.id === font.id}"
       >
         <span class="font-name">${font.name}</span> &gt;
         <span class="font-sample">${this.renderFontSample(font)}</span>

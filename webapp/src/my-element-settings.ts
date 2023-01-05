@@ -46,7 +46,7 @@ export class MyElementSettings extends LitElement {
         <div class="elem-settings">
           <div>
             <label>id:</label>
-            <span class="textspan">${this.selectedElement.id}</span>
+            <span class="textspan">${this.selectedElement.esphomeId}</span>
           </div>
           <div>
             <label>type:</label>

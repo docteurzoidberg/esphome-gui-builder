@@ -6,7 +6,8 @@ import { Coord } from "types/Coord";
 export class AnimationGuiElement extends GuiElement {
   toGuiElementJSON(): AnimationGuiElementJSON {
     return {
-      id: this.id,
+      internalId: this.internalId,
+      esphomeId: this.esphomeId,
       name: this.name,
       x: this.x,
       y: this.y,
@@ -18,7 +19,8 @@ export class AnimationGuiElement extends GuiElement {
   animation: EspHomeAnimation;
   constructor(json: AnimationGuiElementJSON) {
     super({
-      id: json.id,
+      esphomeId: json.animation.id,
+      internalId: json.internalId,
       name: json.name,
       x: json.x,
       y: json.y,

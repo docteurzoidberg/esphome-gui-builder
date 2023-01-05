@@ -1,5 +1,6 @@
 [
     {
+        "id": "font_5x5_pixel",
         "name": "5x5",
         "path": "data/fonts/5x5_pixel.ttf",
         "height": 8,
@@ -2751,6 +2752,7 @@
         ]
     },
     {
+        "id": "font_8-bit-hud",
         "name": "8Bit HUD",
         "path": "data/fonts/8-bit-hud.ttf",
         "height": 5,
@@ -5925,6 +5927,7 @@
         ]
     },
     {
+        "id": "font_Squares",
         "name": "squares",
         "path": "data/fonts/Squares.ttf",
         "height": 4,

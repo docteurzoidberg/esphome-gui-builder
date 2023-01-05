@@ -33,8 +33,6 @@ export class MyAnimationList extends LitElement {
 
   handleDragStart(ev: DragEvent, animation: EspHomeAnimation) {
     const elem: DropElementJSON = {
-      id: "id_" + animation.name, //TODO: generate uniques ids !
-      name: animation.name,
       type: "animation",
       originalData: animation.originalData,
     };

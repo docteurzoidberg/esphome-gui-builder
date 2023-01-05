@@ -6,6 +6,7 @@ import {
 } from "interfaces/esphome/EspHomeFontJSON";
 
 export class EspHomeFont implements EspHomeFontJSON {
+  id: string; //esphome id
   originalData: EspHomeFontJSON;
   name: string;
   height: number;
@@ -111,6 +112,7 @@ export class EspHomeFont implements EspHomeFontJSON {
   }
 
   constructor(fontjson: EspHomeFontJSON) {
+    this.id = fontjson.id;
     this.originalData = fontjson;
     this.name = fontjson.name;
     this.height = fontjson.height;

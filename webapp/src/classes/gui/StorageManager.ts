@@ -45,6 +45,7 @@ export class StorageManager {
   //default, hardcoded gui elements
   static getDefaultScene(): GuiElement[] {
     const fontJson: EspHomeFontJSON = {
+      id: "font_8bithud",
       name: "data/fonts/8-bit-hud.ttf",
       height: 5,
       glyphstr:
@@ -783,12 +784,12 @@ export class StorageManager {
     const elements = [];
 
     const image1 = new ImageGuiElement({
-      id: "icon1",
       name: "image1",
       x: 0,
       y: 32,
       zorder: 9,
       image: {
+        id: "icon1",
         name: "data/images/1.PNG",
         width: 16,
         height: 16,
@@ -798,12 +799,12 @@ export class StorageManager {
     });
 
     const image2 = new ImageGuiElement({
-      id: "icon2",
       name: "image2",
       x: 32,
       y: 32,
       zorder: 1,
       image: {
+        id: "icon2",
         name: "data/images/2.PNG",
         width: 16,
         height: 16,
@@ -813,12 +814,12 @@ export class StorageManager {
     });
 
     const anim1 = new AnimationGuiElement({
-      id: "animation1",
       name: "boot-aliens-16x16",
       x: 14,
       y: 14,
       zorder: 1,
       animation: {
+        id: "anim_boot_aliens_16x16",
         name: "boot-aliens-16x16",
         width: 14,
         height: 12,
@@ -1259,7 +1260,7 @@ export class StorageManager {
     });
 
     const text1 = new FontGuiElement({
-      id: "text1",
+      //id: "text1",
       name: "text1",
       x: 30,
       y: 14,

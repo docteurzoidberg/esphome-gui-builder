@@ -1,4 +1,5 @@
 export interface EspHomeFontJSON {
+  id: string; //esphome id
   name: string;
   height: number;
   glyphstr: string;

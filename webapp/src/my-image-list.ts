@@ -41,8 +41,6 @@ export class MyImageList extends LitElement {
 
   handleDragStart(ev: DragEvent, image: EspHomeImage) {
     const elem: DropElementJSON = {
-      id: "id_" + image.name, //TODO: generate uniques ids !
-      name: image.name,
       type: "image",
       originalData: image.originalData,
     };
@@ -79,7 +77,7 @@ export class MyImageList extends LitElement {
         <img
           class="image"
           draggable="true"
-          is-selected="${this.selectedImage?.name === image.name}"
+          is-selected="${this.selectedImage?.id === image.id}"
           src="${image.dataurl}"
           width=${image.width * this.displayScale}
           height=${image.height * this.displayScale}
