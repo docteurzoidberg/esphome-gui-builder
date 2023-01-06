@@ -7,12 +7,19 @@ import "my-section";
 
 @customElement("my-element-settings")
 export class MyElementSettings extends LitElement {
-  @property()
+  @property({ type: Object })
   selectedElement?: GuiElement;
 
   connectedCallback(): void {
     super.connectedCallback();
-    window.addEventListener("element-moved", () => {
+    window.addEventListener("element-moved", (_event) => {
+      //  this.selectedElement = (e as CustomEvent).detail;
+      //console.log("element-moved from settings", this.selectedElement);
+      this.requestUpdate();
+    });
+    window.addEventListener("element-moving", (_event) => {
+      //  this.selectedElement = (e as CustomEvent).detail;
+      //console.log("element-moving", this.selectedElement);
       this.requestUpdate();
     });
   }

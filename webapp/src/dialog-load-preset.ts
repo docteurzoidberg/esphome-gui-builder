@@ -56,7 +56,7 @@ export class DialogLoadPreset extends LitElement {
 
     .dialog__ok-btn {
       cursor: pointer;
-      height: 30px;
+      height: 34px;
       padding: 6px 15px;
       margin-right: 15px;
       min-width: 60px;
@@ -67,7 +67,7 @@ export class DialogLoadPreset extends LitElement {
       border-style: solid;
       border-radius: 3px;
       box-shadow: 0 1px 2px 0 rgba(64, 61, 4, 0.44);
-      font-size: 14px;
+      font-size: 18px;
       color: white;
       border-color: transparent;
       background-color: #0279c0;
@@ -78,8 +78,7 @@ export class DialogLoadPreset extends LitElement {
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
-      font-family: -apple-system, BlinkMacSystemFont, Ubuntu, "Segoe UI", Roboto,
-        Oxygen, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-size: 18px;
     }
     .dialog__cancel-btn:hover {
       text-decoration: underline;
@@ -131,6 +130,10 @@ export class DialogLoadPreset extends LitElement {
     }
     .presetinfo {
       color: lightgray;
+    }
+    h2,
+    button {
+      font-family: Wendy;
     }
   `;
 

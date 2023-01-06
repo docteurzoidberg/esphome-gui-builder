@@ -2,12 +2,21 @@ import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
+import "@shoelace-style/shoelace/dist/components/input/input"; // https://shoelace.style/components/input
+import "@shoelace-style/shoelace/dist/components/color-picker/color-picker"; // https://shoelace.style/components/color-picke
+import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+
 @customElement("dialog-add-text")
 export class DialogAddText extends LitElement {
   @property()
   show: boolean = false;
 
   fontJson: FontGuiElementJSON | null = null;
+
+  @property()
+  newText: string = "TEST";
+
   static styles = css`
     .overlay {
       top: 0;
@@ -137,8 +146,14 @@ export class DialogAddText extends LitElement {
     this.dispatchEvent(new CustomEvent("open", { detail: fontguielementjson }));
   }
 
-  close() {
+  close(text?: string) {
     this.show = false;
+
+    if (text && this.fontJson) {
+      const font = new EspHomeFont(this.fontJson.font);
+      this.fontJson.text = text;
+      this.fontJson.bounds = font.getBoundingBox(text);
+    }
     this.dispatchEvent(new CustomEvent("close", { detail: this.fontJson }));
   }
 
@@ -150,12 +165,24 @@ export class DialogAddText extends LitElement {
           <header>
             <h2>Add text</h2>
           </header>
-          <main>TOTO</main>
+          <main>
+            <div>
+              <sl-input
+                label="Text"
+                placeholder="Enter text"
+                value="${this.newText}"
+                @sl-change="${(e: any) => {
+                  this.newText = e.target.value;
+                }}"
+              ></sl-input>
+            </div>
+            <div></div>
+          </main>
           <footer>
             <button
               class="dialog__ok-btn"
               @click="${() => {
-                this.close();
+                this.close(this.newText);
               }}"
             >
               OK

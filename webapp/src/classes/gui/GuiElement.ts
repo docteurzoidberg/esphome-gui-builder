@@ -32,6 +32,7 @@ export abstract class GuiElement implements Coord {
 
   //private internalId: number;
   private startedMovingAt: Coord = { x: 0, y: 0 };
+  private lastMovingAt: Coord = { x: 0, y: 0 };
 
   constructor(guielementjson: GuiElementJSON) {
     if (!guielementjson.type) {
@@ -69,16 +70,21 @@ export abstract class GuiElement implements Coord {
   beginMove(coords: Coord) {
     this.isMoving = true;
     this.startedMovingAt = coords;
+    this.lastMovingAt = coords;
   }
 
   move(offset: Coord) {
-    this.x += offset.x - this.startedMovingAt.x;
-    this.y += offset.y - this.startedMovingAt.y;
-    this.startedMovingAt = offset;
+    this.x += offset.x - this.lastMovingAt.x;
+    this.y += offset.y - this.lastMovingAt.y;
+    this.lastMovingAt = offset;
   }
 
   endMove() {
     this.isMoving = false;
+  }
+
+  hasMoved(): boolean {
+    return this.startedMovingAt.x != this.x || this.startedMovingAt.y != this.y;
   }
 
   order(index: number) {

@@ -25,7 +25,7 @@ export class MyCanvasDisplay extends LitElement {
   @property()
   elements: GuiElement[] = [];
 
-  @property()
+  @property({ type: Object })
   selectedElement?: GuiElement;
 
   @property({ type: Number })
@@ -315,8 +315,20 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _elementMoved() {
+    window.dispatchEvent(
+      new CustomEvent("element-moved", { detail: this.selectedElement })
+    );
     this.dispatchEvent(
       new CustomEvent("element-moved", { detail: this.selectedElement })
+    );
+  }
+
+  _elementMoving() {
+    window.dispatchEvent(
+      new CustomEvent("element-moving", { detail: this.selectedElement })
+    );
+    this.dispatchEvent(
+      new CustomEvent("element-moving", { detail: this.selectedElement })
     );
   }
 
@@ -399,6 +411,7 @@ export class MyCanvasDisplay extends LitElement {
   handleMouseUp() {
     if (this.selectedElement?.isMoving) {
       this.selectedElement.endMove();
+      //if (this.selectedElement.hasMoved())
       this._elementMoved();
     }
   }
@@ -406,6 +419,7 @@ export class MyCanvasDisplay extends LitElement {
   handleMouseLeave() {
     if (this.selectedElement?.isMoving) {
       this.selectedElement.endMove();
+      //if (this.selectedElement.hasMoved())
       this._elementMoved();
     }
   }
@@ -417,6 +431,7 @@ export class MyCanvasDisplay extends LitElement {
         x: this.mouse_pixel_coord.x,
         y: this.mouse_pixel_coord.y,
       });
+      this._elementMoving();
     }
   }
 

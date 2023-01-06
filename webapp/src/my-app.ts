@@ -1,6 +1,29 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
+import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/components/input/input";
+import "@shoelace-style/shoelace/dist/components/button/button";
+import "@shoelace-style/shoelace/dist/components/checkbox/checkbox";
+
+import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
+import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
+
+import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+
+registerIconLibrary("boxicons", {
+  resolver: (name) => {
+    let folder = "regular";
+    if (name.substring(0, 4) === "bxs-") folder = "solid";
+    if (name.substring(0, 4) === "bxl-") folder = "logos";
+    return `https://cdn.jsdelivr.net/npm/boxicons@2.0.5/svg/${folder}/${name}.svg`;
+  },
+  mutator: (svg) => svg.setAttribute("fill", "currentColor"),
+});
+
+// Set the base path to the folder you copied Shoelace's assets to
+setBasePath("/assets/shoelace");
+
 import "my-element-list";
 import "my-element-settings";
 import "my-canvas-display";
@@ -35,60 +58,49 @@ export class MyApp extends LitElement {
         height: 100vh;
         margin: 0;
         padding: 0;
-        font-family: "Wendy";
+        font-family: "Teko";
         font-size: 1.5em;
       }
-
+      .title {
+        font-family: "Wendy";
+      }
       .screen-container {
         margin: 20px;
         text-align: center;
       }
-
       .container {
         display: flex;
-        /* flex-flow: column; */
+
         flex-direction: column;
         height: 100%;
       }
-
       .second-row {
-        /* flex:1 1 auto; */
         flex-grow: 1;
       }
-
       .second-row-container {
         display: flex;
         height: 100%;
       }
       .col1 {
-        /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: auto;
         min-width: 250px;
       }
-
       .col2 {
-        /* flex:1 1 auto; */
         flex-grow: 1;
         align-self: auto;
       }
-
       .second-col-container {
         display: flex;
 
-        /* flex-flow: column; */
         flex-direction: column;
         height: 100%;
       }
-
       .second-col-container .row1 {
-        /* flex:1 1 auto; */
         flex-grow: auto;
         align-self: auto;
       }
-
       .second-col-container .row2 {
-        /* flex:0 1 auto; */
         flex-grow: 0;
         align-self: stretch;
         height: 30vh;
@@ -136,7 +148,6 @@ export class MyApp extends LitElement {
 
       @media (prefers-color-scheme: dark) {
         .header {
-          /* dark mode variables go here */
           background-color: #555555;
         }
         .col1,
@@ -147,6 +158,27 @@ export class MyApp extends LitElement {
       //h2 {
       //  text-decoration: underline;
       //}
+      #screenpreset {
+        display: none;
+      }
+      .presetname {
+        color: lightgray;
+        font-size: 0.8em;
+      }
+      #screenwidth,
+      #screenheight,
+      #gridwidth,
+      #guiscale,
+      #displayscale {
+        width: 60px;
+        display: inline-block;
+        color: lightgray;
+      }
+      sl-button.action::part(base) {
+        font-family: "Teko";
+        font-size: 0.8em;
+        font-weight: normal;
+      }
     `,
   ];
 
@@ -177,11 +209,11 @@ export class MyApp extends LitElement {
   @property()
   guiElements: GuiElement[] = [];
 
-  @property()
+  @property({ type: Object })
   selectedElement?: GuiElement;
 
   @property()
-  currentScreenPresetIndex: number = 0;
+  currentScreenPresetIndex?: number;
 
   @query("#screenpreset")
   selectScreenPreset?: HTMLSelectElement;
@@ -315,9 +347,10 @@ export class MyApp extends LitElement {
   }
 
   handleElementMoved(e: CustomEvent) {
-    console.log("element moved");
-    const element = e.detail;
-    this.selectedElement = element;
+    console.log("element-moved", e.detail);
+    //const element = e.detail;
+    //this.selectedElement = element;
+    //this.requestUpdate();
     StorageManager.saveScene(this.guiElements);
   }
 
@@ -484,6 +517,12 @@ export class MyApp extends LitElement {
         id="addTextDialog"
         @close="${this.handleAddTextDialogClosed}"
       ></dialog-add-text>
+
+      <dialog-load-preset
+        @close="${this.handleLoadPresetDialogClosed}"
+        id="loadPresetDialog"
+      ></dialog-load-preset>
+
       <div class="container two-rows-row">
         <div class="first-row header">
           <div class="title">GUI Helper for ESPHome</div>
@@ -501,7 +540,7 @@ export class MyApp extends LitElement {
             /></a>
           </div>
           <div class="logo">
-            <img src="work-in-progress.png" height="48" />
+            <img src="work-in-progress.png" height="64" />
           </div>
         </div>
         <div class="second-row">
@@ -510,23 +549,52 @@ export class MyApp extends LitElement {
               <div class="screen-settings-container">
                 <my-section class="settings">
                   <span slot="title">Screen settings</span>
-                  <div>
-                    <dialog-load-preset
-                      @close="${this.handleLoadPresetDialogClosed}"
-                      id="loadPresetDialog"
-                    ></dialog-load-preset>
-                    <button
-                      type="button"
+                  <div class="sl-theme-dark">
+                    <sl-button
+                      class="action"
+                      size="small"
+                      variant="primary"
+                      outline
                       @click="${() => {
                         console.log(this.dialogLoadPreset);
                         this.dialogLoadPreset?.open();
                       }}"
                     >
-                      Presets
-                    </button>
+                      <sl-icon
+                        library="boxicons"
+                        slot="prefix"
+                        name="bx-folder-open"
+                      ></sl-icon>
+                      LOAD PRESET
+                    </sl-button>
+                    <sl-button
+                      class="action"
+                      size="small"
+                      variant="default"
+                      outline
+                      disabled
+                      @sl-click="${() => {
+                        console.log(this.dialogLoadPreset);
+                        this.dialogLoadPreset?.open();
+                      }}"
+                    >
+                      <sl-icon
+                        library="boxicons"
+                        slot="prefix"
+                        name="bx-save"
+                      ></sl-icon>
+                      SAVE PRESET
+                    </sl-button>
                   </div>
                   <div>
                     <label for="screenpreset">Screen Preset</label>
+                    <span class="presetname"
+                      >${this.currentScreenPresetIndex! >= 0
+                        ? this.screenPresets[this.currentScreenPresetIndex!]
+                            .name
+                        : "Custom"}</span
+                    >
+
                     <select
                       id="screenpreset"
                       @change="${this.handleScreenPresetsChanged}"
@@ -551,26 +619,33 @@ export class MyApp extends LitElement {
                   </div>
                   <div>
                     <label for="screenwidth">Display Width</label>
-                    <input
-                      id="screenwidth"
-                      type="number"
-                      min="1"
-                      .value="${this.screenWidth.toString()}"
-                      @change="${this.handleScreenWidthChanged}"
-                    />
+                    <span>
+                      <sl-input
+                        id="screenwidth"
+                        size="small"
+                        type="number"
+                        min="1"
+                        step="1"
+                        .value="${this.screenWidth.toString()}"
+                        @sl-change="${this.handleScreenWidthChanged}"
+                      ></sl-input>
+                    </span>
                   </div>
                   <div>
                     <label for="screenwidth">Display Height</label>
-                    <input
+                    <sl-input
                       id="screenheight"
+                      size="small"
                       type="number"
                       min="1"
+                      step="1"
                       .value="${this.screenHeight.toString()}"
-                      @change="${this.handleScreenHeightChanged}"
-                    />
+                      @sl-change="${this.handleScreenHeightChanged}"
+                    ></sl-input>
                   </div>
                   <div>
                     <label for="showgrid">Show grid</label>
+
                     <input
                       id="showgrid"
                       type="checkbox"
@@ -583,49 +658,49 @@ export class MyApp extends LitElement {
                   </div>
                   <div>
                     <label for="gridwidth">Grid Width</label>
-                    <input
+                    <sl-input
                       id="gridwidth"
                       type="number"
                       min="1"
                       .value="${this.canvasGridWidth.toString()}"
-                      @change="${(e: Event) => {
+                      @sl-change="${(e: Event) => {
                         this.canvasGridWidth = parseInt(
                           (e.target as HTMLInputElement).value,
                           10
                         );
                       }}"
-                    />
+                    ></sl-input>
                   </div>
                   <div>
                     <label for="displayscale">Display Scale</label>
-                    <input
+                    <sl-input
                       id="displayscale"
                       type="number"
                       min="1"
                       .value="${this.canvasScale.toString()}"
-                      @change="${(e: Event) => {
+                      @sl-change="${(e: Event) => {
                         this.canvasScale = parseInt(
                           (e.target as HTMLInputElement).value,
                           10
                         );
                       }}"
-                    />
+                    ></sl-input>
                   </div>
                   <div>
                     <label for="guiscale">GUI Scale</label>
-                    <input
+                    <sl-input
                       id="guiscale"
                       type="number"
                       min="1"
                       min="5"
                       .value="${this.toolboxScale.toString()}"
-                      @change="${(e: Event) => {
+                      @sl-change="${(e: Event) => {
                         this.toolboxScale = parseInt(
                           (e.target as HTMLInputElement).value,
                           10
                         );
                       }}"
-                    />
+                    ></sl-input>
                   </div>
                 </my-section>
               </div>

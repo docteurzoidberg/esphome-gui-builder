@@ -1,6 +1,29 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
+import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/components/button/button";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button";
+import "@shoelace-style/shoelace/dist/components/tooltip/tooltip";
+
+import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
+import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
+
+import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+
+registerIconLibrary("boxicons", {
+  resolver: (name) => {
+    let folder = "regular";
+    if (name.substring(0, 4) === "bxs-") folder = "solid";
+    if (name.substring(0, 4) === "bxl-") folder = "logos";
+    return `https://cdn.jsdelivr.net/npm/boxicons@2.0.5/svg/${folder}/${name}.svg`;
+  },
+  mutator: (svg) => svg.setAttribute("fill", "currentColor"),
+});
+
+// Set the base path to the folder you copied Shoelace's assets to
+setBasePath("/shoelace");
+
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
@@ -85,35 +108,48 @@ export class MyElementList extends LitElement {
   renderControls(element: GuiElement, index: number) {
     if (element.internalId !== this.selectedElement?.internalId) return html``;
     return html`
-      <my-icon-button
-        class="delete"
-        text="✖ Remove item"
-        color="red"
-        icon="✖"
-        @click="${(e: Event) => {
-          this.removeElement(element, index);
-          e.stopPropagation();
-        }}"
-      >
-      </my-icon-button>
-      <my-icon-button
-        text="⇧ Move item up (front)"
-        icon="⇧"
-        color="yellow"
-        @click="${(e: Event) => {
-          this.moveUp(index);
-          e.stopPropagation();
-        }}"
-      ></my-icon-button>
-      <my-icon-button
-        text="⇩ Move item down (back)"
-        icon="⇩"
-        color="yellow"
-        @click="${(e: Event) => {
-          this.moveDown(index);
-          e.stopPropagation();
-        }}"
-      ></my-icon-button>
+      <sl-tooltip content="✖ Remove from scene" class="delete-btn">
+        <sl-icon-button
+          size="small"
+          library="boxicons"
+          style="font-size: 1rem;"
+          name="bxs-trash"
+          outline
+          @click="${(e: Event) => {
+            this.removeElement(element, index);
+            e.stopPropagation();
+          }}"
+        >
+        </sl-icon-button>
+      </sl-tooltip>
+      <sl-tooltip content="⇩ Move up" class="move-btn">
+        <sl-icon-button
+          size="small"
+          library="boxicons"
+          style="font-size: 1rem;"
+          name="bxs-up-arrow"
+          outline
+          @click="${(e: Event) => {
+            this.moveUp(index);
+            e.stopPropagation();
+          }}"
+        >
+        </sl-icon-button>
+      </sl-tooltip>
+
+      <sl-tooltip content="⇩ Move down" class="move-btn">
+        <sl-icon-button
+          size="small"
+          library="boxicons"
+          style="font-size: 1rem;"
+          name="bxs-down-arrow"
+          @click="${(e: Event) => {
+            this.moveDown(index);
+            e.stopPropagation();
+          }}"
+        >
+        </sl-icon-button>
+      </sl-tooltip>
     `;
   }
 
@@ -157,6 +193,7 @@ export class MyElementList extends LitElement {
     }
     h3 {
       text-decoration: underline;
+      font-family: Wendy;
     }
     button {
       font-family: Wendy;
@@ -188,6 +225,28 @@ export class MyElementList extends LitElement {
       display: inline-block;
       vertical-align: middle;
       opacity: 0.8;
+    }
+
+    .delete-btn sl-icon-button::part(base) {
+      color: #b00052;
+    }
+    .delete-btn sl-icon-button::part(base):hover,
+    .delete-btn sl-icon-button::part(base):focus {
+      color: #c91368;
+    }
+    .delete-btn sl-icon-button::part(base):active {
+      color: #960032;
+    }
+
+    .move-btn sl-icon-button::part(base) {
+      color: #e6ca4f;
+    }
+    .move-btn sl-icon-button::part(base):hover,
+    .move-btn sl-icon-button::part(base):focus {
+      color: #f3e73f;
+    }
+    .move sl-icon-button::part(base):active {
+      color: #cee21c;
     }
   `;
 }
