@@ -540,9 +540,19 @@ export class MyApp extends LitElement {
     //create esphome yaml for each element
     let yaml = "";
 
+    //filter elements by unique ids
+    const uniqueIds = new Set();
+    const yamlElements = this.guiElements.filter((element) => {
+      if (uniqueIds.has(element.esphomeId)) {
+        return false;
+      }
+      uniqueIds.add(element.esphomeId);
+      return true;
+    });
+
     //iterate over all elements with text type
     let fontsYaml = "";
-    this.guiElements.forEach((element) => {
+    yamlElements.forEach((element) => {
       if (element.type === "text") {
         fontsYaml += element.toYAML();
       }
@@ -553,7 +563,7 @@ export class MyApp extends LitElement {
 
     //iterate over all elements with image type
     let imagesYaml = "";
-    this.guiElements.forEach((element) => {
+    yamlElements.forEach((element) => {
       if (element.type === "image") {
         imagesYaml += element.toYAML();
       }
@@ -565,7 +575,7 @@ export class MyApp extends LitElement {
 
     //iterate over all elements with animation type
     let animationsYaml = "";
-    this.guiElements.forEach((element) => {
+    yamlElements.forEach((element) => {
       if (element.type === "animation") {
         animationsYaml += element.toYAML();
       }
