@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 !esphome/
+public/assets/shoelace
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

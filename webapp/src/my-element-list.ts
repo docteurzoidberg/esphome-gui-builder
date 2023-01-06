@@ -22,7 +22,7 @@ registerIconLibrary("boxicons", {
 });
 
 // Set the base path to the folder you copied Shoelace's assets to
-setBasePath("/shoelace");
+setBasePath("/assets/shoelace");
 
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
