@@ -194,6 +194,8 @@ export class MyElementList extends LitElement {
     h3 {
       text-decoration: underline;
       font-family: Wendy;
+      margin-top: 5px;
+      margin-bottom: 5px;
     }
     button {
       font-family: Wendy;

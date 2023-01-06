@@ -4,18 +4,6 @@ import { GuiElement } from "classes/gui/GuiElement";
 import { Coord } from "types/Coord";
 
 export class AnimationGuiElement extends GuiElement {
-  toGuiElementJSON(): AnimationGuiElementJSON {
-    return {
-      internalId: this.internalId,
-      esphomeId: this.esphomeId,
-      name: this.name,
-      x: this.x,
-      y: this.y,
-      type: "animation",
-      zorder: this.zorder,
-      animation: this.animation.originalData,
-    };
-  }
   animation: EspHomeAnimation;
   constructor(json: AnimationGuiElementJSON) {
     super({
@@ -48,9 +36,21 @@ export class AnimationGuiElement extends GuiElement {
     ctx.putImageData(image, coords.x, coords.y);
   }
   toYAML(): string {
-    throw new Error("Method not implemented.");
+    return '\t- id: "' + this.esphomeId + '"\n';
   }
   toCPP(): string {
-    throw new Error("Method not implemented.");
+    return "//not implemented, id:" + this.esphomeId + "\n";
+  }
+  toGuiElementJSON(): AnimationGuiElementJSON {
+    return {
+      internalId: this.internalId,
+      esphomeId: this.esphomeId,
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      type: "animation",
+      zorder: this.zorder,
+      animation: this.animation.originalData,
+    };
   }
 }

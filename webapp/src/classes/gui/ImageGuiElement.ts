@@ -34,10 +34,10 @@ export class ImageGuiElement extends GuiElement {
     ctx.drawImage(img, coords.x, coords.y);
   }
   toYAML(): string {
-    throw new Error("Method not implemented.");
+    return '\t- id: "' + this.esphomeId + '"\n';
   }
   toCPP(): string {
-    throw new Error("Method not implemented.");
+    return "//not implemented, id:" + this.esphomeId + "\n";
   }
   toGuiElementJSON(): ImageGuiElementJSON {
     return {

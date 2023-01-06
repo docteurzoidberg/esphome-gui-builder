@@ -6,6 +6,7 @@ import "@shoelace-style/shoelace/dist/components/input/input"; // https://shoela
 import "@shoelace-style/shoelace/dist/components/color-picker/color-picker"; // https://shoelace.style/components/color-picke
 import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { RGB24 } from "types/RGB";
 
 @customElement("dialog-add-text")
 export class DialogAddText extends LitElement {
@@ -16,6 +17,9 @@ export class DialogAddText extends LitElement {
 
   @property()
   newText: string = "TEST";
+
+  @property({ type: Object })
+  color: RGB24 = { r: 255, g: 255, b: 255 };
 
   static styles = css`
     .overlay {
@@ -152,6 +156,7 @@ export class DialogAddText extends LitElement {
     if (text && this.fontJson) {
       const font = new EspHomeFont(this.fontJson.font);
       this.fontJson.text = text;
+      this.fontJson.color = this.color;
       this.fontJson.bounds = font.getBoundingBox(text);
     }
     this.dispatchEvent(new CustomEvent("close", { detail: this.fontJson }));

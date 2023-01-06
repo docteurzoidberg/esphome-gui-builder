@@ -1,6 +1,7 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
+//Shoelace
 import "@shoelace-style/shoelace/dist/components/icon/icon";
 import "@shoelace-style/shoelace/dist/components/input/input";
 import "@shoelace-style/shoelace/dist/components/button/button";
@@ -8,7 +9,6 @@ import "@shoelace-style/shoelace/dist/components/checkbox/checkbox";
 
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
-
 import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
 
 registerIconLibrary("boxicons", {
@@ -21,8 +21,8 @@ registerIconLibrary("boxicons", {
   mutator: (svg) => svg.setAttribute("fill", "currentColor"),
 });
 
-// Set the base path to the folder you copied Shoelace's assets to
-setBasePath("/assets/shoelace");
+setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
+//-
 
 import "my-element-list";
 import "my-element-settings";
@@ -30,6 +30,7 @@ import "my-canvas-display";
 import "my-toolbox";
 import "my-section";
 import "my-tabs";
+import "my-prism-code";
 import "dialog-load-preset";
 import "dialog-add-text";
 
@@ -49,6 +50,7 @@ import { FontGuiElement } from "classes/gui/FontGuiElement";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 import { DropElementJSON } from "interfaces/gui/DropElementJSON";
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
+
 @customElement("my-app")
 export class MyApp extends LitElement {
   static styles = [
@@ -63,6 +65,7 @@ export class MyApp extends LitElement {
       }
       .title {
         font-family: "Wendy";
+        margin-left: 10px;
       }
       .screen-container {
         margin: 20px;
@@ -110,7 +113,7 @@ export class MyApp extends LitElement {
         font-size: 2em;
         margin: 0;
         padding: 0px;
-        line-height: 80px;
+        //line-height: 80px;
         vertical-align: middle;
       }
       .github {
@@ -224,6 +227,12 @@ export class MyApp extends LitElement {
   @query("#loadPresetDialog")
   dialogLoadPreset?: DialogLoadPreset;
 
+  @property({ type: String })
+  yamlContent: string = "";
+
+  @property({ type: String })
+  cppContent: string = "";
+
   async _loadScreenPresets() {
     //console.log("load screen presets");
     return StorageManager.loadScreenPresets()
@@ -242,6 +251,8 @@ export class MyApp extends LitElement {
     StorageManager.loadScene()
       .then((elements: GuiElement[]) => {
         this.guiElements = elements;
+        this.yamlContent = this._getYamlContent();
+        this.cppContent = this._getCppContent();
       })
       .catch((err: any) => {
         //fallback if json not ok
@@ -343,7 +354,9 @@ export class MyApp extends LitElement {
   handleElementSelected(e: CustomEvent) {
     console.log("element-selected", e.detail);
     const selectedEvent = e.detail as ElementSelectedEvent;
+    //if (selectedEvent.element) {
     this.selectedElement = selectedEvent.element;
+    //}
   }
 
   handleElementMoved(e: CustomEvent) {
@@ -351,6 +364,8 @@ export class MyApp extends LitElement {
     //const element = e.detail;
     //this.selectedElement = element;
     //this.requestUpdate();
+    this.yamlContent = this._getYamlContent();
+    this.cppContent = this._getCppContent();
     StorageManager.saveScene(this.guiElements);
   }
 
@@ -361,6 +376,8 @@ export class MyApp extends LitElement {
       ...this.guiElements.slice(0, details.index),
       ...this.guiElements.slice(details.index + 1),
     ];
+    this.yamlContent = this._getYamlContent();
+    this.cppContent = this._getCppContent();
     StorageManager.saveScene(this.guiElements);
   }
 
@@ -422,6 +439,8 @@ export class MyApp extends LitElement {
 
     if (!newGuiElement) return;
     this.guiElements = [...this.guiElements, newGuiElement];
+    this.yamlContent = this._getYamlContent();
+    this.cppContent = this._getCppContent();
     StorageManager.saveScene(this.guiElements);
   }
 
@@ -511,6 +530,116 @@ export class MyApp extends LitElement {
     });
   }
 
+  protected updated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    super.updated(_changedProperties);
+  }
+
+  _getYamlContent(): string {
+    //create esphome yaml for each element
+    let yaml = "";
+
+    //iterate over all elements with text type
+    let fontsYaml = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "text") {
+        fontsYaml += element.toYAML();
+      }
+    });
+    if (fontsYaml !== "") {
+      yaml += "fonts:\n" + fontsYaml;
+    }
+
+    //iterate over all elements with image type
+    let imagesYaml = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "image") {
+        imagesYaml += element.toYAML();
+      }
+    });
+    if (imagesYaml !== "") {
+      //yaml += "#Images\n";
+      yaml += "images:\n" + imagesYaml;
+    }
+
+    //iterate over all elements with animation type
+    let animationsYaml = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "animation") {
+        animationsYaml += element.toYAML();
+      }
+    });
+    if (animationsYaml !== "") {
+      yaml += "animations:\n" + animationsYaml;
+    }
+
+    if (yaml === "") {
+      yaml =
+        "#/!\\ Scene is empty, add elements to canvas to generate ESPHome YAML config";
+    }
+
+    return yaml;
+  }
+
+  _getCppContent(): string {
+    //create sample cpp call for each element
+    let cpp = "";
+
+    //iterate over all elements with text type
+    let fontsCpp = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "text") {
+        fontsCpp += element.toCPP();
+      }
+    });
+    if (fontsCpp !== "") {
+      cpp += "/* fonts */\n" + fontsCpp;
+    }
+
+    //iterate over all elements with image type
+    let imagesCpp = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "image") {
+        imagesCpp += element.toCPP();
+      }
+    });
+    if (imagesCpp !== "") {
+      cpp += "/* images */\n" + imagesCpp;
+    }
+
+    //iterate over all elements with animation type
+    let animationsCpp = "";
+    this.guiElements.forEach((element) => {
+      if (element.type === "animation") {
+        animationsCpp += element.toCPP();
+      }
+    });
+    if (animationsCpp !== "") {
+      cpp += "/* animations */\n" + animationsCpp;
+    }
+    if (cpp === "") {
+      cpp =
+        "//!\\ Scene is empty, add elements to canvas to generate sample lambda code";
+    }
+    return cpp;
+  }
+
+  renderCodeContent() {
+    return html`
+      <div class="cpp-content">
+        <my-prism-code lang="cpp" code="${this.cppContent}"></my-prism-code>
+      </div>
+    `;
+  }
+  renderYamlContent() {
+    return html`
+      <div class="yaml-content">
+        <my-prism-code lang="yaml" code="${this.yamlContent}"></my-prism-code>
+      </div>
+    `;
+  }
+
   render() {
     return html`
       <dialog-add-text
@@ -536,11 +665,11 @@ export class MyApp extends LitElement {
                 class="githublogo"
                 src="githubw.png"
                 alt="github"
-                height="48"
+                height="32"
             /></a>
           </div>
           <div class="logo">
-            <img src="work-in-progress.png" height="64" />
+            <img src="work-in-progress.png" height="32" />
           </div>
         </div>
         <div class="second-row">
@@ -729,17 +858,29 @@ export class MyApp extends LitElement {
               </div>
               <div class="row2 toolbox-container">
                 <my-tabs>
-                  <h2 slot="tab">TOOLBOX</h2>
+                  <h2 slot="tab">
+                    <sl-icon library="boxicons" name="bx-palette"></sl-icon>
+                    TOOLBOX
+                  </h2>
                   <section slot="panel">
                     <my-toolbox
                       .displayScale="${this.toolboxScale}"
                       @toolbox-loaded="${this.handleToolboxLoaded}"
                     ></my-toolbox>
                   </section>
-                  <h2 slot="tab">YAML</h2>
-                  <section slot="panel">//TODO: yaml content</section>
-                  <h2 slot="tab">CODE</h2>
-                  <section slot="panel">//TODO: code exemple</section>
+                  <h2 slot="tab">
+                    <sl-icon library="boxicons" name="bx-code"></sl-icon>YAML
+                  </h2>
+                  <section slot="panel">
+                    //TODO: yaml content ${this.renderYamlContent()}
+                  </section>
+                  <h2 slot="tab">
+                    <sl-icon library="boxicons" name="bx-code-curly"></sl-icon>
+                    CODE
+                  </h2>
+                  <section slot="panel">
+                    //TODO: code exemple ${this.renderCodeContent()}
+                  </section>
                 </my-tabs>
               </div>
             </div>

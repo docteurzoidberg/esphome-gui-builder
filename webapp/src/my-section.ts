@@ -36,8 +36,8 @@ export class MySection extends LitElement {
       text-decoration: underline;
       cursor: pointer;
       font-family: "Wendy";
-      margin-top: 0px;
-      margin-bottom: 0px;
+      margin-top: 5px;
+      margin-bottom: 5px;
     }
   `;
 }

@@ -3,11 +3,13 @@ import { GuiElement } from "classes/gui/GuiElement";
 import { EspHomeFontTextBound } from "interfaces/esphome/EspHomeFontJSON";
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { Coord } from "types/Coord";
+import { RGB24 } from "types/RGB";
 
 export class FontGuiElement extends GuiElement {
   font: EspHomeFont;
   text: string;
   bounds: EspHomeFontTextBound;
+  color?: RGB24;
   constructor(json: FontGuiElementJSON) {
     super({
       internalId: json.internalId,
@@ -21,6 +23,7 @@ export class FontGuiElement extends GuiElement {
     this.font = new EspHomeFont(json.font);
     this.text = json.text;
     this.bounds = json.bounds;
+    this.color = json.color;
   }
   getWidth(): number {
     return this.bounds.width;
@@ -38,12 +41,15 @@ export class FontGuiElement extends GuiElement {
     if (!result) return;
     ctx.putImageData(result.image, coords.x, coords.y);
   }
+
   toYAML(): string {
-    throw new Error("Method not implemented.");
+    return '\t- id: "' + this.esphomeId + '"\n';
   }
+
   toCPP(): string {
-    throw new Error("Method not implemented.");
+    return "//not implemented, id:" + this.esphomeId + "\n";
   }
+
   toGuiElementJSON(): FontGuiElementJSON {
     return {
       internalId: this.internalId,
@@ -54,6 +60,7 @@ export class FontGuiElement extends GuiElement {
       type: "text",
       zorder: this.zorder,
       font: this.font.originalData,
+      color: this.color,
       text: this.text,
       bounds: this.bounds,
     };
