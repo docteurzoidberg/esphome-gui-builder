@@ -1,6 +1,6 @@
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 
 import "@shoelace-style/shoelace/dist/components/input/input"; // https://shoelace.style/components/input
 import "@shoelace-style/shoelace/dist/components/color-picker/color-picker"; // https://shoelace.style/components/color-picke
@@ -8,18 +8,137 @@ import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { RGB24 } from "types/RGB";
 
+import "my-dialog";
+import "my-section";
+
+import { MyDialog } from "my-dialog";
+
 @customElement("dialog-add-text")
 export class DialogAddText extends LitElement {
-  @property()
-  show: boolean = false;
-
   fontJson: FontGuiElementJSON | null = null;
+
+  @query("#dialog")
+  dialog?: MyDialog;
 
   @property()
   newText: string = "TEST";
 
   @property({ type: Object })
   color: RGB24 = { r: 255, g: 255, b: 255 };
+
+  open(fontguielementjson: FontGuiElementJSON) {
+    this.fontJson = fontguielementjson;
+    this.dialog?.open();
+    this.dispatchEvent(new CustomEvent("open", { detail: fontguielementjson }));
+  }
+
+  close(text?: string) {
+    this.dialog?.close();
+    if (text && this.fontJson) {
+      const font = new EspHomeFont(this.fontJson.font);
+      this.fontJson.text = text;
+      this.fontJson.color = this.color;
+      this.fontJson.bounds = font.getBoundingBox(text);
+    }
+    this.dispatchEvent(
+      new CustomEvent("close", { detail: text ? this.fontJson : null })
+    );
+  }
+
+  render() {
+    return html`
+      <my-dialog id="dialog" @close="${(_e: Event) => this.close()}">
+        <div slot="header">
+          <h2>Add text</h2>
+        </div>
+        <div slot="main">
+          <div>
+            <h3>Text</h3>
+            <sl-input
+              placeholder="Enter text"
+              value="${this.newText}"
+              @sl-change="${(e: any) => {
+                this.newText = e.target.value;
+              }}"
+            ></sl-input>
+          </div>
+          <sl-color-picker inline label="Select a color"></sl-color-picker>
+        </div>
+        <div slot="footer">
+          <button
+            class="dialog__ok-btn"
+            @click="${() => {
+              this.close(this.newText);
+            }}"
+          >
+            OK
+          </button>
+          <button
+            class="dialog__cancel-btn"
+            @click="${() => {
+              this.close();
+            }}"
+          >
+            CANCEL
+          </button>
+        </div>
+      </my-dialog>
+    `;
+  }
+
+  static styles = css``;
+
+  /*
+  render() {
+    if (!this.show) return html``;
+    return html`
+      <div class="dialog">
+        <div class="dialog__content">
+          <header>
+            <h2>Add text</h2>
+          </header>
+          <main>
+            <div>
+              <sl-input
+                label="Text"
+                placeholder="Enter text"
+                value="${this.newText}"
+                @sl-change="${(e: any) => {
+                  this.newText = e.target.value;
+                }}"
+              ></sl-input>
+            </div>
+            <div></div>
+          </main>
+          <footer>
+            <button
+              class="dialog__ok-btn"
+              @click="${() => {
+                this.close(this.newText);
+              }}"
+            >
+              OK
+            </button>
+            <button
+              class="dialog__cancel-btn"
+              @click="${() => {
+                this.close();
+              }}"
+            >
+              CANCEL
+            </button>
+          </footer>
+          <div
+            class="dialog__close-btn"
+            @click="${() => {
+              this.close();
+            }}"
+          ></div>
+        </div>
+      </div>
+      <div class="overlay"></div>
+    `;
+  }
 
   static styles = css`
     .overlay {
@@ -143,75 +262,7 @@ export class DialogAddText extends LitElement {
       color: lightgray;
     }
   `;
-
-  open(fontguielementjson: FontGuiElementJSON) {
-    this.show = true;
-    this.fontJson = fontguielementjson;
-    this.dispatchEvent(new CustomEvent("open", { detail: fontguielementjson }));
-  }
-
-  close(text?: string) {
-    this.show = false;
-
-    if (text && this.fontJson) {
-      const font = new EspHomeFont(this.fontJson.font);
-      this.fontJson.text = text;
-      this.fontJson.color = this.color;
-      this.fontJson.bounds = font.getBoundingBox(text);
-    }
-    this.dispatchEvent(new CustomEvent("close", { detail: this.fontJson }));
-  }
-
-  render() {
-    if (!this.show) return html``;
-    return html`
-      <div class="dialog">
-        <div class="dialog__content">
-          <header>
-            <h2>Add text</h2>
-          </header>
-          <main>
-            <div>
-              <sl-input
-                label="Text"
-                placeholder="Enter text"
-                value="${this.newText}"
-                @sl-change="${(e: any) => {
-                  this.newText = e.target.value;
-                }}"
-              ></sl-input>
-            </div>
-            <div></div>
-          </main>
-          <footer>
-            <button
-              class="dialog__ok-btn"
-              @click="${() => {
-                this.close(this.newText);
-              }}"
-            >
-              OK
-            </button>
-            <button
-              class="dialog__cancel-btn"
-              @click="${() => {
-                this.close();
-              }}"
-            >
-              CANCEL
-            </button>
-          </footer>
-          <div
-            class="dialog__close-btn"
-            @click="${() => {
-              this.close();
-            }}"
-          ></div>
-        </div>
-      </div>
-      <div class="overlay"></div>
-    `;
-  }
+*/
 }
 
 declare global {

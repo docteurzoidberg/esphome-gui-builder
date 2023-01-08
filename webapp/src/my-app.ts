@@ -24,6 +24,11 @@ registerIconLibrary("boxicons", {
 setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
 //-
 
+import "my-number-setting";
+import "my-text-setting";
+import "my-boolean-setting";
+import "my-github-link";
+import "my-wip-logo";
 import "my-element-list";
 import "my-element-settings";
 import "my-canvas-display";
@@ -41,6 +46,8 @@ import { ScreenPreset } from "types/ScreenPreset";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
 import { StorageManager } from "classes/gui/StorageManager";
+import { YAMLGenerator } from "classes/gui/YAMLGenerator";
+import { CPPLGenerator } from "classes/gui/CPPGenerator";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
@@ -53,137 +60,17 @@ import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 
 @customElement("my-app")
 export class MyApp extends LitElement {
-  static styles = [
-    css`
-      :host {
-        display: block;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        font-family: "Teko";
-        font-size: 1.5em;
-      }
-      .title {
-        font-family: "Wendy";
-        margin-left: 10px;
-      }
-      .screen-container {
-        margin: 20px;
-        text-align: center;
-      }
-      .container {
-        display: flex;
+  //app title
+  title = "GUI Helper for ESPHome";
 
-        flex-direction: column;
-        height: 100%;
-      }
-      .second-row {
-        flex-grow: 1;
-      }
-      .second-row-container {
-        display: flex;
-        height: 100%;
-      }
-      .col1 {
-        flex-grow: 0;
-        align-self: auto;
-        min-width: 250px;
-      }
-      .col2 {
-        flex-grow: 1;
-        align-self: auto;
-      }
-      .second-col-container {
-        display: flex;
+  @query("#screenpreset")
+  selectScreenPreset?: HTMLSelectElement;
 
-        flex-direction: column;
-        height: 100%;
-      }
-      .second-col-container .row1 {
-        flex-grow: auto;
-        align-self: auto;
-      }
-      .second-col-container .row2 {
-        flex-grow: 0;
-        align-self: stretch;
-        height: 30vh;
-      }
-      .header {
-        text-align: left;
-        font-size: 2em;
-        margin: 0;
-        padding: 0px;
-        //line-height: 80px;
-        vertical-align: middle;
-      }
-      .github {
-        float: right;
-        margin-right: 15px;
-      }
-      .githublogo {
-        vertical-align: middle;
-        image-rendering: pixelated;
-      }
-      .github,
-      .logo,
-      .title {
-        display: inline-block;
-      }
-      .logo {
-        margin-top: auto;
-        align-items: center;
-        float: right;
-      }
-      .logo img {
-        vertical-align: middle;
-        margin-right: 16px;
-        image-rendering: pixelated;
-      }
+  @query("#addTextDialog")
+  dialogAddText?: DialogAddText;
 
-      .screen-settings-container label {
-        width: 150px;
-        display: inline-block;
-      }
-      .screen-settings-container input[type="number"] {
-        width: 60px;
-        display: inline-block;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .header {
-          background-color: #555555;
-        }
-        .col1,
-        .col3 {
-          background-color: #222222;
-        }
-      }
-      //h2 {
-      //  text-decoration: underline;
-      //}
-      #screenpreset {
-        display: none;
-      }
-      .presetname {
-        color: lightgray;
-        font-size: 0.8em;
-      }
-      #screenwidth,
-      #screenheight,
-      #gridwidth,
-      #guiscale,
-      #displayscale {
-        width: 60px;
-        display: inline-block;
-        color: lightgray;
-      }
-      sl-button.action::part(base) {
-        font-family: "Teko";
-        font-size: 0.8em;
-        font-weight: normal;
-      }
-    `,
-  ];
+  @query("#loadPresetDialog")
+  dialogLoadPreset?: DialogLoadPreset;
 
   @property({ type: Number })
   screenWidth: number = 128;
@@ -218,15 +105,6 @@ export class MyApp extends LitElement {
   @property()
   currentScreenPresetIndex?: number;
 
-  @query("#screenpreset")
-  selectScreenPreset?: HTMLSelectElement;
-
-  @query("#addTextDialog")
-  dialogAddText?: DialogAddText;
-
-  @query("#loadPresetDialog")
-  dialogLoadPreset?: DialogLoadPreset;
-
   @property({ type: String })
   yamlContent: string = "";
 
@@ -244,6 +122,21 @@ export class MyApp extends LitElement {
         console.error(err);
         this.screenPresets = [{ ...StorageManager.getDefaultScreenPreset() }];
       });
+  }
+
+  _getYamlContent(): string {
+    return YAMLGenerator.generateYaml(this.guiElements);
+  }
+
+  _getCppContent(): string {
+    return CPPLGenerator.generateCPP(this.guiElements);
+  }
+
+  _getNewElementName(type: string) {
+    const elements = this.guiElements.filter((element) => {
+      return element.type === type;
+    });
+    return type + (elements.length + 1);
   }
 
   _loadScene() {
@@ -287,13 +180,6 @@ export class MyApp extends LitElement {
     StorageManager.saveSettings(settings);
   }
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this._loadScreenPresets().then(() => {
-      this._loadSettings();
-    });
-  }
-
   handleInitCanvas() {
     console.log("init-canvas");
   }
@@ -301,6 +187,7 @@ export class MyApp extends LitElement {
   handleAddTextDialogClosed(e: CustomEvent) {
     console.log("add-text-dialog-closed", e.detail);
     const json = e.detail as FontGuiElementJSON;
+    if (!json) return;
     const element = new FontGuiElement(json);
     this.guiElements = [...this.guiElements, element];
   }
@@ -379,13 +266,6 @@ export class MyApp extends LitElement {
     this.yamlContent = this._getYamlContent();
     this.cppContent = this._getCppContent();
     StorageManager.saveScene(this.guiElements);
-  }
-
-  _getNewElementName(type: string) {
-    const elements = this.guiElements.filter((element) => {
-      return element.type === type;
-    });
-    return type + (elements.length + 1);
   }
 
   handleElementDropped(e: CustomEvent) {
@@ -517,6 +397,13 @@ export class MyApp extends LitElement {
     img.src = url;
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._loadScreenPresets().then(() => {
+      this._loadSettings();
+    });
+  }
+
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -536,120 +423,6 @@ export class MyApp extends LitElement {
     super.updated(_changedProperties);
   }
 
-  _getYamlContent(): string {
-    //create esphome yaml for each element
-    let yaml = "";
-
-    //filter elements by unique ids
-    const uniqueIds = new Set();
-    const yamlElements = this.guiElements.filter((element) => {
-      if (uniqueIds.has(element.esphomeId)) {
-        return false;
-      }
-      uniqueIds.add(element.esphomeId);
-      return true;
-    });
-
-    //iterate over all elements with text type
-    let fontsYaml = "";
-    yamlElements.forEach((element) => {
-      if (element.type === "text") {
-        fontsYaml += element.toYAML();
-      }
-    });
-    if (fontsYaml !== "") {
-      yaml += "fonts:\n" + fontsYaml;
-    }
-
-    //iterate over all elements with image type
-    let imagesYaml = "";
-    yamlElements.forEach((element) => {
-      if (element.type === "image") {
-        imagesYaml += element.toYAML();
-      }
-    });
-    if (imagesYaml !== "") {
-      //yaml += "#Images\n";
-      yaml += "images:\n" + imagesYaml;
-    }
-
-    //iterate over all elements with animation type
-    let animationsYaml = "";
-    yamlElements.forEach((element) => {
-      if (element.type === "animation") {
-        animationsYaml += element.toYAML();
-      }
-    });
-    if (animationsYaml !== "") {
-      yaml += "animations:\n" + animationsYaml;
-    }
-
-    if (yaml === "") {
-      yaml =
-        "#/!\\ Scene is empty, add elements to canvas to generate ESPHome YAML config";
-    }
-
-    return yaml;
-  }
-
-  _getCppContent(): string {
-    //create sample cpp call for each element
-    let cpp = "";
-
-    //iterate over all elements with text type
-    let fontsCpp = "";
-    this.guiElements.forEach((element) => {
-      if (element.type === "text") {
-        fontsCpp += element.toCPP();
-      }
-    });
-    if (fontsCpp !== "") {
-      cpp += "/* fonts */\n" + fontsCpp;
-    }
-
-    //iterate over all elements with image type
-    let imagesCpp = "";
-    this.guiElements.forEach((element) => {
-      if (element.type === "image") {
-        imagesCpp += element.toCPP();
-      }
-    });
-    if (imagesCpp !== "") {
-      cpp += "/* images */\n" + imagesCpp;
-    }
-
-    //iterate over all elements with animation type
-    let animationsCpp = "";
-    this.guiElements.forEach((element) => {
-      if (element.type === "animation") {
-        animationsCpp += element.toCPP();
-      }
-    });
-    if (animationsCpp !== "") {
-      cpp += "/* animations */\n" + animationsCpp;
-    }
-    if (cpp === "") {
-      cpp =
-        "//!\\ Scene is empty, add elements to canvas to generate sample lambda code";
-    }
-    return cpp;
-  }
-
-  renderCodeContent() {
-    return html`
-      <div class="cpp-content">
-        <my-prism-code lang="cpp" code="${this.cppContent}"></my-prism-code>
-      </div>
-    `;
-  }
-  renderYamlContent() {
-    return html`
-      <div class="yaml-content">
-        <my-prism-code lang="yaml" code="${this.yamlContent}"></my-prism-code>
-      </div>
-    `;
-  }
-
   render() {
     return html`
       <dialog-add-text
@@ -663,29 +436,23 @@ export class MyApp extends LitElement {
       ></dialog-load-preset>
 
       <div class="container two-rows-row">
+        <!-- first row -->
+        <!-- HEADER -->
         <div class="first-row header">
-          <div class="title">GUI Helper for ESPHome</div>
-
-          <div class="github">
-            <a
-              target="new"
-              title="Goto github's repo"
-              href="https://github.com/docteurzoidberg/esphome-gui-builder"
-              ><img
-                class="githublogo"
-                src="githubw.png"
-                alt="github"
-                height="32"
-            /></a>
-          </div>
-          <div class="logo">
-            <img src="work-in-progress.png" height="32" />
-          </div>
+          <!-- TITLE -->
+          <div class="title">${this.title}</div>
+          <!-- GITHUB LINK -->
+          <my-github-link></my-github-link>
+          <!-- WIP LOGO -->
+          <my-wip-logo></my-wip-logo>
         </div>
+
         <div class="second-row">
           <div class="second-row-container three-cols-row">
+            <!-- left column -->
             <div class="col1">
               <div class="screen-settings-container">
+                <!-- SCREEN SETTINGS -->
                 <my-section class="settings">
                   <span slot="title">Screen settings</span>
                   <div class="sl-theme-dark">
@@ -725,131 +492,81 @@ export class MyApp extends LitElement {
                       SAVE PRESET
                     </sl-button>
                   </div>
-                  <div>
-                    <label for="screenpreset">Screen Preset</label>
-                    <span class="presetname"
-                      >${this.currentScreenPresetIndex! >= 0
-                        ? this.screenPresets[this.currentScreenPresetIndex!]
-                            .name
-                        : "Custom"}</span
-                    >
-
-                    <select
-                      id="screenpreset"
-                      @change="${this.handleScreenPresetsChanged}"
-                    >
-                      <option
-                        value="-1"
-                        ?selected=${this.currentScreenPresetIndex === -1}
-                      >
-                        Custom
-                      </option>
-                      ${this.screenPresets.map(
-                        (option, index) => html`
-                          <option
-                            value=${index}
-                            ?selected=${index === this.currentScreenPresetIndex}
-                          >
-                            ${option.name}
-                          </option>
-                        `
-                      )}
-                    </select>
-                  </div>
-                  <div>
-                    <label for="screenwidth">Display Width</label>
-                    <span>
-                      <sl-input
-                        id="screenwidth"
-                        size="small"
-                        type="number"
-                        min="1"
-                        step="1"
-                        .value="${this.screenWidth.toString()}"
-                        @sl-change="${this.handleScreenWidthChanged}"
-                      ></sl-input>
-                    </span>
-                  </div>
-                  <div>
-                    <label for="screenwidth">Display Height</label>
-                    <sl-input
-                      id="screenheight"
-                      size="small"
-                      type="number"
-                      min="1"
-                      step="1"
-                      .value="${this.screenHeight.toString()}"
-                      @sl-change="${this.handleScreenHeightChanged}"
-                    ></sl-input>
-                  </div>
-                  <div>
-                    <label for="showgrid">Show grid</label>
-
-                    <input
-                      id="showgrid"
-                      type="checkbox"
-                      .checked="${this.showGrid}"
-                      @change="${(e: Event) =>
-                        (this.showGrid = (
-                          e.target as HTMLInputElement
-                        ).checked)}"
-                    />
-                  </div>
-                  <div>
-                    <label for="gridwidth">Grid Width</label>
-                    <sl-input
-                      id="gridwidth"
-                      type="number"
-                      min="1"
-                      .value="${this.canvasGridWidth.toString()}"
-                      @sl-change="${(e: Event) => {
-                        this.canvasGridWidth = parseInt(
-                          (e.target as HTMLInputElement).value,
-                          10
-                        );
-                      }}"
-                    ></sl-input>
-                  </div>
-                  <div>
-                    <label for="displayscale">Display Scale</label>
-                    <sl-input
-                      id="displayscale"
-                      type="number"
-                      min="1"
-                      .value="${this.canvasScale.toString()}"
-                      @sl-change="${(e: Event) => {
-                        this.canvasScale = parseInt(
-                          (e.target as HTMLInputElement).value,
-                          10
-                        );
-                      }}"
-                    ></sl-input>
-                  </div>
-                  <div>
-                    <label for="guiscale">GUI Scale</label>
-                    <sl-input
-                      id="guiscale"
-                      type="number"
-                      min="1"
-                      min="5"
-                      .value="${this.toolboxScale.toString()}"
-                      @sl-change="${(e: Event) => {
-                        this.toolboxScale = parseInt(
-                          (e.target as HTMLInputElement).value,
-                          10
-                        );
-                      }}"
-                    ></sl-input>
-                  </div>
+                  <my-text-setting
+                    label="preset"
+                    value="${this.currentScreenPresetIndex! >= 0
+                      ? this.screenPresets[this.currentScreenPresetIndex!].name
+                      : "Custom"}"
+                  ></my-text-setting>
+                  <my-number-setting
+                    label="width"
+                    value="${this.screenWidth}"
+                    editable
+                    min="1"
+                    @change="${this.handleScreenWidthChanged}"
+                  ></my-number-setting>
+                  <my-number-setting
+                    label="height"
+                    value="${this.screenHeight}"
+                    editable
+                    min="1"
+                    @change="${this.handleScreenHeightChanged}"
+                  ></my-number-setting>
+                  <my-boolean-setting
+                    label="show grid"
+                    value="${this.showGrid}"
+                    editable
+                    @change="${(e: CustomEvent) =>
+                      (this.showGrid = e.detail as boolean)}"
+                  ></my-boolean-setting>
+                  <my-number-setting
+                    label="grid size"
+                    value="${this.canvasGridWidth}"
+                    editable
+                    min="1"
+                    @change="${(e: Event) => {
+                      this.canvasGridWidth = parseInt(
+                        (e.target as HTMLInputElement).value,
+                        10
+                      );
+                    }}"
+                  ></my-number-setting>
+                  <my-number-setting
+                    label="scale"
+                    value="${this.canvasScale}"
+                    editable
+                    @change="${(e: Event) => {
+                      this.canvasScale = parseInt(
+                        (e.target as HTMLInputElement).value,
+                        10
+                      );
+                    }}"
+                  ></my-number-setting>
+                  <my-number-setting
+                    label="gui scale"
+                    value="${this.toolboxScale}"
+                    min="1"
+                    min="5"
+                    editable
+                    @change="${(e: Event) => {
+                      this.toolboxScale = parseInt(
+                        (e.target as HTMLInputElement).value,
+                        10
+                      );
+                    }}"
+                  ></my-number-setting>
                 </my-section>
               </div>
+              <!-- ELEMENT SETTINGS -->
               <div class="element-settings-container">
                 <my-element-settings
                   .selectedElement="${this.selectedElement}"
                 ></my-element-settings>
               </div>
             </div>
+            <!-- second column -->
             <div class="col2 second-col-container two-rows-col">
+              <!-- CANVAS -->
               <div class="row1 screen-container">
                 <my-canvas-display
                   .displayWidth="${this.screenWidth}"
@@ -866,6 +583,7 @@ export class MyApp extends LitElement {
                   @element-dropped="${this.handleElementDropped}"
                 ></my-canvas-display>
               </div>
+              <!-- TABS -->
               <div class="row2 toolbox-container">
                 <my-tabs>
                   <h2 slot="tab">
@@ -873,6 +591,7 @@ export class MyApp extends LitElement {
                     TOOLBOX
                   </h2>
                   <section slot="panel">
+                    <!--TOOLBOX -->
                     <my-toolbox
                       .displayScale="${this.toolboxScale}"
                       @toolbox-loaded="${this.handleToolboxLoaded}"
@@ -882,19 +601,29 @@ export class MyApp extends LitElement {
                     <sl-icon library="boxicons" name="bx-code"></sl-icon>YAML
                   </h2>
                   <section slot="panel">
-                    //TODO: yaml content ${this.renderYamlContent()}
+                    <!-- YAML CODE OUTPUT -->
+                    <my-prism-code
+                      lang="yaml"
+                      code="${this.yamlContent}"
+                    ></my-prism-code>
                   </section>
                   <h2 slot="tab">
                     <sl-icon library="boxicons" name="bx-code-curly"></sl-icon>
                     CODE
                   </h2>
                   <section slot="panel">
-                    //TODO: code exemple ${this.renderCodeContent()}
+                    <!-- CPP CODE OUTPUT -->
+                    <my-prism-code
+                      lang="cpp"
+                      code="${this.cppContent}"
+                    ></my-prism-code>
                   </section>
                 </my-tabs>
               </div>
             </div>
+            <!-- third column -->
             <div class="col3">
+              <!-- ELEMENT LIST -->
               <div class="element-list-container">
                 <my-element-list
                   .guiElements="${this.guiElements}"
@@ -909,6 +638,108 @@ export class MyApp extends LitElement {
       </div>
     `;
   }
+  static styles = [
+    css`
+      :host {
+        display: block;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: "Teko";
+        font-size: 1.5em;
+      }
+      .header {
+        text-align: left;
+        font-size: 2em;
+        margin: 0;
+        padding: 0px;
+        //line-height: 80px;
+        vertical-align: middle;
+      }
+      .title {
+        display: inline-block;
+        font-family: "Wendy";
+        margin-left: 10px;
+      }
+      .screen-container {
+        margin: 20px;
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .second-row {
+        flex-grow: 1;
+      }
+      .second-row-container {
+        display: flex;
+        height: 100%;
+      }
+      .col1 {
+        flex-grow: 0;
+        align-self: auto;
+        min-width: 250px;
+      }
+      .col2 {
+        flex-grow: 1;
+        align-self: auto;
+      }
+      .second-col-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .second-col-container .row1 {
+        flex-grow: auto;
+        align-self: auto;
+      }
+      .second-col-container .row2 {
+        flex-grow: 0;
+        align-self: stretch;
+        height: 30vh;
+      }
+      .screen-settings-container label {
+        width: 150px;
+        display: inline-block;
+      }
+      .screen-settings-container input[type="number"] {
+        width: 60px;
+        display: inline-block;
+      }
+      @media (prefers-color-scheme: dark) {
+        .header {
+          background-color: #555555;
+        }
+        .col1,
+        .col3 {
+          background-color: #222222;
+        }
+      }
+      #screenpreset {
+        display: none;
+      }
+      .presetname {
+        color: lightgray;
+        font-size: 0.8em;
+      }
+      #screenwidth,
+      #screenheight,
+      #gridwidth,
+      #guiscale,
+      #displayscale {
+        width: 60px;
+        display: inline-block;
+        color: lightgray;
+      }
+      sl-button.action::part(base) {
+        font-family: "Teko";
+        font-size: 0.8em;
+        font-weight: normal;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -3,6 +3,48 @@ import { customElement, property } from "lit/decorators.js";
 
 @customElement("my-dialog")
 export class MyDialog extends LitElement {
+  @property()
+  show = false;
+
+  open(): void {
+    this.show = true;
+  }
+
+  close(): void {
+    this.show = false;
+  }
+
+  render() {
+    return html`
+      ${this.show
+        ? html`
+            <div class="dialog">
+              <div class="dialog__content">
+                <header>
+                  <slot name="header"></slot>
+                </header>
+                <main>
+                  <slot name="main"></slot>
+                </main>
+                <footer>
+                  <slot name="footer"></slot>
+                </footer>
+                <div
+                  class="dialog__close-btn"
+                  @click="${() => {
+                    this.close();
+                    this.dispatchEvent(
+                      new CustomEvent("close", { detail: null })
+                    );
+                  }}"
+                ></div>
+              </div>
+            </div>
+            <div class="overlay"></div>
+          `
+        : ""}
+    `;
+  }
   static styles = css`
     .overlay {
       top: 0;
@@ -29,23 +71,26 @@ export class MyDialog extends LitElement {
       align-items: center;
       justify-content: center;
     }
+
     .dialog__content {
       position: relative;
       max-width: 520px;
       margin-bottom: 5%;
-      background-color: white;
+      //background-color: white;
       padding: 30px;
-      color: #344a5e;
+      background-color: #1a242c;
       border-radius: 5px;
       box-shadow: 0 30px 30px 0 rgba(52, 74, 94, 0.8);
     }
     .dialog h2 {
       margin: 0;
       margin-bottom: 10px;
+      border-bottom: solid 2px #0279c0;
     }
+
     .dialog__ok-btn {
       cursor: pointer;
-      height: 30px;
+      height: 34px;
       padding: 6px 15px;
       margin-right: 15px;
       min-width: 60px;
@@ -56,7 +101,7 @@ export class MyDialog extends LitElement {
       border-style: solid;
       border-radius: 3px;
       box-shadow: 0 1px 2px 0 rgba(64, 61, 4, 0.44);
-      font-size: 14px;
+      font-size: 18px;
       color: white;
       border-color: transparent;
       background-color: #0279c0;
@@ -67,8 +112,7 @@ export class MyDialog extends LitElement {
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
-      font-family: -apple-system, BlinkMacSystemFont, Ubuntu, "Segoe UI", Roboto,
-        Oxygen, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-size: 18px;
     }
     .dialog__cancel-btn:hover {
       text-decoration: underline;
@@ -101,68 +145,29 @@ export class MyDialog extends LitElement {
     .dialog__close-btn::after {
       transform: rotate(-45deg);
     }
+    main {
+      margin-bottom: 15px;
+    }
+    .warning {
+      color: lightgray;
+      font-size: 14pt;
+    }
+    .warn {
+      color: red;
+      font-family: Wendy;
+      font-size: 18pt;
+      font-weight: bold;
+    }
+    .presetname {
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    .presetinfo {
+      color: lightgray;
+    }
+    h2,
+    button {
+      font-family: Wendy;
+    }
   `;
-
-  @property()
-  header = "";
-
-  @property()
-  show = false;
-
-  private _close(detail: string): void {
-    // Fire a custom event for others to listen to
-    this.dispatchEvent(new CustomEvent("close", { detail }));
-  }
-
-  open(): void {
-    this.show = true;
-  }
-
-  handleClick(): void {
-    this.show = false;
-    this._close("ok");
-  }
-
-  close(result: string): void {
-    this.show = false;
-    this._close(result);
-  }
-
-  render() {
-    return html`
-      ${this.show
-        ? html`
-            <div class="dialog">
-              <div class="dialog__content">
-                <header>
-                  <h2>${this.header}</h2>
-                </header>
-                <main>
-                  <slot></slot>
-                </main>
-                <footer>
-                  <button
-                    class="dialog__ok-btn"
-                    @click="${() => this.handleClick()}"
-                  >
-                    OK
-                  </button>
-                  <button
-                    class="dialog__cancel-btn"
-                    @click="${() => this.close("cancel")}"
-                  >
-                    CANCEL
-                  </button>
-                </footer>
-                <div
-                  class="dialog__close-btn"
-                  @click="${() => this.close("close")}"
-                ></div>
-              </div>
-            </div>
-            <div class="overlay"></div>
-          `
-        : ""}
-    `;
-  }
 }

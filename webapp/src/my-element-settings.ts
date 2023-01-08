@@ -1,9 +1,13 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { GuiElement } from "classes/gui/GuiElement";
 
 import "my-section";
+import "my-text-setting";
+import "my-number-setting";
+
+import { FontGuiElement } from "classes/gui/FontGuiElement";
 
 @customElement("my-element-settings")
 export class MyElementSettings extends LitElement {
@@ -51,58 +55,58 @@ export class MyElementSettings extends LitElement {
       <my-section>
         <span slot="title">Element settings</span>
         <div class="elem-settings">
-          <div>
-            <label>id:</label>
-            <span class="textspan">${this.selectedElement.esphomeId}</span>
-          </div>
-          <div>
-            <label>type:</label>
-            <span class="textspan">${this.selectedElement.type}</span>
-          </div>
-          <div>
-            <label>name:</label>
-            <span class="textspan">${this.selectedElement.name}</span>
-          </div>
-          <div>
-            <label for="selectedElementX">x: </label>
-            <span class="numberspan">${this.selectedElement.x}</span>
-            <input
-              type="number"
-              id="selectedElementX"
-              .value="${this.selectedElement.x.toString()}"
-              step="1"
-              @change="${this.updateElementX}"
-            />
-          </div>
-          <div>
-            <label for="selectedElementY">y:</label>
-            <span class="numberspan">${this.selectedElement.y}</span>
-            <input
-              type="number"
-              id="selectedElementY"
-              .value="${this.selectedElement.y.toString()}"
-              step="1"
-              @change="${this.updateElementY}"
-            />
-          </div>
-          <div>
-            <label for="zorder">zorder:</label>
-            <span class="numberspan">${this.selectedElement.zorder}</span>
-            <input
-              type="number"
-              id="zorder"
-              .value="${this.selectedElement.zorder.toString()}"
-              step="1"
-              @change="${this.updateElementZ}"
-            />
-          </div>
-        </div>
-      </my-section>
-      <my-section>
-        <span slot="title">Element parameters</span>
-        <div class="elem-params">
-          <div>//todo: params depends on element's type</div>
-          <div>params: ${this.selectedElement.params}</div>
+          <!-- ELEMENT TYPE -->
+          <my-text-setting
+            label="type"
+            value="${this.selectedElement.type}"
+          ></my-text-setting>
+          <!-- ELEMENT NAME -->
+          <my-text-setting
+            label="name"
+            value="${this.selectedElement.name}"
+          ></my-text-setting>
+          <!-- ELEMENT ESPHOMEID -->
+          <my-text-setting
+            label="id"
+            value="${this.selectedElement.esphomeId}"
+          ></my-text-setting>
+          <!-- ELEMENT X -->
+          <my-number-setting
+            label="X"
+            value="${this.selectedElement.x}"
+            editable
+            @change="${this.updateElementX}"
+          ></my-number-setting>
+          <!-- ELEMENT Y -->
+          <my-number-setting
+            label="Y"
+            value="${this.selectedElement.y}"
+            editable
+            @change="${this.updateElementY}"
+          ></my-number-setting>
+          <!-- ELEMENT Z -->
+          <my-number-setting
+            label="zorder"
+            value="${this.selectedElement.zorder}"
+            editable
+            min="0"
+            @change="${this.updateElementZ}"
+          ></my-number-setting>
+          ${this.selectedElement instanceof FontGuiElement
+            ? html`
+                <!-- FONTGUIELEMENT TEXT -->
+                <my-text-setting
+                  label="text"
+                  value="${(this.selectedElement as FontGuiElement).text}"
+                  editable
+                ></my-text-setting>
+                <!-- FONTGUIELEMENT COLOR -->
+                <div>
+                  <label>color:</label>
+                  <sl-color-picker size="small"></sl-color-picker>
+                </div>
+              `
+            : nothing}
         </div>
       </my-section>
     `;
@@ -115,7 +119,6 @@ export class MyElementSettings extends LitElement {
     h2 {
       text-decoration: underline;
     }
-
     label {
       width: 75px;
       display: inline-block;
@@ -123,6 +126,8 @@ export class MyElementSettings extends LitElement {
     .textspan {
       display: inline-block;
       width: 135px;
+      color: lightgray;
+      font-family: Wendy;
     }
     .numberspan {
       display: inline-block;

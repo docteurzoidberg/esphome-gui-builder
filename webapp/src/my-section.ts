@@ -1,19 +1,28 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("my-section")
 export class MySection extends LitElement {
   @property()
-  isOpen: boolean = true;
+  open: boolean = true;
 
   headerClick() {
-    this.isOpen = !this.isOpen;
+    this.open = !this.open;
     this.requestUpdate();
   }
 
   renderExpandCollapse() {
-    if (this.isOpen) return html`<span @click="${this.headerClick}">-</span>`;
+    if (this.open) return html`<span @click="${this.headerClick}">-</span>`;
     else return html`<span @click="${this.headerClick}">+</span>`;
+  }
+
+  protected updated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    super.updated(_changedProperties);
+    if (_changedProperties.has("open")) {
+      this.requestUpdate();
+    }
   }
 
   render() {
@@ -22,7 +31,7 @@ export class MySection extends LitElement {
         <slot name="title" @click="${this.headerClick}"></slot>
         ${this.renderExpandCollapse()}
       </h3>
-      <section id="container" is-visible="${this.isOpen}">
+      <section id="container" is-visible="${this.open}">
         <slot></slot>
       </section>
     `;
