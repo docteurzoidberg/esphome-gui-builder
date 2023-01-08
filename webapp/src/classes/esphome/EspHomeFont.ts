@@ -9,6 +9,7 @@ export class EspHomeFont implements EspHomeFontJSON {
   id: string; //esphome id
   originalData: EspHomeFontJSON;
   name: string;
+  path: string;
   height: number;
   glyphstr: string;
   glyphs: EspHomeFontGlyph[];
@@ -115,6 +116,7 @@ export class EspHomeFont implements EspHomeFontJSON {
     this.id = fontjson.id;
     this.originalData = fontjson;
     this.name = fontjson.name;
+    this.path = fontjson.path;
     this.height = fontjson.height;
     this.glyphstr = fontjson.glyphstr;
     this.glyphs = fontjson.glyphs;

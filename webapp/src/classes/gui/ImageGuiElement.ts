@@ -33,11 +33,23 @@ export class ImageGuiElement extends GuiElement {
     img.src = this.image.dataurl;
     ctx.drawImage(img, coords.x, coords.y);
   }
+
+  toYAML(): string {
+    const yaml = `  #${this.name}
+  - id: "${this.esphomeId}"
+    file: "${this.image.path}"
+    width: ${this.image.width}
+    height: ${this.image.height}
+    color_depth: RGB24\n`;
+    return yaml;
+  }
+  /*
   toYAML(): string {
     return '\t- id: "' + this.esphomeId + '"\n';
   }
+  */
   toCPP(): string {
-    return "//not implemented, id:" + this.esphomeId + "\n";
+    return "//TODO: draw image, id:" + this.esphomeId + "\n";
   }
   toGuiElementJSON(): ImageGuiElementJSON {
     return {

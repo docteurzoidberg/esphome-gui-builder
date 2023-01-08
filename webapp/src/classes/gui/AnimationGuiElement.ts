@@ -35,11 +35,22 @@ export class AnimationGuiElement extends GuiElement {
     if (!image) return;
     ctx.putImageData(image, coords.x, coords.y);
   }
+
   toYAML(): string {
-    return '\t- id: "' + this.esphomeId + '"\n';
+    const yaml = `  #${this.name}
+  - id: "${this.esphomeId}"
+    file: "${this.animation.path}"
+    width: ${this.animation.width}
+    height: ${this.animation.height}`;
+    return yaml;
   }
+
   toCPP(): string {
-    return "//not implemented, id:" + this.esphomeId + "\n";
+    return (
+      "//TODO: draw animation frame and calling nextframe, id:" +
+      this.esphomeId +
+      "\n"
+    );
   }
   toGuiElementJSON(): AnimationGuiElementJSON {
     return {

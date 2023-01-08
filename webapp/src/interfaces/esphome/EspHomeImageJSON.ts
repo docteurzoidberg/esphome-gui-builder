@@ -3,5 +3,6 @@ export interface EspHomeImageJSON {
   width: number;
   height: number;
   name: string;
+  path: string;
   dataurl: string;
 }

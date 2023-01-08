@@ -6,6 +6,7 @@ export class EspHomeImage implements EspHomeImageJSON {
   width: number;
   height: number;
   name: string;
+  path: string;
   dataurl: string;
   constructor(imagejson: EspHomeImageJSON) {
     this.id = imagejson.id;
@@ -13,6 +14,7 @@ export class EspHomeImage implements EspHomeImageJSON {
     this.width = imagejson.width;
     this.height = imagejson.height;
     this.name = imagejson.name;
+    this.path = imagejson.path;
     this.dataurl = imagejson.dataurl;
   }
 }

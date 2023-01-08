@@ -43,11 +43,16 @@ export class FontGuiElement extends GuiElement {
   }
 
   toYAML(): string {
-    return '\t- id: "' + this.esphomeId + '"\n';
+    const yaml = `  #${this.name}
+  - id: "${this.esphomeId}"
+    file: "${this.font.path}"
+    size: ${this.font.height}
+    glyphs: "${this.font.glyphstr.replace(/"/g, '\\"')}"\n`;
+    return yaml;
   }
 
   toCPP(): string {
-    return "//not implemented, id:" + this.esphomeId + "\n";
+    return "//TODO: print text, id:" + this.esphomeId + "\n";
   }
 
   toGuiElementJSON(): FontGuiElementJSON {

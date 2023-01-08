@@ -6,6 +6,7 @@ export class EspHomeAnimation implements EspHomeAnimationJSON {
 
   id: string; //esphome id
   name: string;
+  path: string;
   frames: number;
   data: number[];
   dataurl: string;
@@ -80,6 +81,7 @@ export class EspHomeAnimation implements EspHomeAnimationJSON {
     this.originalData = animationjson;
     this.id = animationjson.id;
     this.name = animationjson.name;
+    this.path = animationjson.path;
     this.frames = animationjson.frames;
     this.dataurl = animationjson.dataurl;
     this.data = animationjson.data;
