@@ -4,8 +4,8 @@ import { customElement, property } from "lit/decorators.js";
 import { GuiElement } from "classes/gui/GuiElement";
 
 import "my-section";
-import "my-text-setting";
-import "my-number-setting";
+import "setting-text";
+import "setting-number";
 
 import { FontGuiElement } from "classes/gui/FontGuiElement";
 

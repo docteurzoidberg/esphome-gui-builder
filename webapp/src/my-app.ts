@@ -1,6 +1,8 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
+import { COMMIT_ID, BRANCH } from "vite:my-plugin";
+
 //Shoelace
 import "@shoelace-style/shoelace/dist/components/icon/icon";
 import "@shoelace-style/shoelace/dist/components/input/input";
@@ -24,9 +26,6 @@ registerIconLibrary("boxicons", {
 setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
 //-
 
-import "my-number-setting";
-import "my-text-setting";
-import "my-boolean-setting";
 import "my-github-link";
 import "my-wip-logo";
 import "my-element-list";
@@ -36,6 +35,11 @@ import "my-toolbox";
 import "my-section";
 import "my-tabs";
 import "my-prism-code";
+
+import "setting-text";
+import "setting-number";
+import "setting-boolean";
+
 import "dialog-load-preset";
 import "dialog-add-text";
 
@@ -440,7 +444,7 @@ export class MyApp extends LitElement {
         <!-- HEADER -->
         <div class="first-row header">
           <!-- TITLE -->
-          <div class="title">${this.title}</div>
+          <div class="title">${this.title} (${BRANCH + ", " + COMMIT_ID})</div>
           <!-- GITHUB LINK -->
           <my-github-link></my-github-link>
           <!-- WIP LOGO -->
