@@ -47,6 +47,7 @@ export class StorageManager {
     const fontJson: EspHomeFontJSON = {
       id: "font_8bithud",
       name: "data/fonts/8-bit-hud.ttf",
+      path: "data/fonts/8-bit-hud.ttf",
       height: 5,
       glyphstr:
         ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz\u00b0',
@@ -791,6 +792,7 @@ export class StorageManager {
       image: {
         id: "icon1",
         name: "data/images/1.PNG",
+        path: "data/images/1.PNG",
         width: 16,
         height: 16,
         dataurl:
@@ -806,6 +808,7 @@ export class StorageManager {
       image: {
         id: "icon2",
         name: "data/images/2.PNG",
+        path: "data/images/2.PNG",
         width: 16,
         height: 16,
         dataurl:
@@ -821,6 +824,7 @@ export class StorageManager {
       animation: {
         id: "anim_boot_aliens_16x16",
         name: "boot-aliens-16x16",
+        path: "data/animations/boot-aliens-16x16.gif",
         width: 14,
         height: 12,
         frames: 16,
