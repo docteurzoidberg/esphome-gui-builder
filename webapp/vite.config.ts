@@ -2,9 +2,17 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import copy from "rollup-plugin-copy";
 import { resolve } from "path";
-
+import GitRevision from "./vite-plugin-git-revision";
+import myVitePlugin from "./my-vite-plugin";
 export default defineConfig({
   plugins: [
+    myVitePlugin({}),
+    /*
+    GitRevision({
+      lightweightTags: false,
+      branch: true,
+    }),
+    */
     tsconfigPaths(),
     copy({
       copyOnce: true,
