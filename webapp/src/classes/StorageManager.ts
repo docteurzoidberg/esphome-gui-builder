@@ -13,10 +13,12 @@ import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { Settings } from "types/Settings";
 import { ScreenPreset } from "types/ScreenPreset";
 import { SceneStorageData } from "types/SceneStorageData";
+import { SettingsStorageData } from "types/SettingsStorageData";
 
 export class StorageManager {
   static sceneVersion: string = "1.0.0";
   static presetsVersion: string = "1.0.0";
+  static settingsVersion: string = "1.0.0";
 
   //default, hardcoded screen presets
   static getDefaultScreenPreset(): ScreenPreset {
@@ -1302,7 +1304,7 @@ export class StorageManager {
   //load gui elements
   static async loadScene(): Promise<GuiElement[]> {
     const localStorageData = localStorage.getItem("scene");
-    const returnPromise = new Promise<GuiElement[]>((resolve, reject) => {
+    const returnPromise = new Promise<GuiElement[]>((resolve, _reject) => {
       //create local data if no data present
       if (!localStorageData) {
         console.info("No data in localstorage, loading hardcoded scene");
@@ -1340,9 +1342,9 @@ export class StorageManager {
         });
         resolve(newGuiElements);
       } catch (e) {
-        console.error("Data loading error, loading hardcoded scene");
-        console.error(e);
-        console.log(localStorageData);
+        console.warn("Data loading error, loading hardcoded scene");
+        //console.error(e);
+        //console.log(localStorageData);
         const guiElements = StorageManager.getDefaultScene();
         StorageManager.saveScene(guiElements);
         return resolve(guiElements);
@@ -1373,12 +1375,29 @@ export class StorageManager {
       StorageManager.saveSettings(settings);
       return settings;
     }
-    const parsedData: Settings = JSON.parse(localStorageData);
-    return parsedData;
+    try {
+      const parsedData: SettingsStorageData = JSON.parse(localStorageData);
+      if (parsedData.version != StorageManager.settingsVersion) {
+        console.log("Settings data version mismatch, loading default settings");
+        const settings = StorageManager.getDefaultSettings();
+        StorageManager.saveSettings(settings);
+        return settings;
+      }
+      return parsedData.settings;
+    } catch (error) {
+      console.log("Error loading settings, loading default settings");
+      const settings = StorageManager.getDefaultSettings();
+      StorageManager.saveSettings(settings);
+      return settings;
+    }
   }
 
   //save screen settings, gui scale, etc
   static async saveSettings(settings: Settings) {
-    localStorage.setItem("settings", JSON.stringify(settings));
+    const settingsData: SettingsStorageData = {
+      version: StorageManager.settingsVersion,
+      settings: settings,
+    };
+    localStorage.setItem("settings", JSON.stringify(settingsData));
   }
 }

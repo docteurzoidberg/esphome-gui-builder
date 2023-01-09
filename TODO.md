@@ -10,6 +10,8 @@
 
 ## todos for the first real release
 
+- [ ] handle text alignments
+- [ ] drawing elements (line, rectangle, circle)
 - [ ] import other asset library from json
 - [ ] load/save current screenn
 - [ ] add user screen presets (load /save them from localstorage)
