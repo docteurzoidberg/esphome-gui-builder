@@ -12,8 +12,12 @@ import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 
 import { Settings } from "types/Settings";
 import { ScreenPreset } from "types/ScreenPreset";
+import { SceneStorageData } from "types/SceneStorageData";
 
 export class StorageManager {
+  static sceneVersion: string = "1.0.0";
+  static presetsVersion: string = "1.0.0";
+
   //default, hardcoded screen presets
   static getDefaultScreenPreset(): ScreenPreset {
     return {
@@ -1298,26 +1302,51 @@ export class StorageManager {
   //load gui elements
   static async loadScene(): Promise<GuiElement[]> {
     const localStorageData = localStorage.getItem("scene");
-    const returnPromise = new Promise<GuiElement[]>((resolve, _reject) => {
+    const returnPromise = new Promise<GuiElement[]>((resolve, reject) => {
+      //create local data if no data present
       if (!localStorageData) {
-        console.log("No data in localstorage, loading hardcoded scene");
+        console.info("No data in localstorage, loading hardcoded scene");
         const guiElements = StorageManager.getDefaultScene();
         StorageManager.saveScene(guiElements);
         return resolve(guiElements);
       }
-      const parsedData: GuiElementJSON[] = JSON.parse(localStorageData);
-      const guiElements: GuiElement[] = [];
-      parsedData.forEach((elem) => {
-        if (elem.type == "image")
-          guiElements.push(new ImageGuiElement(elem as ImageGuiElementJSON));
-        else if (elem.type == "animation")
-          guiElements.push(
-            new AnimationGuiElement(elem as AnimationGuiElementJSON)
-          );
-        else if (elem.type == "text")
-          guiElements.push(new FontGuiElement(elem as FontGuiElementJSON));
-      });
-      resolve(guiElements);
+
+      try {
+        const parsedData: SceneStorageData = JSON.parse(localStorageData);
+
+        //invalidate localStorageData if version is different
+        //TODO: ask user to download old data?
+        if (parsedData.version !== StorageManager.sceneVersion) {
+          console.warn("Scene data version mismatch, loading hardcoded scene");
+          const guiElements = StorageManager.getDefaultScene();
+          StorageManager.saveScene(guiElements);
+          return resolve(guiElements);
+        }
+
+        //construct scene
+        const newGuiElements: GuiElement[] = [];
+        parsedData.elements.forEach((elem) => {
+          if (elem.type == "image") {
+            newGuiElements.push(
+              new ImageGuiElement(elem as ImageGuiElementJSON)
+            );
+          } else if (elem.type == "animation") {
+            newGuiElements.push(
+              new AnimationGuiElement(elem as AnimationGuiElementJSON)
+            );
+          } else if (elem.type == "text") {
+            newGuiElements.push(new FontGuiElement(elem as FontGuiElementJSON));
+          }
+        });
+        resolve(newGuiElements);
+      } catch (e) {
+        console.error("Data loading error, loading hardcoded scene");
+        console.error(e);
+        console.log(localStorageData);
+        const guiElements = StorageManager.getDefaultScene();
+        StorageManager.saveScene(guiElements);
+        return resolve(guiElements);
+      }
     });
     return returnPromise;
   }
@@ -1328,7 +1357,11 @@ export class StorageManager {
     guiElements.forEach((elem) => {
       jsonElements.push(elem.toGuiElementJSON());
     });
-    localStorage.setItem("scene", JSON.stringify(jsonElements));
+    const sceneData: SceneStorageData = {
+      version: StorageManager.sceneVersion,
+      elements: jsonElements,
+    };
+    localStorage.setItem("scene", JSON.stringify(sceneData));
   }
 
   //load screen settings, gui scale, etc

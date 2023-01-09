@@ -49,13 +49,15 @@ import { DialogAddText } from "dialog-add-text";
 import { ScreenPreset } from "types/ScreenPreset";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
-import { StorageManager } from "classes/gui/StorageManager";
-import { YAMLGenerator } from "classes/gui/YAMLGenerator";
-import { CPPLGenerator } from "classes/gui/CPPGenerator";
+import { StorageManager } from "classes/StorageManager";
+import { YAMLGenerator } from "classes/YAMLGenerator";
+import { CPPLGenerator } from "classes/CPPGenerator";
+
+import { EspHomeFont } from "classes/esphome/EspHomeFont";
+
 import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 import { AnimationGuiElement } from "classes/gui/AnimationGuiElement";
-import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { FontGuiElement } from "classes/gui/FontGuiElement";
 
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";

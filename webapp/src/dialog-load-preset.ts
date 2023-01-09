@@ -1,4 +1,4 @@
-import { StorageManager } from "classes/gui/StorageManager";
+import { StorageManager } from "classes/StorageManager";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ScreenPreset } from "types/ScreenPreset";

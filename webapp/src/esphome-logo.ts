@@ -3,10 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 @customElement("esphome-logo")
 export default class ESPHomeLogo extends LitElement {
-  static styles = css`
-    :root {
-    }
-  `;
+  static styles = css``;
 
   render() {
     return html`<svg

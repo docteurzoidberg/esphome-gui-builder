@@ -1,4 +1,4 @@
-import { GuiElement } from "./GuiElement";
+import { GuiElement } from "classes/gui/GuiElement";
 
 export class YAMLGenerator {
   static generateYaml(elements: GuiElement[]) {

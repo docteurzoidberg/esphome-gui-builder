@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "lit";
+import { html, css, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("my-dialog")
@@ -15,35 +15,33 @@ export class MyDialog extends LitElement {
   }
 
   render() {
-    return html`
-      ${this.show
-        ? html`
-            <div class="dialog">
-              <div class="dialog__content">
-                <header>
-                  <slot name="header"></slot>
-                </header>
-                <main>
-                  <slot name="main"></slot>
-                </main>
-                <footer>
-                  <slot name="footer"></slot>
-                </footer>
-                <div
-                  class="dialog__close-btn"
-                  @click="${() => {
-                    this.close();
-                    this.dispatchEvent(
-                      new CustomEvent("close", { detail: null })
-                    );
-                  }}"
-                ></div>
-              </div>
+    return this.show
+      ? html`
+          <div class="dialog">
+            <div class="dialog__content">
+              <header>
+                <slot name="header"></slot>
+              </header>
+              <main>
+                <slot name="main"></slot>
+              </main>
+              <footer>
+                <slot name="footer"></slot>
+              </footer>
+              <div
+                class="dialog__close-btn"
+                @click="${() => {
+                  this.close();
+                  this.dispatchEvent(
+                    new CustomEvent("close", { detail: null })
+                  );
+                }}"
+              ></div>
             </div>
-            <div class="overlay"></div>
-          `
-        : ""}
-    `;
+          </div>
+          <div class="overlay"></div>
+        `
+      : nothing;
   }
   static styles = css`
     .overlay {
