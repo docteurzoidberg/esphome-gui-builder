@@ -42,7 +42,7 @@ export class ImageGuiElement extends GuiElement {
     file: "${this.image.path}"
     width: ${this.image.width}
     height: ${this.image.height}
-    color_depth: RGB24\n`;
+    type: ${this.image.type}\n`;
     return yaml;
   }
   /*

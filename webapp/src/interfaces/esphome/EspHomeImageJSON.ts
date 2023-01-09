@@ -4,5 +4,6 @@ export interface EspHomeImageJSON {
   height: number;
   name: string;
   path: string;
+  type?: string;
   dataurl: string;
 }

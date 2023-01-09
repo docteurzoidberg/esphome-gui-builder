@@ -8,6 +8,7 @@ export class EspHomeImage implements EspHomeImageJSON {
   name: string;
   path: string;
   dataurl: string;
+  type?: string;
   constructor(imagejson: EspHomeImageJSON) {
     this.id = imagejson.id;
     this.originalData = imagejson;
@@ -16,5 +17,6 @@ export class EspHomeImage implements EspHomeImageJSON {
     this.name = imagejson.name;
     this.path = imagejson.path;
     this.dataurl = imagejson.dataurl;
+    this.type = imagejson.type || "RGB24";
   }
 }

@@ -31,7 +31,7 @@ export class YAMLGenerator {
       fontsYaml += element.toYAML();
     });
     if (fontsYaml !== "") {
-      yaml += "fonts:\n" + fontsYaml;
+      yaml += "font:\n" + fontsYaml;
     }
 
     //iterate over all elements with image type
@@ -40,7 +40,7 @@ export class YAMLGenerator {
       imagesYaml += element.toYAML();
     });
     if (imagesYaml !== "") {
-      yaml += "images:\n" + imagesYaml;
+      yaml += "image:\n" + imagesYaml;
     }
 
     //iterate over all elements with animation type
@@ -49,7 +49,7 @@ export class YAMLGenerator {
       animationsYaml += element.toYAML();
     });
     if (animationsYaml !== "") {
-      yaml += "animations:\n" + animationsYaml;
+      yaml += "animation:\n" + animationsYaml;
     }
 
     if (yaml === "") {
