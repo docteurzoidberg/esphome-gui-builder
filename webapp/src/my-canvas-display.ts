@@ -14,14 +14,27 @@ import { Size } from "types/Size";
 import { Rect } from "types/Rect";
 import { Coord } from "types/Coord";
 import { ElementSelectedEvent } from "types/Events";
+import { RGB24 } from "types/RGB";
 
-const imageScale = 5;
+const imageScale = 4;
 const selectedLineWidth = 2;
 const handleSize = 8;
-const handleColor = {
+
+const selectedLineColor: RGB24 = {
   r: 39,
   g: 186,
   b: 253,
+};
+
+const handleStrokeColor: RGB24 = {
+  r: 39,
+  g: 186,
+  b: 253,
+};
+const handleFillColor: RGB24 = {
+  r: 255,
+  g: 255,
+  b: 255,
 };
 
 @customElement("my-canvas-display")
@@ -243,15 +256,42 @@ export class MyCanvasDisplay extends LitElement {
     const elemWidth = guielement.getWidth();
     const elemHeight = guielement.getHeight();
     const elemScaledWidth =
-      (elemWidth + 1) * canvasscale + gridwidth * elemWidth;
+      elemWidth * canvasscale + gridwidth * (elemWidth - 1);
     const elemScaledHeight =
-      (elemHeight + 1) * canvasscale + gridwidth * elemHeight;
+      elemHeight * canvasscale + gridwidth * (elemHeight - 1);
     return {
       x: x * canvasscale + gridwidth * (x + 1),
       y: y * canvasscale + gridwidth * (y + 1),
       w: elemScaledWidth,
       h: elemScaledHeight,
     };
+  }
+
+  _drawHandle(ctx: CanvasRenderingContext2D, rect: Rect) {
+    //handle stroke color
+    ctx.fillStyle =
+      "rgba(" +
+      handleStrokeColor.r +
+      "," +
+      handleStrokeColor.g +
+      "," +
+      handleStrokeColor.b +
+      ", 1)";
+
+    //blue rectangle behind
+    ctx.fillRect(rect.x, rect.y, handleSize, handleSize);
+
+    //smaller white rectangle in front of larger one
+    ctx.fillStyle =
+      "rgba(" +
+      handleFillColor.r +
+      "," +
+      handleFillColor.g +
+      "," +
+      handleFillColor.b +
+      ", 1)";
+
+    ctx.fillRect(rect.x + 1, rect.y + 1, handleSize - 2, handleSize - 2);
   }
 
   _drawSelectedElementRectBorder(ctx: CanvasRenderingContext2D) {
@@ -264,14 +304,6 @@ export class MyCanvasDisplay extends LitElement {
       this.showGrid ? this.canvasGridWidth : 0
     );
 
-    //const selectedLineWidth = 2 * this.canvasScale;
-    //const selectedLineWidth = 2;
-    const selectedLineColor = {
-      r: 39,
-      g: 186,
-      b: 253,
-    };
-
     ctx.strokeStyle =
       "rgba(" +
       selectedLineColor.r +
@@ -282,54 +314,18 @@ export class MyCanvasDisplay extends LitElement {
       ", 1)";
 
     ctx.lineWidth = selectedLineWidth;
-    ctx.strokeRect(
-      rect.x - selectedLineWidth / 2,
-      rect.y - selectedLineWidth / 2,
-      rect.w - selectedLineWidth / 2 - this.canvasGridWidth,
-      rect.h - selectedLineWidth / 2 - this.canvasGridWidth
-    );
+
+    const borderRect = this._getBorderRect(rect);
+    ctx.strokeRect(borderRect.x, borderRect.y, borderRect.w, borderRect.h);
 
     if (!this.selectedElement.resizable) return;
 
     //draw handle at 4 corners
-
-    ctx.fillStyle =
-      "rgba(" +
-      handleColor.r +
-      "," +
-      handleColor.g +
-      "," +
-      handleColor.b +
-      ", 1)";
-
-    //top left
-    ctx.fillRect(
-      rect.x - selectedLineWidth / 2 - handleSize / 2,
-      rect.y - selectedLineWidth / 2 - handleSize / 2,
-      handleSize,
-      handleSize
-    );
-    //top right
-    ctx.fillRect(
-      rect.x + rect.w - selectedLineWidth / 2 - handleSize / 2,
-      rect.y - selectedLineWidth / 2 - handleSize / 2,
-      handleSize,
-      handleSize
-    );
-    //bottom left
-    ctx.fillRect(
-      rect.x - selectedLineWidth / 2 - handleSize / 2,
-      rect.y + rect.h - selectedLineWidth / 2 - handleSize / 2,
-      handleSize,
-      handleSize
-    );
-    //bottom right
-    ctx.fillRect(
-      rect.x + rect.w - selectedLineWidth / 2 - handleSize / 2,
-      rect.y + rect.h - selectedLineWidth / 2 - handleSize / 2,
-      handleSize,
-      handleSize
-    );
+    const handles = this._getHandlesRect(rect);
+    this._drawHandle(ctx, handles.topLeft);
+    this._drawHandle(ctx, handles.topRight);
+    this._drawHandle(ctx, handles.bottomLeft);
+    this._drawHandle(ctx, handles.bottomRight);
   }
 
   _drawDragOverElementRectBorder(ctx: CanvasRenderingContext2D) {
@@ -442,12 +438,39 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _isAt(rect: Rect, coord: Coord) {
-    return (
-      coord.x >= rect.x &&
-      coord.x <= rect.x + rect.w &&
-      coord.y >= rect.y &&
-      coord.y <= rect.y + rect.h
-    );
+    if (coord.x > rect.x && coord.x <= rect.x + rect.w)
+      if (coord.y > rect.y && coord.y <= rect.y + rect.h) return true;
+    return false;
+  }
+
+  _getHandlesRect(scaledRect: Rect) {
+    const rect = this._getBorderRect(scaledRect);
+    return {
+      topLeft: {
+        x: rect.x - handleSize / 2,
+        y: rect.y - handleSize / 2,
+        w: handleSize,
+        h: handleSize,
+      } as Rect,
+      topRight: {
+        x: rect.x + rect.w - handleSize / 2,
+        y: rect.y - handleSize / 2,
+        w: handleSize,
+        h: handleSize,
+      } as Rect,
+      bottomLeft: {
+        x: rect.x - handleSize / 2,
+        y: rect.y + rect.h - handleSize / 2,
+        w: handleSize,
+        h: handleSize,
+      } as Rect,
+      bottomRight: {
+        x: rect.x + rect.w - handleSize / 2,
+        y: rect.y + rect.h - handleSize / 2,
+        w: handleSize,
+        h: handleSize,
+      } as Rect,
+    };
   }
 
   _isHandleAt(element: GuiElement, coord: Coord) {
@@ -459,110 +482,103 @@ export class MyCanvasDisplay extends LitElement {
       this.canvasScale,
       this.showGrid ? this.canvasGridWidth : 0
     );
-
     //check coordinates againt all four handles in corners
-
-    const handleTopLeft = {
-      x: rect.x - handleSize / 2,
-      y: rect.y - handleSize / 2,
-      w: handleSize,
-      h: handleSize,
-    };
-
-    const handleTopRight = {
-      x: rect.x + rect.w - handleSize / 2,
-      y: rect.y - handleSize / 2,
-      w: handleSize,
-      h: handleSize,
-    };
-
-    const handleBottomLeft = {
-      x: rect.x - handleSize / 2,
-      y: rect.y + rect.h - handleSize / 2,
-      w: handleSize,
-      h: handleSize,
-    };
-
-    const handleBottomRight = {
-      x: rect.x + rect.w - handleSize / 2,
-      y: rect.y + rect.h - handleSize / 2,
-      w: handleSize,
-      h: handleSize,
-    };
-
+    const handles = this._getHandlesRect(rect);
     return (
-      this._isAt(handleTopLeft, coord) ||
-      this._isAt(handleTopRight, coord) ||
-      this._isAt(handleBottomLeft, coord) ||
-      this._isAt(handleBottomRight, coord)
+      this._isAt(handles.topLeft, coord) ||
+      this._isAt(handles.topRight, coord) ||
+      this._isAt(handles.bottomLeft, coord) ||
+      this._isAt(handles.bottomRight, coord)
     );
+  }
+
+  _getBorderRect(elemScaledRect: Rect) {
+    return {
+      x: elemScaledRect.x - selectedLineWidth / 2,
+      y: elemScaledRect.y - selectedLineWidth / 2,
+      w: elemScaledRect.w + selectedLineWidth,
+      h: elemScaledRect.h + selectedLineWidth,
+    } as Rect;
   }
 
   _isBorderAt(element: GuiElement, coord: Coord) {
     if (!element) return false;
-    const elemRect = this._getElementScaledRect(
+    const elemScaledRect = this._getElementScaledRect(
       element,
       element.x,
       element.y,
       this.canvasScale,
       this.showGrid ? this.canvasGridWidth : 0
     );
+    const elemScaledBorderRect = this._getBorderRect(elemScaledRect);
+    //check if coord is inside border rect but outside elem's rect
+    return (
+      !this._isAt(elemScaledRect, coord) &&
+      this._isAt(elemScaledBorderRect, coord)
+    );
   }
 
   handleMouseDown(e: MouseEvent) {
     //differencier les click sur un element deja selectionné pour voir si click sur poignees ou bordure, ou sur un nouvel element pour selection
 
-    let newSelection = false;
-
     //get elements at mouse coordinates
-    const atcoords = this.elements.filter((element) =>
-      element.isAt(this.mouse_pixel_coord)
-    );
+    const atcoords = this.elements.filter((element) => {
+      return this._isAt(
+        {
+          x: element.x,
+          y: element.y,
+          w: element.getWidth(),
+          h: element.getHeight(),
+        } as Rect,
+        this.mouse_pixel_coord
+      );
+    });
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
 
+    let newSelection: GuiElement | undefined = undefined;
+    let selectionChanged = false;
+
     //trigger selection change if any
     if (selected?.internalId != this.selectedElement?.internalId) {
-      this.dispatchEvent(
-        new CustomEvent("element-selected", {
-          detail: { element: selected } as ElementSelectedEvent,
-        })
-      );
-      this.selectedElement = selected;
-      newSelection = selected ? true : false;
+      newSelection = selected;
+      selectionChanged = true;
     }
 
-    if (this.selectedElement && !newSelection) {
-      //check if click on handles
-      //check if click on border
-      //TODO: begin resize
-    }
-
-    //1: check if click on handles
-    const elemHandles = this.elements.filter((element) =>
-      this._isHandleAt(element, this.mouse_pixel_coord)
-    );
-
-    if (elemHandles.length > 0) {
-      console.log("click on handle, check if itt's current selected element");
-      //check if current selected element
-      elemHandles.filter(
-        (element) => element.internalId == this.selectedElement?.internalId
-      );
+    if (
+      !newSelection &&
+      this.selectedElement &&
+      this.selectedElement.resizable
+    ) {
+      const elemHandles = this.elements.filter((element) => {
+        return (
+          this._isHandleAt(element, { x: e.offsetX, y: e.offsetY }) &&
+          element.internalId == this.selectedElement?.internalId
+        );
+      });
       if (elemHandles.length > 0) {
-        console.log("click on handle of current selected element");
+        console.log("click on handle of the current selected element");
         //todo: manage handle click
+        if (e.button === 0 && !this.selectedElement.isResizing) {
+          this.selectedElement.beginResize(this.mouse_pixel_coord);
+        }
+        return;
       }
     }
-
-    //2: check if click on border
-    //3: check if click on element
-    //4: check if click on empty space
 
     //sort elements by z order desc
     // atcoords.sort((a, b) =>
     //   a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
     // );
+
+    if (selectionChanged) {
+      this.dispatchEvent(
+        new CustomEvent("element-selected", {
+          detail: { element: newSelection } as ElementSelectedEvent,
+        })
+      );
+      this.selectedElement = newSelection;
+    }
 
     //begin move element if any
     if (
@@ -579,14 +595,21 @@ export class MyCanvasDisplay extends LitElement {
       this.selectedElement.endMove();
       //if (this.selectedElement.hasMoved())
       this._elementMoved();
+    } else if (this.selectedElement?.isResizing) {
+      this.selectedElement.endResize();
+      //TODO: event resizing/moving?
+      //this._elementResized();
     }
   }
 
   handleMouseLeave() {
     if (this.selectedElement?.isMoving) {
       this.selectedElement.endMove();
-      //if (this.selectedElement.hasMoved())
       this._elementMoved();
+    } else if (this.selectedElement?.isResizing) {
+      this.selectedElement.endResize();
+      //TODO: event resizing/moving?
+      //this._elementResized();
     }
   }
 
@@ -598,6 +621,10 @@ export class MyCanvasDisplay extends LitElement {
         y: this.mouse_pixel_coord.y,
       });
       this._elementMoving();
+    } else if (this.selectedElement?.isResizing) {
+      this.selectedElement.resize();
+      console.log("resizing");
+      //TODO: event resizing/moving?
     }
   }
 

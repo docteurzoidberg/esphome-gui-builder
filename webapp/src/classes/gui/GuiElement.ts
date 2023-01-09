@@ -35,6 +35,7 @@ export abstract class GuiElement implements Coord, Size {
   resizable: boolean = false;
 
   isMoving: boolean = false; //is element actually being moved on canvas?
+  isResizing: boolean = false; //is element actually being resized on canvas?
 
   //private internalId: number;
   private startedMovingAt: Coord = { x: 0, y: 0 };
@@ -69,8 +70,8 @@ export abstract class GuiElement implements Coord, Size {
   abstract toGuiElementJSON(): GuiElementJSON;
 
   isAt(coords: Coord) {
-    if (coords.x >= this.x && coords.x < this.x + this.getWidth())
-      if (coords.y >= this.y && coords.y < this.y + this.getHeight())
+    if (coords.x > this.x && coords.x <= this.x + this.getWidth())
+      if (coords.y > this.y && coords.y <= this.y + this.getHeight())
         return true;
     return false;
   }
@@ -79,6 +80,16 @@ export abstract class GuiElement implements Coord, Size {
     this.isMoving = true;
     this.startedMovingAt = coords;
     this.lastMovingAt = coords;
+  }
+
+  beginResize(_coords: Coord) {
+    this.isResizing = true;
+  }
+
+  resize() {}
+
+  endResize() {
+    this.isResizing = false;
   }
 
   move(offset: Coord) {
