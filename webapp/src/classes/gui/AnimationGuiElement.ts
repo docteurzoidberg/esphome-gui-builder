@@ -12,6 +12,8 @@ export class AnimationGuiElement extends GuiElement {
       name: json.name,
       x: json.x,
       y: json.y,
+      width: json.animation.width,
+      height: json.animation.height,
       type: "animation",
       zorder: json.zorder,
     });

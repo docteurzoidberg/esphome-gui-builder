@@ -1,6 +1,7 @@
 import { Coord } from "types/Coord";
 import { GuiElementType } from "types/GuiElementType";
 import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
+import { Size } from "types/Size";
 
 //generate a random uuid
 const uuid = () => {
@@ -16,7 +17,7 @@ const uuid = () => {
   return uuid;
 };
 
-export abstract class GuiElement implements Coord {
+export abstract class GuiElement implements Coord, Size {
   type: GuiElementType;
   originalData: GuiElementJSON;
   internalId: string; //unique id for this element
@@ -26,7 +27,12 @@ export abstract class GuiElement implements Coord {
   params?: any;
   x: number;
   y: number;
-  zorder: number;
+
+  width: number = 0;
+  height: number = 0;
+  zorder: number = 0;
+
+  resizable: boolean = false;
 
   isMoving: boolean = false; //is element actually being moved on canvas?
 
@@ -44,6 +50,8 @@ export abstract class GuiElement implements Coord {
     this.originalData = guielementjson;
     this.x = guielementjson.x;
     this.y = guielementjson.y;
+    this.width = guielementjson.width || 0;
+    this.height = guielementjson.height || 0;
     this.zorder = guielementjson.zorder;
     this.type = guielementjson.type;
   }

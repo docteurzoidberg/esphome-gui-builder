@@ -17,6 +17,8 @@ export class FontGuiElement extends GuiElement {
       name: json.name,
       x: json.x,
       y: json.y,
+      width: json.width || json.bounds.width,
+      height: json.height || json.bounds.height,
       type: "text",
       zorder: json.zorder,
     });
@@ -24,12 +26,13 @@ export class FontGuiElement extends GuiElement {
     this.text = json.text;
     this.bounds = json.bounds;
     this.color = json.color;
+    this.resizable = true;
   }
   getWidth(): number {
-    return this.bounds.width;
+    return this.width ? this.width : this.bounds.width;
   }
   getHeight(): number {
-    return this.bounds.height;
+    return this.height ? this.height : this.bounds.height;
   }
   drawToCanvas(ctx: CanvasRenderingContext2D): void {
     const result = this.font.render(this.text);

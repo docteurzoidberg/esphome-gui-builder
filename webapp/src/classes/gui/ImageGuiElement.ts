@@ -12,6 +12,8 @@ export class ImageGuiElement extends GuiElement {
       name: json.name,
       x: json.x,
       y: json.y,
+      width: json.image.width,
+      height: json.image.height,
       type: "image",
       zorder: json.zorder,
     });

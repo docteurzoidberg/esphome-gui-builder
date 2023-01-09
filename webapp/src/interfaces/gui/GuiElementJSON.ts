@@ -7,5 +7,7 @@ export interface GuiElementJSON {
   type?: GuiElementType;
   x: number;
   y: number;
+  width?: number;
+  height?: number;
   zorder: number;
 }

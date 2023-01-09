@@ -16,6 +16,13 @@ import { Coord } from "types/Coord";
 import { ElementSelectedEvent } from "types/Events";
 
 const imageScale = 5;
+const selectedLineWidth = 2;
+const handleSize = 8;
+const handleColor = {
+  r: 39,
+  g: 186,
+  b: 253,
+};
 
 @customElement("my-canvas-display")
 export class MyCanvasDisplay extends LitElement {
@@ -256,14 +263,72 @@ export class MyCanvasDisplay extends LitElement {
       this.canvasScale,
       this.showGrid ? this.canvasGridWidth : 0
     );
-    const selectedLineWidth = 8;
-    ctx.strokeStyle = "rgba(" + 255 + "," + 0 + "," + 0 + ", 1)";
+
+    //const selectedLineWidth = 2 * this.canvasScale;
+    //const selectedLineWidth = 2;
+    const selectedLineColor = {
+      r: 39,
+      g: 186,
+      b: 253,
+    };
+
+    ctx.strokeStyle =
+      "rgba(" +
+      selectedLineColor.r +
+      "," +
+      selectedLineColor.g +
+      "," +
+      selectedLineColor.b +
+      ", 1)";
+
     ctx.lineWidth = selectedLineWidth;
     ctx.strokeRect(
       rect.x - selectedLineWidth / 2,
       rect.y - selectedLineWidth / 2,
-      rect.w,
-      rect.h
+      rect.w - selectedLineWidth / 2 - this.canvasGridWidth,
+      rect.h - selectedLineWidth / 2 - this.canvasGridWidth
+    );
+
+    if (!this.selectedElement.resizable) return;
+
+    //draw handle at 4 corners
+
+    ctx.fillStyle =
+      "rgba(" +
+      handleColor.r +
+      "," +
+      handleColor.g +
+      "," +
+      handleColor.b +
+      ", 1)";
+
+    //top left
+    ctx.fillRect(
+      rect.x - selectedLineWidth / 2 - handleSize / 2,
+      rect.y - selectedLineWidth / 2 - handleSize / 2,
+      handleSize,
+      handleSize
+    );
+    //top right
+    ctx.fillRect(
+      rect.x + rect.w - selectedLineWidth / 2 - handleSize / 2,
+      rect.y - selectedLineWidth / 2 - handleSize / 2,
+      handleSize,
+      handleSize
+    );
+    //bottom left
+    ctx.fillRect(
+      rect.x - selectedLineWidth / 2 - handleSize / 2,
+      rect.y + rect.h - selectedLineWidth / 2 - handleSize / 2,
+      handleSize,
+      handleSize
+    );
+    //bottom right
+    ctx.fillRect(
+      rect.x + rect.w - selectedLineWidth / 2 - handleSize / 2,
+      rect.y + rect.h - selectedLineWidth / 2 - handleSize / 2,
+      handleSize,
+      handleSize
     );
   }
 
@@ -376,29 +441,130 @@ export class MyCanvasDisplay extends LitElement {
     }
   }
 
+  _isAt(rect: Rect, coord: Coord) {
+    return (
+      coord.x >= rect.x &&
+      coord.x <= rect.x + rect.w &&
+      coord.y >= rect.y &&
+      coord.y <= rect.y + rect.h
+    );
+  }
+
+  _isHandleAt(element: GuiElement, coord: Coord) {
+    if (!element) return false;
+    const rect = this._getElementScaledRect(
+      element,
+      element.x,
+      element.y,
+      this.canvasScale,
+      this.showGrid ? this.canvasGridWidth : 0
+    );
+
+    //check coordinates againt all four handles in corners
+
+    const handleTopLeft = {
+      x: rect.x - handleSize / 2,
+      y: rect.y - handleSize / 2,
+      w: handleSize,
+      h: handleSize,
+    };
+
+    const handleTopRight = {
+      x: rect.x + rect.w - handleSize / 2,
+      y: rect.y - handleSize / 2,
+      w: handleSize,
+      h: handleSize,
+    };
+
+    const handleBottomLeft = {
+      x: rect.x - handleSize / 2,
+      y: rect.y + rect.h - handleSize / 2,
+      w: handleSize,
+      h: handleSize,
+    };
+
+    const handleBottomRight = {
+      x: rect.x + rect.w - handleSize / 2,
+      y: rect.y + rect.h - handleSize / 2,
+      w: handleSize,
+      h: handleSize,
+    };
+
+    return (
+      this._isAt(handleTopLeft, coord) ||
+      this._isAt(handleTopRight, coord) ||
+      this._isAt(handleBottomLeft, coord) ||
+      this._isAt(handleBottomRight, coord)
+    );
+  }
+
+  _isBorderAt(element: GuiElement, coord: Coord) {
+    if (!element) return false;
+    const elemRect = this._getElementScaledRect(
+      element,
+      element.x,
+      element.y,
+      this.canvasScale,
+      this.showGrid ? this.canvasGridWidth : 0
+    );
+  }
+
   handleMouseDown(e: MouseEvent) {
+    //differencier les click sur un element deja selectionné pour voir si click sur poignees ou bordure, ou sur un nouvel element pour selection
+
+    let newSelection = false;
+
     //get elements at mouse coordinates
     const atcoords = this.elements.filter((element) =>
       element.isAt(this.mouse_pixel_coord)
     );
-    //sort elements by z order desc
-    // atcoords.sort((a, b) =>
-    //   a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
-    // );
-
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
 
     //trigger selection change if any
-    if (selected != this.selectedElement) {
+    if (selected?.internalId != this.selectedElement?.internalId) {
       this.dispatchEvent(
         new CustomEvent("element-selected", {
           detail: { element: selected } as ElementSelectedEvent,
         })
       );
       this.selectedElement = selected;
+      newSelection = selected ? true : false;
     }
 
+    if (this.selectedElement && !newSelection) {
+      //check if click on handles
+      //check if click on border
+      //TODO: begin resize
+    }
+
+    //1: check if click on handles
+    const elemHandles = this.elements.filter((element) =>
+      this._isHandleAt(element, this.mouse_pixel_coord)
+    );
+
+    if (elemHandles.length > 0) {
+      console.log("click on handle, check if itt's current selected element");
+      //check if current selected element
+      elemHandles.filter(
+        (element) => element.internalId == this.selectedElement?.internalId
+      );
+      if (elemHandles.length > 0) {
+        console.log("click on handle of current selected element");
+        //todo: manage handle click
+      }
+    }
+
+    //2: check if click on border
+    //3: check if click on element
+    //4: check if click on empty space
+
+    //sort elements by z order desc
+    // atcoords.sort((a, b) =>
+    //   a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
+    // );
+
+    //begin move element if any
     if (
       this.selectedElement &&
       e.button === 0 &&

@@ -26,9 +26,9 @@ export class StorageManager {
       name: "128x64",
       width: 128,
       height: 64,
-      scale: 3,
+      scale: 4,
       showgrid: true,
-      gridsize: 1,
+      gridsize: 2,
       colormode: "rgb",
       background: { r: 0, g: 0, b: 0 },
     };
@@ -40,7 +40,7 @@ export class StorageManager {
     return {
       screenWidth: defaultScreenPreset.width,
       screenHeight: defaultScreenPreset.height,
-      guiScale: 3,
+      guiScale: 2,
       screenScale: defaultScreenPreset.scale,
       showGrid: defaultScreenPreset.showgrid,
       gridSize: defaultScreenPreset.gridsize,

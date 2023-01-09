@@ -540,6 +540,7 @@ export class MyApp extends LitElement {
                   <my-number-setting
                     label="scale"
                     value="${this.canvasScale}"
+                    min="1"
                     editable
                     @change="${(e: Event) => {
                       this.canvasScale = parseInt(
