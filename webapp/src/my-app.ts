@@ -291,7 +291,6 @@ export class MyApp extends LitElement {
     elementJson.name = name;
 
     if (dropElementJSON.type == "image") {
-      //const name = "img" +
       newGuiElement = new ImageGuiElement({
         ...elementJson,
         image: dropElementJSON.originalData,
@@ -668,10 +667,7 @@ export class MyApp extends LitElement {
         font-family: "Wendy";
         margin-left: 10px;
       }
-      .screen-container {
-        margin: 20px;
-        text-align: center;
-      }
+
       .container {
         display: flex;
         flex-direction: column;

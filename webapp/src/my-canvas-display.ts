@@ -15,6 +15,7 @@ import { Rect } from "types/Rect";
 import { Coord } from "types/Coord";
 import { ElementSelectedEvent } from "types/Events";
 import { RGB24 } from "types/RGB";
+import { HandleCorner } from "types/HandleCorner";
 
 const imageScale = 4;
 const selectedLineWidth = 2;
@@ -172,7 +173,7 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _drawCanvas() {
-    //TODO: check if cnvas size changed?
+    //TODO: check if canvas size changed?
     this._calcCanvasSize(this.displayWidth, this.displayHeight);
 
     const ctx = this.ctx;
@@ -245,7 +246,7 @@ export class MyCanvasDisplay extends LitElement {
       this._drawSelectedElementRectBorder(ctx);
     }
   }
-
+  /*
   _getElementScaledRect(
     guielement: GuiElement,
     x: number,
@@ -266,7 +267,7 @@ export class MyCanvasDisplay extends LitElement {
       h: elemScaledHeight,
     };
   }
-
+*/
   _drawHandle(ctx: CanvasRenderingContext2D, rect: Rect) {
     //handle stroke color
     ctx.fillStyle =
@@ -296,8 +297,7 @@ export class MyCanvasDisplay extends LitElement {
 
   _drawSelectedElementRectBorder(ctx: CanvasRenderingContext2D) {
     if (!this.selectedElement) return;
-    const rect = this._getElementScaledRect(
-      this.selectedElement,
+    const rect = this.selectedElement.getScaledRect(
       this.selectedElement.x,
       this.selectedElement.y,
       this.canvasScale,
@@ -335,8 +335,7 @@ export class MyCanvasDisplay extends LitElement {
     const mouseY = this.dragOverEvent!.clientY - this.canvasElement.offsetTop;
     const pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
     const pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
-    const rect = this._getElementScaledRect(
-      this.dragOverElement,
+    const rect = this.dragOverElement.getScaledRect(
       pixelX,
       pixelY,
       this.canvasScale,
@@ -443,6 +442,26 @@ export class MyCanvasDisplay extends LitElement {
     return false;
   }
 
+  _isHandleAt(scaledRect: Rect, coord: Coord) {
+    //check coordinates againt all four handles in corners
+    const handles = this._getHandlesRect(scaledRect);
+    return (
+      this._isAt(handles.topLeft, coord) ||
+      this._isAt(handles.topRight, coord) ||
+      this._isAt(handles.bottomLeft, coord) ||
+      this._isAt(handles.bottomRight, coord)
+    );
+  }
+
+  _isBorderAt(scaledRect: Rect, coord: Coord) {
+    //get border rect
+    const elemScaledBorderRect = this._getBorderRect(scaledRect);
+    //check if coord is inside border rect but outside elem's rect
+    return (
+      !this._isAt(scaledRect, coord) && this._isAt(elemScaledBorderRect, coord)
+    );
+  }
+
   _getHandlesRect(scaledRect: Rect) {
     const rect = this._getBorderRect(scaledRect);
     return {
@@ -473,25 +492,6 @@ export class MyCanvasDisplay extends LitElement {
     };
   }
 
-  _isHandleAt(element: GuiElement, coord: Coord) {
-    if (!element) return false;
-    const rect = this._getElementScaledRect(
-      element,
-      element.x,
-      element.y,
-      this.canvasScale,
-      this.showGrid ? this.canvasGridWidth : 0
-    );
-    //check coordinates againt all four handles in corners
-    const handles = this._getHandlesRect(rect);
-    return (
-      this._isAt(handles.topLeft, coord) ||
-      this._isAt(handles.topRight, coord) ||
-      this._isAt(handles.bottomLeft, coord) ||
-      this._isAt(handles.bottomRight, coord)
-    );
-  }
-
   _getBorderRect(elemScaledRect: Rect) {
     return {
       x: elemScaledRect.x - selectedLineWidth / 2,
@@ -501,26 +501,7 @@ export class MyCanvasDisplay extends LitElement {
     } as Rect;
   }
 
-  _isBorderAt(element: GuiElement, coord: Coord) {
-    if (!element) return false;
-    const elemScaledRect = this._getElementScaledRect(
-      element,
-      element.x,
-      element.y,
-      this.canvasScale,
-      this.showGrid ? this.canvasGridWidth : 0
-    );
-    const elemScaledBorderRect = this._getBorderRect(elemScaledRect);
-    //check if coord is inside border rect but outside elem's rect
-    return (
-      !this._isAt(elemScaledRect, coord) &&
-      this._isAt(elemScaledBorderRect, coord)
-    );
-  }
-
   handleMouseDown(e: MouseEvent) {
-    //differencier les click sur un element deja selectionné pour voir si click sur poignees ou bordure, ou sur un nouvel element pour selection
-
     //get elements at mouse coordinates
     const atcoords = this.elements.filter((element) => {
       return this._isAt(
@@ -533,6 +514,7 @@ export class MyCanvasDisplay extends LitElement {
         this.mouse_pixel_coord
       );
     });
+
     //take first element available (topmost one)
     const selected = atcoords.length > 0 ? atcoords[0] : undefined;
 
@@ -545,32 +527,58 @@ export class MyCanvasDisplay extends LitElement {
       selectionChanged = true;
     }
 
+    //handle click on resize handles only if current element is already selected and resizable
     if (
       !newSelection &&
       this.selectedElement &&
       this.selectedElement.resizable
     ) {
-      const elemHandles = this.elements.filter((element) => {
-        return (
-          this._isHandleAt(element, { x: e.offsetX, y: e.offsetY }) &&
-          element.internalId == this.selectedElement?.internalId
-        );
-      });
-      if (elemHandles.length > 0) {
+      //get scaled rect of the current selected element
+      const elemScaledRect = this.selectedElement.getScaledRect(
+        this.selectedElement.x,
+        this.selectedElement.y,
+        this.canvasScale,
+        this.showGrid ? this.canvasGridWidth : 0
+      );
+
+      //any handle clicked ?
+      if (this._isHandleAt(elemScaledRect, { x: e.offsetX, y: e.offsetY })) {
         console.log("click on handle of the current selected element");
-        //todo: manage handle click
         if (e.button === 0 && !this.selectedElement.isResizing) {
-          this.selectedElement.beginResize(this.mouse_pixel_coord);
+          //handle clicked, start resizing
+          const handles = this._getHandlesRect(
+            this.selectedElement.getScaledRect(
+              this.selectedElement.x,
+              this.selectedElement.y,
+              this.canvasScale,
+              this.showGrid ? this.canvasGridWidth : 0
+            )
+          );
+          //check which handle was clicked
+          let selectedHandleCorner: HandleCorner | null = null;
+          const corners = [
+            HandleCorner.TopLeft,
+            HandleCorner.TopRight,
+            HandleCorner.BottomLeft,
+            HandleCorner.BottomRight,
+          ];
+          corners.forEach((corner) => {
+            if (this._isAt(handles[corner], { x: e.offsetX, y: e.offsetY }))
+              selectedHandleCorner = corner;
+          });
+          if (selectedHandleCorner) {
+            console.log("selectedHandleCorner: " + selectedHandleCorner);
+            this.selectedElement.beginResize(
+              selectedHandleCorner,
+              this.mouse_pixel_coord
+            );
+          }
         }
         return;
       }
     }
 
-    //sort elements by z order desc
-    // atcoords.sort((a, b) =>
-    //   a.zorder > b.zorder ? -1 : a.zorder == b.zorder ? 0 : 1
-    // );
-
+    //notify listeners if selection changed
     if (selectionChanged) {
       this.dispatchEvent(
         new CustomEvent("element-selected", {
@@ -599,6 +607,7 @@ export class MyCanvasDisplay extends LitElement {
       this.selectedElement.endResize();
       //TODO: event resizing/moving?
       //this._elementResized();
+      this._elementMoved();
     }
   }
 
@@ -622,8 +631,12 @@ export class MyCanvasDisplay extends LitElement {
       });
       this._elementMoving();
     } else if (this.selectedElement?.isResizing) {
-      this.selectedElement.resize();
+      this.selectedElement.resize({
+        x: this.mouse_pixel_coord.x,
+        y: this.mouse_pixel_coord.y,
+      });
       console.log("resizing");
+      this._elementMoving();
       //TODO: event resizing/moving?
     }
   }
@@ -678,7 +691,7 @@ export class MyCanvasDisplay extends LitElement {
 
   render() {
     return html`
-      <div class="">
+      <div class="canvas-container">
         <canvas
           id="display"
           @mousemove="${this.handleMouseMove}"
@@ -688,14 +701,23 @@ export class MyCanvasDisplay extends LitElement {
           @drop="${this.handleDrop}"
           @dragover="${this.handleDragOver}"
           @dragleave="${this.handleDragLeave}"
-        ></canvas>
+        >
+        </canvas>
       </div>
     `;
   }
 
   static styles = css`
-    :host {
-      background-color: pink;
+    .canvas-container {
+      padding: 0;
+      margin: 0;
+      text-align: center;
+    }
+    #display {
+      border: 10px solid lightgray;
+      border-radius: 6px;
+      padding: 0;
+      margin: 10px;
     }
   `;
 }
