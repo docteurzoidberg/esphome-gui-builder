@@ -29,10 +29,9 @@ export abstract class GuiElement implements Coord, Size {
   params?: any;
   x: number;
   y: number;
-
-  width: number = 0;
-  height: number = 0;
-  zorder: number = 0;
+  width: number;
+  height: number;
+  zorder: number;
 
   resizable: boolean = false;
 
@@ -105,9 +104,9 @@ export abstract class GuiElement implements Coord, Size {
     this.lastMovingAt = coords;
   }
 
-  beginResize(_selectedHandleCorner: HandleCorner, coords: Coord) {
+  beginResize(selectedHandleCorner: HandleCorner, coords: Coord) {
     this.isResizing = true;
-    this.resizeCorner = _selectedHandleCorner;
+    this.resizeCorner = selectedHandleCorner;
     this.startedMovingAt = coords;
     this.lastMovingAt = coords;
   }
@@ -115,7 +114,6 @@ export abstract class GuiElement implements Coord, Size {
   resize(offset: Coord) {
     if (!this.isResizing || !this.resizeCorner) return;
 
-    //TODO
     const mouseMovedX = offset.x - this.lastMovingAt.x;
     const mouseMovedY = offset.y - this.lastMovingAt.y;
 

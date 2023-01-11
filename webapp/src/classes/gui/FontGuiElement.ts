@@ -1,4 +1,5 @@
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
+import { EspHomeTextAlign } from "classes/esphome/EspHomeTextAlign";
 import { GuiElement } from "classes/gui/GuiElement";
 import { EspHomeFontTextBound } from "interfaces/esphome/EspHomeFontJSON";
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
@@ -10,6 +11,7 @@ export class FontGuiElement extends GuiElement {
   text: string;
   bounds: EspHomeFontTextBound;
   color?: RGB24;
+  align?: EspHomeTextAlign;
   constructor(json: FontGuiElementJSON) {
     super({
       internalId: json.internalId,
@@ -25,14 +27,15 @@ export class FontGuiElement extends GuiElement {
     this.font = new EspHomeFont(json.font);
     this.text = json.text;
     this.bounds = json.bounds;
-    this.color = json.color;
     this.resizable = true;
+    if (json.align) this.align = json.align;
+    if (json.color) this.color = json.color;
   }
   getWidth(): number {
-    return this.width ? this.width : this.bounds.width;
+    return this.width !== undefined ? this.width : this.bounds.width;
   }
   getHeight(): number {
-    return this.height ? this.height : this.bounds.height;
+    return this.height !== undefined ? this.height : this.bounds.height;
   }
   drawToCanvas(ctx: CanvasRenderingContext2D): void {
     const result = this.font.render(this.text);
@@ -44,7 +47,6 @@ export class FontGuiElement extends GuiElement {
     if (!result) return;
     ctx.putImageData(result.image, coords.x, coords.y);
   }
-
   toYAML(): string {
     const yaml = `  #${this.name}
   - id: "${this.esphomeId}"
@@ -53,11 +55,9 @@ export class FontGuiElement extends GuiElement {
     glyphs: "${this.font.glyphstr.replace(/"/g, '\\"')}"\n`;
     return yaml;
   }
-
   toCPP(): string {
     return "//TODO: print text, id:" + this.esphomeId + "\n";
   }
-
   toGuiElementJSON(): FontGuiElementJSON {
     return {
       internalId: this.internalId,

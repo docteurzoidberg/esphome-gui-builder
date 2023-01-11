@@ -2,9 +2,9 @@ import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import "@shoelace-style/shoelace/dist/components/input/input"; // https://shoelace.style/components/input
-import "@shoelace-style/shoelace/dist/components/color-picker/color-picker"; // https://shoelace.style/components/color-picke
-import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+import "@shoelace-style/shoelace/dist/components/input/input";
+import "@shoelace-style/shoelace/dist/components/color-picker/color-picker";
+import "@shoelace-style/shoelace/dist/themes/dark.css";
 import { EspHomeFont } from "classes/esphome/EspHomeFont";
 import { RGB24 } from "types/RGB";
 

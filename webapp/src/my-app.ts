@@ -227,7 +227,7 @@ export class MyApp extends LitElement {
         console.log(this.selectScreenPreset.options[i].value);
         if (this.screenPresets[i].name === preset.name) {
           this.currentScreenPresetIndex = i;
-          this.selectScreenPreset.value = i.toString();
+          //this.selectScreenPreset.value = i.toString();
         }
       }
 
@@ -303,21 +303,20 @@ export class MyApp extends LitElement {
     } else if (dropElementJSON.type == "text") {
       const font = new EspHomeFont(dropElementJSON.originalData);
 
-      //TODO: dialog or not dialog?
+      /*
       this.dialogAddText?.open({
         ...elementJson,
         font: dropElementJSON.originalData,
         text: "TOTO",
         bounds: font.getBoundingBox("TOTO"),
-      });
-      /*
-      element = new FontGuiElement({
+      });*/
+      //TODO: dialog or not dialog?
+      newGuiElement = new FontGuiElement({
         ...elementJson,
         font: dropElementJSON.originalData,
-        text: "TOTO",
-        bounds: font.getBoundingBox("TOTO"),
+        text: "HELLO",
+        bounds: font.getBoundingBox("HELLO"),
       });
-      */
     } else {
       console.error("unknow type", dropElementJSON.type);
     }
@@ -340,7 +339,7 @@ export class MyApp extends LitElement {
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
       this.currentScreenPreset = undefined;
-      if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
+      //if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
       this.requestUpdate();
     }
     this._saveSettings();
@@ -352,7 +351,7 @@ export class MyApp extends LitElement {
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
       this.currentScreenPreset = undefined;
-      if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
+      //if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
       this.requestUpdate();
     }
     this._saveSettings();

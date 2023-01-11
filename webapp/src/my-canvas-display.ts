@@ -246,28 +246,7 @@ export class MyCanvasDisplay extends LitElement {
       this._drawSelectedElementRectBorder(ctx);
     }
   }
-  /*
-  _getElementScaledRect(
-    guielement: GuiElement,
-    x: number,
-    y: number,
-    canvasscale: number,
-    gridwidth: number = 0
-  ): Rect {
-    const elemWidth = guielement.getWidth();
-    const elemHeight = guielement.getHeight();
-    const elemScaledWidth =
-      elemWidth * canvasscale + gridwidth * (elemWidth - 1);
-    const elemScaledHeight =
-      elemHeight * canvasscale + gridwidth * (elemHeight - 1);
-    return {
-      x: x * canvasscale + gridwidth * (x + 1),
-      y: y * canvasscale + gridwidth * (y + 1),
-      w: elemScaledWidth,
-      h: elemScaledHeight,
-    };
-  }
-*/
+
   _drawHandle(ctx: CanvasRenderingContext2D, rect: Rect) {
     //handle stroke color
     ctx.fillStyle =
@@ -330,14 +309,10 @@ export class MyCanvasDisplay extends LitElement {
 
   _drawDragOverElementRectBorder(ctx: CanvasRenderingContext2D) {
     if (!this.dragOverElement) return;
-    //TODO: mouseXY?
-    const mouseX = this.dragOverEvent!.clientX - this.canvasElement.offsetLeft;
-    const mouseY = this.dragOverEvent!.clientY - this.canvasElement.offsetTop;
-    const pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
-    const pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
+
     const rect = this.dragOverElement.getScaledRect(
-      pixelX,
-      pixelY,
+      this.mouse_pixel_coord.x,
+      this.mouse_pixel_coord.y,
       this.canvasScale,
       this.showGrid ? this.canvasGridWidth : 0
     );
@@ -354,13 +329,7 @@ export class MyCanvasDisplay extends LitElement {
 
   _drawDragOverElementToCanvas(ctx: CanvasRenderingContext2D) {
     if (!this.dragOverElement) return;
-
-    //TODO: mouseXY?
-    let mouseX = this.dragOverEvent!.clientX - this.canvasElement.offsetLeft;
-    let mouseY = this.dragOverEvent!.clientY - this.canvasElement.offsetTop;
-    let pixelX = Math.ceil(mouseX / this.canvasCalcScaleX) - 1;
-    let pixelY = Math.ceil(mouseY / this.canvasCalcScaleY) - 1;
-    this.dragOverElement.drawGhostToCanvas(ctx, { x: pixelX, y: pixelY });
+    this.dragOverElement.drawGhostToCanvas(ctx, this.mouse_pixel_coord);
   }
 
   _setMouseXY(e: MouseEvent) {
@@ -406,8 +375,8 @@ export class MyCanvasDisplay extends LitElement {
 
     //base object
     const newGuiElementJSON: GuiElementJSON = {
-      x: 0, //TODO: coordinates
-      y: 0, //TODO: coordinates
+      x: 0, //overwritten later
+      y: 0, //overwritten later
       zorder: 0,
     };
 
@@ -422,7 +391,7 @@ export class MyCanvasDisplay extends LitElement {
         animation: dragOverElementJSON.originalData,
       });
     } else if (dragOverElementJSON.type == "text") {
-      const text = "//TODO";
+      const text = "HELLO";
       const font = new EspHomeFont(dragOverElementJSON.originalData);
       this.dragOverElement = new FontGuiElement({
         ...newGuiElementJSON,
@@ -619,6 +588,7 @@ export class MyCanvasDisplay extends LitElement {
       this.selectedElement.endResize();
       //TODO: event resizing/moving?
       //this._elementResized();
+      this._elementMoved();
     }
   }
 
@@ -644,18 +614,18 @@ export class MyCanvasDisplay extends LitElement {
   handleDrop(ev: DragEvent) {
     this.dragOverEvent = undefined;
     this.dragOverElement = undefined;
-
+    this._setMouseXY(ev);
     const data = ev.dataTransfer!.getData("application/gui-element-json");
     const dropElementJSON: DropElementJSON = JSON.parse(
       data
     ) as DropElementJSON;
 
     let elementJson: any = {
-      x: 0, //TODO: coordinates
-      y: 0, //TODO: coordinates
+      x: this.mouse_pixel_coord.x,
+      y: this.mouse_pixel_coord.y,
       zorder: 0,
     };
-
+    //raise event
     this.dispatchEvent(
       new CustomEvent("element-dropped", {
         detail: { elementJson: elementJson, dropElementJSON: dropElementJSON },
@@ -664,13 +634,14 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   handleDragOver(ev: DragEvent) {
+    console.log("drag over");
+    this._setMouseXY(ev); //?
     ev.preventDefault();
     ev.dataTransfer!.dropEffect = "move";
     this.dragOverEvent = ev;
     if (!this.dragOverElement) {
       this._createDragOverElement();
     }
-    //TODO: check mouse coord?
   }
 
   handleDragLeave() {
@@ -714,9 +685,8 @@ export class MyCanvasDisplay extends LitElement {
       text-align: center;
     }
     #display {
-      border: 10px solid lightgray;
+      border: 6px solid lightgray;
       border-radius: 6px;
-      padding: 0;
       margin: 10px;
     }
   `;

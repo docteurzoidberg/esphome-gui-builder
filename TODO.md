@@ -2,10 +2,10 @@
 
 ## todos for the public 'poc demo'
 
-- [ ] drop element at mouse coordinates, not 0,0
-- [ ] ordering elements on scene act as zorder
+- [ ] fix element ordering
 - [ ] setting text element parameters (text. color etc)
 - [ ] setting animation element parameters (fps)
+- [ ] cpp output
 - [ ] css styling !!!
 
 ## todos for the first real release
@@ -13,7 +13,7 @@
 - [ ] handle text alignments
 - [ ] drawing elements (line, rectangle, circle)
 - [ ] import other asset library from json
-- [ ] load/save current screenn
+- [ ] load/save current screen
 - [ ] add user screen presets (load /save them from localstorage)
 
 ## todos for future releases
