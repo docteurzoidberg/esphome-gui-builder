@@ -2,7 +2,6 @@ import { EspHomeAnimation } from "classes/esphome/EspHomeAnimation";
 import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
 import { GuiElement } from "classes/gui/GuiElement";
 import { Coord } from "types/Coord";
-import { CPPLGenerator } from "classes/CPPGenerator";
 
 export class AnimationGuiElement extends GuiElement {
   animation: EspHomeAnimation;
