@@ -1,6 +1,6 @@
 [
     {
-        "id": "font_Roboto-Medium",
+        "id": "font_Roboto_Medium",
         "name": "Roboto_22",
         "path": "data/fonts/Roboto-Medium.ttf",
         "height": 22,
@@ -14688,7 +14688,7 @@
         ]
     },
     {
-        "id": "font_Roboto-Medium",
+        "id": "font_Roboto_Medium",
         "name": "Roboto_20",
         "path": "data/fonts/Roboto-Medium.ttf",
         "height": 20,
@@ -26581,7 +26581,7 @@
         ]
     },
     {
-        "id": "font_Roboto-Medium",
+        "id": "font_Roboto_Medium",
         "name": "IBMPlexMono_big",
         "path": "data/fonts/Roboto-Medium.ttf",
         "height": 48,
@@ -92323,7 +92323,7 @@
         ]
     },
     {
-        "id": "font_8-bit-hud",
+        "id": "font_8_bit_hud",
         "name": "8Bit HUD",
         "path": "data/fonts/8-bit-hud.ttf",
         "height": 5,

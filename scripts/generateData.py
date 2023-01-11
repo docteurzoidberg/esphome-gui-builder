@@ -5,7 +5,7 @@ import glob
 import json
 import os
 import shutil
-
+import re
 
 #python enum for image type
 class ImageType:
@@ -319,7 +319,9 @@ def get_image_json(path, resize=None,type=None):
 
     rhs = [HexInt(x) for x in data]
     basename = os.path.basename(path).split('.')[0]
-    id = "img_" + basename
+    #replace invalid chars in basename
+    cleanname = re.sub('[^0-9a-zA-Z_]', '_', basename)
+    id = "img_" + cleanname
     name = basename
     return ImageJson(id, name, path, type, width, height, [], dataurl)
 
@@ -442,7 +444,9 @@ def get_animation_json(path, resize=None, type=None):
     #print(rhs)
 
     basename = os.path.basename(path).split('.')[0]
-    id = "anim_" + basename
+    #replace invalid chars in basename
+    cleanname = re.sub('[^0-9a-zA-Z_]', '_', basename)
+    id = "anim_" + cleanname
     name = basename
     return AnimationJson(id, name, path,type, width, height, frames, rhs, dataurl)
 
@@ -485,7 +489,10 @@ def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJK
         glyph_initializer.append(glyphobj)
 
     #id= name of the file without extension
-    id = "font_" + os.path.basename(path).split('.')[0]
+    basename = os.path.basename(path).split('.')[0]
+    #replace invalid chars in basename
+    basename = re.sub('[^0-9a-zA-Z_]', '_', basename)
+    id = "font_" + basename
     return FontJson(id, name, path, size, glyphs, rhs, glyph_initializer)
 
 

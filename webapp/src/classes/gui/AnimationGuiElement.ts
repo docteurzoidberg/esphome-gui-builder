@@ -2,6 +2,7 @@ import { EspHomeAnimation } from "classes/esphome/EspHomeAnimation";
 import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON";
 import { GuiElement } from "classes/gui/GuiElement";
 import { Coord } from "types/Coord";
+import { CPPLGenerator } from "classes/CPPGenerator";
 
 export class AnimationGuiElement extends GuiElement {
   animation: EspHomeAnimation;
@@ -39,6 +40,7 @@ export class AnimationGuiElement extends GuiElement {
   }
 
   toYAML(): string {
+    //TODO: handle global interval if fps set?
     const yaml = `  #${this.name}
   - id: "${this.esphomeId}"
     file: "${this.animation.path}"
@@ -48,11 +50,18 @@ export class AnimationGuiElement extends GuiElement {
   }
 
   toCPP(): string {
-    return (
-      "//TODO: draw animation frame and calling nextframe, id:" +
-      this.esphomeId +
-      "\n"
-    );
+    /*
+    ESPHome doc: https://esphome.io/components/display/index.html#animation
+
+      //Ingress shown animation Frame.
+      id(my_animation).next_frame();
+      // Draw the animation my_animation at position [x=0,y=0]
+      it.image(0, 0, id(my_animation), COLOR_ON, COLOR_OFF);
+    */
+    //TODO: handle fps
+    //TODO: handle binary images
+    const cpp = `\t// ${this.name}\n\tid(${this.esphomeId}).next_frame();\n\tit.image(${this.x}, ${this.y}, id(${this.esphomeId}));\n`;
+    return cpp;
   }
   toGuiElementJSON(): AnimationGuiElementJSON {
     return {

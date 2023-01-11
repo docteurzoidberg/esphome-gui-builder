@@ -48,6 +48,7 @@ export class FontGuiElement extends GuiElement {
     ctx.putImageData(result.image, coords.x, coords.y);
   }
   toYAML(): string {
+    //TODO: Handle global yaml color: ?
     const yaml = `  #${this.name}
   - id: "${this.esphomeId}"
     file: "${this.font.path}"
@@ -56,7 +57,27 @@ export class FontGuiElement extends GuiElement {
     return yaml;
   }
   toCPP(): string {
-    return "//TODO: print text, id:" + this.esphomeId + "\n";
+    /*
+      ESPHome doc: https://esphome.io/components/display/index.html#drawing-static-text
+
+        // Print the string "Hello World!" at [0,10]
+        it.print(0, 10, id(my_font), "Hello World!");
+
+        // Aligned on right edge
+        it.print(it.get_width(), 0, id(my_font), TextAlign::TOP_RIGHT, "Right aligned");
+
+         / Syntax is always: it.print(<x>, <y>, <font>, [color=COLOR_ON], [align=TextAlign::TOP_LEFT], <text>);
+        it.print(0, 0, id(my_font), COLOR_ON, "Left aligned");
+
+        it.printf(0, 0, id(my_font), "The sensor value is: %.1f", id(my_sensor).state);
+        // If the sensor has the value 30.02, the result will be: "The sensor value is: 30.0"
+
+    */
+
+    //espace double quote in text
+    const text = this.text.replace(/"/g, '\\"');
+    const cpp = `\t// ${this.name}\n\tit.print(${this.x}, ${this.y}, id(${this.esphomeId}), "${text}");\n`;
+    return cpp;
   }
   toGuiElementJSON(): FontGuiElementJSON {
     return {

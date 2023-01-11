@@ -760,7 +760,7 @@
         "data": []
     },
     {
-        "id": "img_main-page-off",
+        "id": "img_main_page_off",
         "name": "main-page-off",
         "path": "data/images/niels/backgrounds/main-page-off.png",
         "type": 2,
@@ -770,7 +770,7 @@
         "data": []
     },
     {
-        "id": "img_main-page-on",
+        "id": "img_main_page_on",
         "name": "main-page-on",
         "path": "data/images/niels/backgrounds/main-page-on.png",
         "type": 2,
@@ -840,7 +840,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-settings-96",
+        "id": "img_icons8_settings_96",
         "name": "icons8-settings-96",
         "path": "data/images/niels/icons8/icons8-settings-96.png",
         "type": 3,
@@ -850,7 +850,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-chevron-right-96",
+        "id": "img_icons8_chevron_right_96",
         "name": "icons8-chevron-right-96",
         "path": "data/images/niels/icons8/icons8-chevron-right-96.png",
         "type": 3,
@@ -860,7 +860,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-light-off-96",
+        "id": "img_icons8_light_off_96",
         "name": "icons8-light-off-96",
         "path": "data/images/niels/icons8/icons8-light-off-96.png",
         "type": 3,
@@ -870,7 +870,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-calendar-1-96",
+        "id": "img_icons8_calendar_1_96",
         "name": "icons8-calendar-1-96",
         "path": "data/images/niels/icons8/icons8-calendar-1-96.png",
         "type": 3,
@@ -880,7 +880,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-table-96",
+        "id": "img_icons8_table_96",
         "name": "icons8-table-96",
         "path": "data/images/niels/icons8/icons8-table-96.png",
         "type": 3,
@@ -890,7 +890,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-doorbell-96",
+        "id": "img_icons8_doorbell_96",
         "name": "icons8-doorbell-96",
         "path": "data/images/niels/icons8/icons8-doorbell-96.png",
         "type": 3,
@@ -900,7 +900,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-book-shelf-96",
+        "id": "img_icons8_book_shelf_96",
         "name": "icons8-book-shelf-96",
         "path": "data/images/niels/icons8/icons8-book-shelf-96.png",
         "type": 3,
@@ -910,7 +910,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-home-office-96",
+        "id": "img_icons8_home_office_96",
         "name": "icons8-home-office-96",
         "path": "data/images/niels/icons8/icons8-home-office-96.png",
         "type": 3,
@@ -920,7 +920,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-sort-left-96",
+        "id": "img_icons8_sort_left_96",
         "name": "icons8-sort-left-96",
         "path": "data/images/niels/icons8/icons8-sort-left-96.png",
         "type": 3,
@@ -930,7 +930,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-floor-plan-96",
+        "id": "img_icons8_floor_plan_96",
         "name": "icons8-floor-plan-96",
         "path": "data/images/niels/icons8/icons8-floor-plan-96.png",
         "type": 3,
@@ -940,7 +940,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-fan-96",
+        "id": "img_icons8_fan_96",
         "name": "icons8-fan-96",
         "path": "data/images/niels/icons8/icons8-fan-96.png",
         "type": 3,
@@ -950,7 +950,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-toilet-bowl-96",
+        "id": "img_icons8_toilet_bowl_96",
         "name": "icons8-toilet-bowl-96",
         "path": "data/images/niels/icons8/icons8-toilet-bowl-96.png",
         "type": 3,
@@ -960,7 +960,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-chevron-left-96",
+        "id": "img_icons8_chevron_left_96",
         "name": "icons8-chevron-left-96",
         "path": "data/images/niels/icons8/icons8-chevron-left-96.png",
         "type": 3,
@@ -970,7 +970,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-radiator-96",
+        "id": "img_icons8_radiator_96",
         "name": "icons8-radiator-96",
         "path": "data/images/niels/icons8/icons8-radiator-96.png",
         "type": 3,
@@ -980,7 +980,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-air-conditioner-96",
+        "id": "img_icons8_air_conditioner_96",
         "name": "icons8-air-conditioner-96",
         "path": "data/images/niels/icons8/icons8-air-conditioner-96.png",
         "type": 3,
@@ -990,7 +990,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-sort-right-96",
+        "id": "img_icons8_sort_right_96",
         "name": "icons8-sort-right-96",
         "path": "data/images/niels/icons8/icons8-sort-right-96.png",
         "type": 3,
@@ -1000,7 +1000,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-sofa-96",
+        "id": "img_icons8_sofa_96",
         "name": "icons8-sofa-96",
         "path": "data/images/niels/icons8/icons8-sofa-96.png",
         "type": 3,
@@ -1010,7 +1010,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-cooker-96",
+        "id": "img_icons8_cooker_96",
         "name": "icons8-cooker-96",
         "path": "data/images/niels/icons8/icons8-cooker-96.png",
         "type": 3,
@@ -1020,7 +1020,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-shower-96",
+        "id": "img_icons8_shower_96",
         "name": "icons8-shower-96",
         "path": "data/images/niels/icons8/icons8-shower-96.png",
         "type": 3,
@@ -1030,7 +1030,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-alarm-96",
+        "id": "img_icons8_alarm_96",
         "name": "icons8-alarm-96",
         "path": "data/images/niels/icons8/icons8-alarm-96.png",
         "type": 3,
@@ -1040,7 +1040,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-bed-96",
+        "id": "img_icons8_bed_96",
         "name": "icons8-bed-96",
         "path": "data/images/niels/icons8/icons8-bed-96.png",
         "type": 3,
@@ -1050,7 +1050,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-open-door-96",
+        "id": "img_icons8_open_door_96",
         "name": "icons8-open-door-96",
         "path": "data/images/niels/icons8/icons8-open-door-96.png",
         "type": 3,
@@ -1060,7 +1060,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-tv-96",
+        "id": "img_icons8_tv_96",
         "name": "icons8-tv-96",
         "path": "data/images/niels/icons8/icons8-tv-96.png",
         "type": 3,
@@ -1070,7 +1070,7 @@
         "data": []
     },
     {
-        "id": "img_icons8-dishwasher-96",
+        "id": "img_icons8_dishwasher_96",
         "name": "icons8-dishwasher-96",
         "path": "data/images/niels/icons8/icons8-dishwasher-96.png",
         "type": 3,

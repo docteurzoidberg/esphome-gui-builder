@@ -45,13 +45,23 @@ export class ImageGuiElement extends GuiElement {
     type: ${this.image.type}\n`;
     return yaml;
   }
-  /*
-  toYAML(): string {
-    return '\t- id: "' + this.esphomeId + '"\n';
-  }
-  */
+
   toCPP(): string {
-    return "//TODO: draw image, id:" + this.esphomeId + "\n";
+    /*
+    ESPHome doc: https://esphome.io/components/display/index.html#images
+
+        // Draw the image my_image at position [x=0,y=0]
+        it.image(0, 0, id(my_image));
+
+        //For binary images the image method accepts two additional color parameters which can be supplied to modify the color used to represent the on and off bits respectively. e.g.
+
+        // Draw the image my_image at position [x=0,y=0]
+        // with front color red and back color blue
+        it.image(0, 0, id(my_image), id(red), id(blue));
+    */
+    //TODO: handle binary images
+    const cpp = `\t//${this.name}\n\tit.image(${this.x}, ${this.y}, id(${this.esphomeId}));\n`;
+    return cpp;
   }
   toGuiElementJSON(): ImageGuiElementJSON {
     return {
