@@ -8,35 +8,85 @@ screens:
     gridsize: 2 #grid size [number]
     scale: 4 #pixels per pixel [number]
     refresh: 16 #ms
-  - name: "tinyled16x16"
+  - name: "ili9341"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 320
+    height: 240
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 2 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ili93xx"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 320
+    height: 480
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 1 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ledmatrix_8x32"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 32
+    height: 8
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 2 #grid size [number]
+    scale: 8 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ledmatrix_16x16"
     colormode: RGB24 #rgb24|rgb16|grey8|binary
     width: 16
     height: 16
     background: "000000" #rgb color (hex)
     showgrid: true #show grid [true|false]
     gridsize: 2 #grid size [number]
-    scale: 10 #pixels per pixel [number]
+    scale: 8 #pixels per pixel [number]
     refresh: 16 #ms
+
 fonts:
-  - name: "5x5"
-    file: "data/fonts/5x5_pixel.ttf"
-    glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
-    size: 8
+  - name: "Roboto_22"
+    file: "data/fonts/Roboto-Medium.ttf"
+    size: 22
+    glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+  - name: "Roboto_20"
+    file: "data/fonts/Roboto-Medium.ttf"
+    size: 20
+    glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+  - name: "IBMPlexMono_big"
+    file: "data/fonts/Roboto-Medium.ttf"
+    size: 48
+    glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
   - name: "8Bit HUD"
     file: "data/fonts/8-bit-hud.ttf"
     glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
     size: 5
-
+  - name: "5x5"
+    file: "data/fonts/5x5_pixel.ttf"
+    glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+    size: 8
   - name: "squares"
     file: "data/fonts/Squares.ttf"
     glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
     size: 4
 
 animations:
-  - include: "data/animations/*.[gG][iI][fF]"
+  - include: "data/animations/stock/*.[gG][iI][fF]"
+  - include: "data/animations/niels/writingpen.gif"
+    resize: 100x100
+    type: BINARY
 
 images:
-  - include: "data/images/18x18_emojis/*.png"
-  - include: "data/images/16x16_bw_icons/*.png"
-  - include: "data/images/16x16_color_icons/*.png"
-  - include: "data/images/*.[pP][nN][gG]"
+  - include: "data/images/stock/18x18_emojis/*.png"
+  - include: "data/images/stock/16x16_bw_icons/*.png"
+  - include: "data/images/niels/backgrounds/*.png"
+    resize: 320x240
+    type: RGB24
+  - include: "data/images/niels/battery/*.png"
+  - include: "data/images/niels/icons8/*.png"
+    type: TRANSPARENT_BINARY
+  - include: "data/images/stock/16x16_color_icons/*.png"
+    type: RGB24
+  - include: "data/images/stock/random/*.[pP][nN][gG]"
+    type: RGB24

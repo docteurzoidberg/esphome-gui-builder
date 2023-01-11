@@ -10,11 +10,41 @@
         "background": "000000"
     },
     {
-        "name": "tinyled16x16",
+        "name": "ili9341",
+        "width": 320,
+        "height": 240,
+        "showgrid": true,
+        "scale": 2,
+        "gridsize": 1,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ili93xx",
+        "width": 320,
+        "height": 480,
+        "showgrid": true,
+        "scale": 1,
+        "gridsize": 1,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ledmatrix_8x32",
+        "width": 32,
+        "height": 8,
+        "showgrid": true,
+        "scale": 8,
+        "gridsize": 2,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ledmatrix_16x16",
         "width": 16,
         "height": 16,
         "showgrid": true,
-        "scale": 10,
+        "scale": 8,
         "gridsize": 2,
         "colormode": "RGB24",
         "background": "000000"

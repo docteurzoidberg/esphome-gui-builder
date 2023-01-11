@@ -1,9 +1,29 @@
+import io
 import voluptuous as vol
 import base64
 import glob
 import json
 import os
 import shutil
+
+
+#python enum for image type
+class ImageType:
+    IMAGE_TYPE_BINARY = 0
+    IMAGE_TYPE_GRAYSCALE = 1
+    IMAGE_TYPE_RGB24 = 2
+    IMAGE_TYPE_TRANSPARENT_BINARY = 3
+    IMAGE_TYPE_RGB565 = 4
+    IMAGE_TYPE_RGBA32 = 5
+
+IMAGE_TYPE = {
+    "BINARY": ImageType.IMAGE_TYPE_BINARY,
+    "GRAYSCALE": ImageType.IMAGE_TYPE_GRAYSCALE,
+    "RGB24": ImageType.IMAGE_TYPE_RGB24,
+    "TRANSPARENT_BINARY": ImageType.IMAGE_TYPE_TRANSPARENT_BINARY,
+    "RGB565": ImageType.IMAGE_TYPE_RGB565,
+    "RGBA32": ImageType.IMAGE_TYPE_RGBA32
+}
 
 class HexInt(int):
     def __str__(self):
@@ -27,18 +47,21 @@ class ScreenPresetJson:
         self.background = background
 
 class ImageJson:
-    def __init__(self, id, name, path, width, height, dataurl) -> None:
+    def __init__(self, id, name, path, type, width, height, data, dataurl) -> None:
         self.id = id
         self.name = name
         self.path = path
+        self.type = type
         self.width = width
         self.height = height
         self.dataurl = dataurl
+        self.data = data
 
 class AnimationJson:
-    def __init__(self, id, name, path,  width, height, frames, data, dataurl) -> None:
+    def __init__(self, id, name, path, type, width, height, frames, data, dataurl) -> None:
         self.id = id
         self.name = name
+        self.type = type
         self.path = path
         self.width = width
         self.height = height
@@ -113,9 +136,15 @@ class AssetsBuilder:
         for image in images:
             if "include" in image:
                 include = image["include"]
+                resize = None
+                type = None
+                if "resize" in image:
+                    resize = image["resize"]
+                if "type" in image:
+                    type = image["type"]
                 result = glob.iglob(include, recursive=True)
                 for path in result:
-                    jsonout.append(get_image_json(path))
+                    jsonout.append(get_image_json(path=path, resize=resize, type=type))
         with open('data/images.json', 'w') as outfile:
             jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
             outfile.write(jsonStr)
@@ -128,9 +157,16 @@ class AssetsBuilder:
         for animation in animations:
             if "include" in animation:
                 include = animation["include"]
+                resize = None
+                type = None
+                if "resize" in animation:
+                    resize = animation["resize"]
+                if "type" in animation:
+                    type = animation["type"]
+
                 result = glob.iglob(include, recursive=True)
                 for path in result:
-                    jsonout.append(get_animation_json(path))
+                    jsonout.append(get_animation_json(path, resize=resize, type = type))
 
         with open('data/animations.json', 'w') as outfile:
             jsonStr = json.dumps([obj.__dict__ for obj in jsonout], indent=4)
@@ -172,23 +208,122 @@ def load_ttf_font(path, size):
 
     return TrueTypeFontWrapper(font)
 
-def get_image_json(path):
-    from PIL import Image
-    file = open(path, 'rb')
-    binary_fc       = file.read()  # fc aka file_content
-    file.close()
-    im = Image.open(path)
-    width, height = im.size
-    base64_utf8_str = base64.b64encode(binary_fc).decode('utf-8')
-    dataurl = f'data:image/png;base64,{base64_utf8_str}'
-    file.close()
 
+
+def pillow_image_to_base64_string(img):
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+
+def get_image_json(path, resize=None,type=None):
+    from PIL import Image
+
+    #file = open(path, 'rb')
+    #binary_fc       = file.read()  # fc aka file_content
+    #base64_utf8_str = base64.b64encode(binary_fc).decode('utf-8')
+    #dataurl = f'data:image/png;base64,{base64_utf8_str}'
+    #file.close()
+
+
+    image = Image.open(path)
+
+    width, height = image.size
+    data = []
+
+    if type is None:
+        type = ImageType.IMAGE_TYPE_RGB24
+    else:
+        #parse type from string to enum
+        type = IMAGE_TYPE[type]
+
+    if resize is not None:
+        #parse resize text  "WIDTHxHEIGHT" and returns a new width.height tuple
+        width, height = [int(x) for x in resize.split('x')]
+        image.thumbnail([width, height])
+        width, height = image.size
+    else:
+        if width > 500 or height > 500:
+            print(
+                "The image you requested is very big. Please consider using"
+                " the resize parameter."
+            )
+
+    dither = Image.NONE
+
+    if type == ImageType.IMAGE_TYPE_GRAYSCALE:
+        image = image.convert("L", dither=dither)
+        pixels = list(image.getdata())
+        data = [0 for _ in range(height * width)]
+        pos = 0
+        for pix in pixels:
+            data[pos] = pix
+            pos += 1
+
+    elif type == ImageType.IMAGE_TYPE_RGB24:
+        image = image.convert("RGB")
+        pixels = list(image.getdata())
+        data = [0 for _ in range(height * width * 3)]
+        pos = 0
+        for pix in pixels:
+            data[pos] = pix[0]
+            pos += 1
+            data[pos] = pix[1]
+            pos += 1
+            data[pos] = pix[2]
+            pos += 1
+
+    elif type == ImageType.IMAGE_TYPE_RGB565:
+        image = image.convert("RGB")
+        pixels = list(image.getdata())
+        data = [0 for _ in range(height * width * 3)]
+        pos = 0
+        for pix in pixels:
+            R = pix[0] >> 3
+            G = pix[1] >> 2
+            B = pix[2] >> 3
+            rgb = (R << 11) | (G << 5) | B
+            data[pos] = rgb >> 8
+            pos += 1
+            data[pos] = rgb & 255
+            pos += 1
+
+    elif type == ImageType.IMAGE_TYPE_BINARY:
+        image = image.convert("1", dither=dither)
+        width8 = ((width + 7) // 8) * 8
+        data = [0 for _ in range(height * width8 // 8)]
+        for y in range(height):
+            for x in range(width):
+                if image.getpixel((x, y)):
+                    continue
+                pos = x + y * width8
+                data[pos // 8] |= 0x80 >> (pos % 8)
+
+    elif type == ImageType.IMAGE_TYPE_TRANSPARENT_BINARY or type == ImageType.IMAGE_TYPE_RGBA32:
+        image = image.convert("RGBA")
+        width8 = ((width + 7) // 8) * 8
+        data = [0 for _ in range(height * width8 // 8)]
+        for y in range(height):
+            for x in range(width):
+                if not image.getpixel((x, y))[3]:
+                    continue
+                pos = x + y * width8
+                data[pos // 8] |= 0x80 >> (pos % 8)
+    else:
+        raise Exception("Unknown image type: " + str(type))
+
+    base64 = pillow_image_to_base64_string(image)
+    dataurl = f'data:image/png;base64,{base64}'
+
+    image.close()
+
+    rhs = [HexInt(x) for x in data]
     basename = os.path.basename(path).split('.')[0]
     id = "img_" + basename
     name = basename
-    return ImageJson(id, name, path, width, height, dataurl)
+    return ImageJson(id, name, path, type, width, height, [], dataurl)
 
-def get_animation_json(path):
+def get_animation_json(path, resize=None, type=None):
     #path = CORE.relative_config_path(config[CONF_FILE])
 
     file = open(path, 'rb')
@@ -205,23 +340,103 @@ def get_animation_json(path):
 
     width, height = image.size
     frames = image.n_frames
-    data = [0 for _ in range(height * width * 3 * frames)]
-    pos = 0
-    for frameIndex in range(frames):
-        image.seek(frameIndex)
-        frame = image.convert("RGB")
-        pixels = list(frame.getdata())
-        if len(pixels) != height * width:
-            raise Exception(
-                f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+    data = None
+
+    if type is None:
+        type = ImageType.IMAGE_TYPE_BINARY
+    else:
+        #parse type from string to enum
+        type = IMAGE_TYPE[type]
+
+    if resize is not None:
+        #parse resize text  "WIDTHxHEIGHT" and returns a new width.height tuple
+        new_width_max, new_height_max = tuple(map(int, resize.split('x')))
+        ratio = min(new_width_max / width, new_height_max / height)
+        width, height = int(width * ratio), int(height * ratio)
+    else:
+        if width > 500 or height > 500:
+            print(
+                "The image you requested is very big. Please consider using"
+                " the resize parameter."
             )
-        for pix in pixels:
-            data[pos] = pix[0]
-            pos += 1
-            data[pos] = pix[1]
-            pos += 1
-            data[pos] = pix[2]
-            pos += 1
+
+    if type == ImageType.IMAGE_TYPE_GRAYSCALE:
+        data = [0 for _ in range(height * width * frames)]
+        pos = 0
+        for frameIndex in range(frames):
+            image.seek(frameIndex)
+            frame = image.convert("L", dither=Image.NONE)
+            if resize is not None:
+                frame = frame.resize([width, height])
+            pixels = list(frame.getdata())
+            if len(pixels) != height * width:
+                raise Exception(
+                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                )
+            for pix in pixels:
+                data[pos] = pix
+                pos += 1
+    elif type == ImageType.IMAGE_TYPE_RGB24:
+        data = [0 for _ in range(height * width * 3 * frames)]
+        pos = 0
+        for frameIndex in range(frames):
+            image.seek(frameIndex)
+            if resize is not None:
+                image.thumbnail([width, height])
+            frame = image.convert("RGB")
+            if resize is not None:
+                frame = frame.resize([width, height])
+            pixels = list(frame.getdata())
+            if len(pixels) != height * width:
+                raise Exception(
+                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                )
+            for pix in pixels:
+                data[pos] = pix[0]
+                pos += 1
+                data[pos] = pix[1]
+                pos += 1
+                data[pos] = pix[2]
+                pos += 1
+
+    elif type == ImageType.IMAGE_TYPE_RGB565:
+        data = [0 for _ in range(height * width * 2 * frames)]
+        pos = 0
+        for frameIndex in range(frames):
+            image.seek(frameIndex)
+            frame = image.convert("RGB")
+            if resize is not None:
+                frame = frame.resize([width, height])
+            pixels = list(frame.getdata())
+            if len(pixels) != height * width:
+                raise Exception(
+                    f"Unexpected number of pixels in {path} frame {frameIndex}: ({len(pixels)} != {height*width})"
+                )
+            for pix in pixels:
+                R = pix[0] >> 3
+                G = pix[1] >> 2
+                B = pix[2] >> 3
+                rgb = (R << 11) | (G << 5) | B
+                data[pos] = rgb >> 8
+                pos += 1
+                data[pos] = rgb & 255
+                pos += 1
+    else:
+    #elif type == ImageType.IMAGE_TYPE_BINARY:
+        width8 = ((width + 7) // 8) * 8
+        data = [0 for _ in range((height * width8 // 8) * frames)]
+        for frameIndex in range(frames):
+            image.seek(frameIndex)
+            frame = image.convert("1", dither=Image.NONE)
+            if resize is not None:
+                frame = frame.resize([width, height])
+            for y in range(height):
+                for x in range(width):
+                    if frame.getpixel((x, y)):
+                        continue
+                    pos = x + y * width8 + (height * width8 * frameIndex)
+                    data[pos // 8] |= 0x80 >> (pos % 8)
+
 
     rhs = [HexInt(x) for x in data]
     #print(rhs)
@@ -229,7 +444,7 @@ def get_animation_json(path):
     basename = os.path.basename(path).split('.')[0]
     id = "anim_" + basename
     name = basename
-    return AnimationJson(id, name, path, width, height, frames, rhs, dataurl)
+    return AnimationJson(id, name, path,type, width, height, frames, rhs, dataurl)
 
 def get_font_json(name, path, size=5, glyphs=' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'):
     font = load_ttf_font(path, size)

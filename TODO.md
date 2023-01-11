@@ -16,6 +16,8 @@
 - [ ] load/save current screen
 - [ ] add user screen presets (load /save them from localstorage)
 
+- [ ] use dataUrls / compressed data for animations/images (and for fonts?)
+
 ## todos for future releases
 
 - [ ] download scene assets as a zip containing all data needed for esphome
