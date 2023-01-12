@@ -29,8 +29,8 @@ export class MyPrismCode extends LitElement {
         href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-twilight.css"
         rel="stylesheet"
       />
-      <div>
-        <pre><code id="codeblock" class="language-${this
+      <div class="">
+        <pre><code id="codeblock" class="container language-${this
           .lang}">&nbsp;</code></pre>
       </div>
     `;
@@ -58,7 +58,12 @@ export class MyPrismCode extends LitElement {
     }
   }
 
-  static styles = css``;
+  static styles = css`
+    pre {
+      max-height: 275px;
+      overflow: auto;
+    }
+  `;
 }
 
 declare global {

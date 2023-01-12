@@ -19,7 +19,7 @@ export class MyBooleanSetting extends MySetting {
       <div class="value">
         <sl-switch
           size="small"
-          ?checked="${this.value}"
+          ?checked="${this.value === true}"
           @sl-change="${this.handleValueChanged}"
         >
         </sl-switch>

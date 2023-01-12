@@ -221,21 +221,17 @@ export class MyApp extends LitElement {
     const preset = e.detail as ScreenPreset | undefined;
     if (preset) {
       this.currentScreenPreset = preset;
-      if (!this.selectScreenPreset) return;
-
       for (let i = 0; i < this.screenPresets.length; i++) {
-        console.log(this.selectScreenPreset.options[i].value);
         if (this.screenPresets[i].name === preset.name) {
           this.currentScreenPresetIndex = i;
-          //this.selectScreenPreset.value = i.toString();
         }
       }
-
       this.screenWidth = preset.width;
       this.screenHeight = preset.height;
       this.showGrid = preset.showgrid;
       this.canvasGridWidth = preset.gridsize;
       this.canvasScale = preset.scale;
+      this.requestUpdate();
       this._saveSettings();
     }
   }
@@ -518,7 +514,7 @@ export class MyApp extends LitElement {
                   ></my-number-setting>
                   <my-boolean-setting
                     label="show grid"
-                    value="${this.showGrid}"
+                    .value="${this.showGrid}"
                     editable
                     @change="${(e: CustomEvent) =>
                       (this.showGrid = e.detail as boolean)}"
@@ -647,7 +643,7 @@ export class MyApp extends LitElement {
     css`
       :host {
         display: block;
-        height: 100vh;
+        //height: 100vh;
         margin: 0;
         padding: 0;
         font-family: "Teko";
@@ -670,7 +666,7 @@ export class MyApp extends LitElement {
       .container {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        height: 100vh;
       }
       .second-row {
         flex-grow: 1;
@@ -691,16 +687,29 @@ export class MyApp extends LitElement {
       .second-col-container {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        //height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
       }
       .second-col-container .row1 {
-        flex-grow: auto;
+        flex-grow: 1;
         align-self: auto;
+        min-height: 50vh;
+
+        max-height: 50vh;
       }
       .second-col-container .row2 {
         flex-grow: 0;
         align-self: stretch;
-        height: 30vh;
+        //height: 30vh;
+        //max-height: 50vh;
+      }
+      .screen-container {
+        overflow: auto;
+      }
+      .toolbox-container {
+        //overflow: auto;
+        height: 100%;
       }
       .screen-settings-container label {
         width: 150px;

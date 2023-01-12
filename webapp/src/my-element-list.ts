@@ -218,7 +218,7 @@ export class MyElementList extends LitElement {
       font-weight: bold;
     }
     .elements {
-      height: 100vh;
+      //height: 100vh;
       min-width: 350px;
     }
     .type {

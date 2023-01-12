@@ -13,7 +13,7 @@ screens:
     width: 320
     height: 240
     background: "000000" #rgb color (hex)
-    showgrid: true #show grid [true|false]
+    showgrid: false #show grid [true|false]
     gridsize: 1 #grid size [number]
     scale: 2 #pixels per pixel [number]
     refresh: 16 #ms
@@ -22,7 +22,7 @@ screens:
     width: 320
     height: 480
     background: "000000" #rgb color (hex)
-    showgrid: true #show grid [true|false]
+    showgrid: false #show grid [true|false]
     gridsize: 1 #grid size [number]
     scale: 1 #pixels per pixel [number]
     refresh: 16 #ms
@@ -32,8 +32,8 @@ screens:
     height: 8
     background: "000000" #rgb color (hex)
     showgrid: true #show grid [true|false]
-    gridsize: 2 #grid size [number]
-    scale: 8 #pixels per pixel [number]
+    gridsize: 4 #grid size [number]
+    scale: 20 #pixels per pixel [number]
     refresh: 16 #ms
   - name: "ledmatrix_16x16"
     colormode: RGB24 #rgb24|rgb16|grey8|binary
@@ -41,8 +41,8 @@ screens:
     height: 16
     background: "000000" #rgb color (hex)
     showgrid: true #show grid [true|false]
-    gridsize: 2 #grid size [number]
-    scale: 8 #pixels per pixel [number]
+    gridsize: 4 #grid size [number]
+    scale: 16 #pixels per pixel [number]
     refresh: 16 #ms
 
 fonts:
@@ -87,6 +87,6 @@ images:
   - include: "data/images/niels/icons8/*.png"
     type: TRANSPARENT_BINARY
   - include: "data/images/stock/16x16_color_icons/*.png"
-    type: RGB24
+    type: TRANSPARENT_BINARY
   - include: "data/images/stock/random/*.[pP][nN][gG]"
     type: RGB24
