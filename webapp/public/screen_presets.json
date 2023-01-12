@@ -21,8 +21,8 @@
     },
     {
         "name": "ili93xx",
-        "width": 320,
-        "height": 480,
+        "width": 480,
+        "height": 320,
         "showgrid": false,
         "scale": 1,
         "gridsize": 1,

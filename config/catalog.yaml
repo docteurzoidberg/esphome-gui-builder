@@ -19,8 +19,8 @@ screens:
     refresh: 16 #ms
   - name: "ili93xx"
     colormode: RGB24 #rgb24|rgb16|grey8|binary
-    width: 320
-    height: 480
+    width: 480
+    height: 320
     background: "000000" #rgb color (hex)
     showgrid: false #show grid [true|false]
     gridsize: 1 #grid size [number]
