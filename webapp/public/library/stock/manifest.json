@@ -1,0 +1,48 @@
+{
+    "name": "stock",
+    "version": "0.0.0",
+    "buildpath": "build/library/stock",
+    "files": [
+        {
+            "path": "18x18_emojis/images.json",
+            "type": "images",
+            "size": 6263
+        },
+        {
+            "path": "16x16_bw_icons/images.json",
+            "type": "images",
+            "size": 27923
+        },
+        {
+            "path": "16x16_color_icons/images.json",
+            "type": "images",
+            "size": 39397
+        },
+        {
+            "path": "random/images.json",
+            "type": "images",
+            "size": 1006
+        },
+        {
+            "path": "color/animations.json",
+            "type": "animations",
+            "size": 20441
+        },
+        {
+            "path": "standard/fonts.json",
+            "type": "fonts",
+            "size": 316429
+        },
+        {
+            "path": "pixel/fonts.json",
+            "type": "fonts",
+            "size": 54507
+        },
+        {
+            "path": "screen_presets.json",
+            "type": "screens",
+            "size": 432
+        }
+    ],
+    "description": "Stock assets for gui helper"
+}

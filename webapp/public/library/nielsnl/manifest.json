@@ -1,0 +1,38 @@
+{
+    "name": "nielsnl",
+    "version": "0.0.0",
+    "buildpath": "build/library/nielsnl",
+    "files": [
+        {
+            "path": "backgrounds/images.json",
+            "type": "images",
+            "size": 173591
+        },
+        {
+            "path": "battery/images.json",
+            "type": "images",
+            "size": 3094
+        },
+        {
+            "path": "icons/images.json",
+            "type": "images",
+            "size": 94381
+        },
+        {
+            "path": "binary/animations.json",
+            "type": "animations",
+            "size": 823603
+        },
+        {
+            "path": "standard/fonts.json",
+            "type": "fonts",
+            "size": 1179221
+        },
+        {
+            "path": "screen_presets.json",
+            "type": "screens",
+            "size": 434
+        }
+    ],
+    "description": "NielNL's Switplate component assets"
+}

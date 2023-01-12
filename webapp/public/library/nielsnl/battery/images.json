@@ -1,0 +1,62 @@
+[
+    {
+        "id": "img_ic_battery_charging_100_white_18dp",
+        "name": "ic_battery_charging_100_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_charging_100_white_18dp.png",
+        "type": 2,
+        "width": 27,
+        "height": 27,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAfElEQVR4nM2V0QrAIAhFc+z/f9k9BCP0Kisd3PsShenJtMbgl5i5qmI7sZaRrhIPjD2HCA1scLCqui5WGT1K/6lLHmGumBijy6RhTKrtPkXBAUTkhDFvB4I8JoCzF7fzuLbwvxX+RiLII1Tna+bV4NG8wZSMzR6//5FMegAunyEuP2I1NQAAAABJRU5ErkJggg==",
+        "data": []
+    },
+    {
+        "id": "img_ic_battery_low_white_18dp",
+        "name": "ic_battery_low_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_low_white_18dp.png",
+        "type": 2,
+        "width": 27,
+        "height": 27,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAW0lEQVR4nO2UUQoAIAhDLbr/le0C6xEVYaG/uvVEmln8Ktx2d6EppKpbPKr0axJNiBWsYJy0G02e37pBDy4Ae5xnTMd0/NuRfqEFycfXHUeRxZF8hZFPuTYZrDr8fBgrgNms1AAAAABJRU5ErkJggg==",
+        "data": []
+    },
+    {
+        "id": "img_ic_battery_high_white_18dp",
+        "name": "ic_battery_high_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_high_white_18dp.png",
+        "type": 2,
+        "width": 27,
+        "height": 27,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAXUlEQVR4nO2UUQoAIAhDNbr/le0Cc4iFGLhf22uhKdJfystmBjzKXOsqDxK+DUYDZhQWZAzivJPvX82IXgeqOzPEIXYibl7m3yNDbLEffyd6q5ev5JKM8YlJzFYPHZNrFTSsCzmaAAAAAElFTkSuQmCC",
+        "data": []
+    },
+    {
+        "id": "img_ic_battery_medium_white_18dp",
+        "name": "ic_battery_medium_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_medium_white_18dp.png",
+        "type": 2,
+        "width": 27,
+        "height": 27,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAYklEQVR4nO1UQQoAIAjT6P9ftg/MJSYh1K62NZkq0h/Ky2YGOMpY48gPAv4NWgNkZBZ4DMp5L+u7nqRGEiB91Ht8U5ElI0125k3FTTI8hIziz7pA0TtZ/CRf8RifmMRs9cACIF4bMl4Pgr4AAAAASUVORK5CYII=",
+        "data": []
+    },
+    {
+        "id": "img_ic_battery_outline_white_18dp",
+        "name": "ic_battery_outline_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_outline_white_18dp.png",
+        "type": 2,
+        "width": 27,
+        "height": 27,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAV0lEQVR4nO1VQQ4AIAjS1v+/bNcORK5a8wBXBWFualYfzssRATjOWO3KDwKeBq0BMjILPCblVp3vU3dSIxsgOd57lKIUpSjFPdg1y5/eGV9S81d31lkMA4imEi5sm0k0AAAAAElFTkSuQmCC",
+        "data": []
+    },
+    {
+        "id": "img_ic_battery_white_18dp",
+        "name": "ic_battery_white_18dp",
+        "path": "data/images/niels/battery/ic_battery_white_18dp.png",
+        "type": 2,
+        "width": 100,
+        "height": 20,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAUCAIAAAD0og/CAAAASElEQVR4nO3QwQ3AIBDAsNL9dz5WIC+EZE8QZc3Mx5n/dsBLzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKNjGGAyVNF++qAAAAAElFTkSuQmCC",
+        "data": []
+    }
+]

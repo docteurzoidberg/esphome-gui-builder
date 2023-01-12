@@ -32,6 +32,7 @@ import "my-element-list";
 import "my-element-settings";
 import "my-canvas-display";
 import "my-toolbox";
+import "my-toolbox-tree";
 import "my-section";
 import "my-tabs";
 import "my-prism-code";
@@ -592,6 +593,8 @@ export class MyApp extends LitElement {
                     TOOLBOX
                   </h2>
                   <section slot="panel">
+                    <my-toolbox-tree .displayScale="${this.toolboxScale}">
+                    </my-toolbox-tree>
                     <!--TOOLBOX -->
                     <my-toolbox
                       .displayScale="${this.toolboxScale}"

@@ -1,0 +1,34 @@
+library:
+  name: "mbuts"
+  buildpath: "build/library/mbuts"
+  publish: "webapp/public/library/mbuts"
+  description: "Mbuts' assets"
+
+screens:
+  - name: "ili9341"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 320
+    height: 240
+    background: "000000" #rgb color (hex)
+    showgrid: false #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 2 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ili93xx"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 480
+    height: 320
+    background: "000000" #rgb color (hex)
+    showgrid: false #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 1 #pixels per pixel [number]
+    refresh: 16 #ms
+
+fonts:
+  - folder:
+    name: "default"
+    files:
+      - name: "Roboto_20"
+        file: "data/fonts/Roboto-Medium.ttf"
+        size: 20
+        glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'

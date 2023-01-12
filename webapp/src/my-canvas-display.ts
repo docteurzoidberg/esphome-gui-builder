@@ -81,26 +81,28 @@ export class MyCanvasDisplay extends LitElement {
 
   //rendering
   ctx?: CanvasRenderingContext2D | null;
-  lastFrameTs: number = 0;
+  lastFrameTs: number = performance.now();
   lastAnimationRequest = 0;
 
   //when there is a dragover event
   dragOverEvent?: DragEvent;
   dragOverElement?: GuiElement;
 
-  _draw(ts: number) {
-    //todo: limit fps?
-    //if(ts-this.lastFrameTs < (1000/30))
-    //  return;
-    this.lastFrameTs = ts;
-    if (this.ctx) {
-      this.ctx.save();
-      this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
-      this._drawCanvas();
-      this.ctx.restore();
+  _draw() {
+    const currentTime = performance.now();
+    const deltaTime = currentTime - this.lastFrameTs;
+    const threshold = 1000 / 60;
+    if (deltaTime > threshold) {
+      if (this.ctx) {
+        this.ctx.save();
+        this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+        this._drawCanvas();
+        this.lastFrameTs = performance.now();
+        this.ctx.restore();
+      }
     }
-    this.lastAnimationRequest = requestAnimationFrame((ts: number) => {
-      this._draw(ts);
+    this.lastAnimationRequest = requestAnimationFrame(() => {
+      this._draw();
     });
   }
 
@@ -121,7 +123,7 @@ export class MyCanvasDisplay extends LitElement {
       })
     );
 
-    this._draw(this.lastFrameTs);
+    this._draw();
 
     //dispatch drawing-update event
     //this.dispatchEvent(
@@ -173,11 +175,18 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _drawCanvas() {
+    console.info("draw canvas");
     //TODO: check if canvas size changed?
     this._calcCanvasSize(this.displayWidth, this.displayHeight);
 
+    //const ctx = this.ctx;
+    if (!this.ctx) {
+      console.warn("no canvas context");
+      this.ctx = this.canvasElement.getContext("2d");
+    }
+    if (!this.ctx) return;
+
     const ctx = this.ctx;
-    if (!ctx) return;
 
     //fill with white backgound (for transparency)
     ctx.fillStyle = "white";
@@ -195,7 +204,7 @@ export class MyCanvasDisplay extends LitElement {
     newcanvas.width = this.displayWidth;
     newcanvas.height = this.displayHeight;
 
-    const sortedElements = [...this.elements].reverse();
+    const sortedElements = [...this.elements];
 
     //draw each guielement
     sortedElements.forEach((element) => {

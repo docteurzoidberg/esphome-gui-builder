@@ -1,0 +1,22 @@
+[
+    {
+        "id": "img_zzz1",
+        "name": "zzz1",
+        "path": "data/images/stock/random/zzz1.PNG",
+        "type": 2,
+        "width": 16,
+        "height": 16,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAlklEQVR4nJ1SwQ2EMAyzEQP0tmOE2+BmYANG6HYsgBQeQaZNy91B1EeU2rGjhDnhVgwAphXT+gMnzFiWABiMoCcAPI8K+dVp2UIdNvzj22AueBLe86bG+hO6FDwVupxAvrR0pVMRls+IJkiqRUVwtA9XjmgWvUVLBPVC8dsMpY2wkOM02uGUq+Iw5nRk3X0rhOGTa70VO/udPaczmHEWAAAAAElFTkSuQmCC",
+        "data": []
+    },
+    {
+        "id": "img_zzz2",
+        "name": "zzz2",
+        "path": "data/images/stock/random/zzz2.PNG",
+        "type": 2,
+        "width": 16,
+        "height": 16,
+        "dataurl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAfElEQVR4nK1RyQ3AMAjDUR4ZtSN0hIzQUfujD0uIFhqJqjyCw2FMgmM/pWKtVP2loYvINkdMvEntdKrqowAiCymaVQDwgCw0XkkBG73NoaqsXoBkaea8SB+5NZgq40si8TVsXa/WIknD2gofxzmNLp6pSHlo9ZigKvgPuwAU1U4kb2xuGAAAAABJRU5ErkJggg==",
+        "data": []
+    }
+]

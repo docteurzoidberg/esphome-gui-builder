@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Default",
+        "width": 128,
+        "height": 64,
+        "showgrid": true,
+        "scale": 4,
+        "gridsize": 2,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ili9341",
+        "width": 320,
+        "height": 240,
+        "showgrid": false,
+        "scale": 2,
+        "gridsize": 1,
+        "colormode": "RGB24",
+        "background": "000000"
+    }
+]

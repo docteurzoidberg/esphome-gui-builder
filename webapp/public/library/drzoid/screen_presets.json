@@ -1,0 +1,32 @@
+[
+    {
+        "name": "ledmatrix_35x25",
+        "width": 35,
+        "height": 25,
+        "showgrid": true,
+        "scale": 8,
+        "gridsize": 4,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ledmatrix_16x16",
+        "width": 16,
+        "height": 16,
+        "showgrid": true,
+        "scale": 16,
+        "gridsize": 4,
+        "colormode": "RGB24",
+        "background": "000000"
+    },
+    {
+        "name": "ledmatrix_8x32",
+        "width": 32,
+        "height": 8,
+        "showgrid": true,
+        "scale": 20,
+        "gridsize": 4,
+        "colormode": "RGB24",
+        "background": "000000"
+    }
+]

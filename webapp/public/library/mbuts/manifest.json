@@ -1,0 +1,18 @@
+{
+    "name": "mbuts",
+    "version": "0.0.0",
+    "buildpath": "build/library/mbuts",
+    "files": [
+        {
+            "path": "default/fonts.json",
+            "type": "fonts",
+            "size": 185666
+        },
+        {
+            "path": "screen_presets.json",
+            "type": "screens",
+            "size": 434
+        }
+    ],
+    "description": "Mbuts' assets"
+}

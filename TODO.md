@@ -9,14 +9,15 @@
 
 ## todos for the first real release
 
+- [ ] add user screen presets (load /save them from localstorage)
 - [ ] import/export asset library from json
 - [ ] import/export current screen
-- [ ] add user screen presets (load /save them from localstorage)
+- [ ] handle basic shape drawing (line, rectangle, circle)
 - [ ] handle color: yaml declaration with auto-generated palette
 - [ ] handle binary type for images and animations (color_on, color_off)
 - [ ] handle text alignments
-- [ ] handle basic shape drawing (line, rectangle, circle)
-- [ ] use dataUrls / compressed data for animations/images (and for fonts?)
+
+- [ ] use dataUrls / compressed data for animations/images/fonts
 
 ## todos for future releases
 

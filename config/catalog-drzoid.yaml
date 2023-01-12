@@ -1,0 +1,68 @@
+library:
+  name: "drzoid"
+  buildpath: "build/library/drzoid"
+  publish: "webapp/public/library/drzoid"
+  description: "DrZoid' assets for led matrix/tiny displays"
+
+screens:
+  - name: "ledmatrix_35x25"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 35
+    height: 25
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 4 #grid size [number]
+    scale: 8 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ledmatrix_16x16"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 16
+    height: 16
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 4 #grid size [number]
+    scale: 16 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ledmatrix_8x32"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 32
+    height: 8
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 4 #grid size [number]
+    scale: 20 #pixels per pixel [number]
+    refresh: 16 #ms
+
+animations:
+  - folder:
+    name: "16x16"
+    files:
+      - include: "data/animations/stock/boot-aliens-16x16.gif"
+
+fonts:
+  - folder:
+    name: "tiny"
+    files:
+      - name: "8Bit HUD"
+        file: "data/fonts/8-bit-hud.ttf"
+        glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+        size: 5
+      - name: "5x5"
+        file: "data/fonts/5x5_pixel.ttf"
+        glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+        size: 8
+      - name: "squares"
+        file: "data/fonts/Squares.ttf"
+        glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+        size: 4
+
+images:
+  - folder:
+    name: "b&w"
+    files:
+      - include: "data/images/stock/18x18_emojis/*.png"
+      - include: "data/images/stock/16x16_bw_icons/*.png"
+  - folder:
+    name: "color"
+    files:
+      - include: "data/images/stock/16x16_color_icons/*.png"

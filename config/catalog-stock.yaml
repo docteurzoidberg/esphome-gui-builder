@@ -1,0 +1,71 @@
+library:
+  name: "stock"
+  buildpath: "build/library/stock"
+  publish: "webapp/public/library/stock"
+  description: "Stock assets for gui helper"
+
+screens:
+  - name: "Default"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 128
+    height: 64
+    background: "000000" #rgb color (hex)
+    showgrid: true #show grid [true|false]
+    gridsize: 2 #grid size [number]
+    scale: 4 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ili9341"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 320
+    height: 240
+    background: "000000" #rgb color (hex)
+    showgrid: false #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 2 #pixels per pixel [number]
+    refresh: 16 #ms
+
+fonts:
+  - folder:
+    name: "standard"
+    files:
+      - name: "Roboto_20"
+        file: "data/fonts/Roboto-Medium.ttf"
+        size: 20
+        glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+      - name: "Roboto_16"
+        file: "data/fonts/Roboto-Medium.ttf"
+        size: 16
+        glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+  - folder:
+    name: "pixel"
+    files:
+      - name: "8Bit HUD"
+        file: "data/fonts/8-bit-hud.ttf"
+        glyphs: ' !"%()+=,-.:/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+        size: 5
+
+animations:
+  - folder:
+    name: "color"
+    files:
+      - include: "data/animations/stock/*.[gG][iI][fF]"
+
+images:
+  - folder:
+    name: "18x18_emojis"
+    files:
+      - include: "data/images/stock/18x18_emojis/*.png"
+  - folder:
+    name: "16x16_bw_icons"
+    files:
+      - include: "data/images/stock/16x16_bw_icons/*.png"
+  - folder:
+    name: "16x16_color_icons"
+    files:
+      - include: "data/images/stock/16x16_color_icons/*.png"
+        type: TRANSPARENT_BINARY
+  - folder:
+    name: "random"
+    files:
+      - include: "data/images/stock/random/*.[pP][nN][gG]"
+        type: RGB24

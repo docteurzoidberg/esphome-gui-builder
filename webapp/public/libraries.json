@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "libraries": [
+    "/library/stock",
+    "/library/drzoid"
+  ]
+}

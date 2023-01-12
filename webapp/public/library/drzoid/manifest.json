@@ -1,0 +1,33 @@
+{
+    "name": "drzoid",
+    "version": "0.0.0",
+    "buildpath": "build/library/drzoid",
+    "files": [
+        {
+            "path": "b&w/images.json",
+            "type": "images",
+            "size": 34184
+        },
+        {
+            "path": "color/images.json",
+            "type": "images",
+            "size": 38089
+        },
+        {
+            "path": "16x16/animations.json",
+            "type": "animations",
+            "size": 8625
+        },
+        {
+            "path": "tiny/fonts.json",
+            "type": "fonts",
+            "size": 268945
+        },
+        {
+            "path": "screen_presets.json",
+            "type": "screens",
+            "size": 665
+        }
+    ],
+    "description": "DrZoid' assets for led matrix/tiny displays"
+}

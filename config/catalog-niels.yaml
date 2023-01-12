@@ -1,0 +1,63 @@
+library:
+  name: "nielsnl"
+  buildpath: "build/library/nielsnl"
+  publish: "webapp/public/library/nielsnl"
+  description: "NielNL's Switplate component assets"
+
+screens:
+  - name: "ili9341"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 320
+    height: 240
+    background: "000000" #rgb color (hex)
+    showgrid: false #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 2 #pixels per pixel [number]
+    refresh: 16 #ms
+  - name: "ili93xx"
+    colormode: RGB24 #rgb24|rgb16|grey8|binary
+    width: 480
+    height: 320
+    background: "000000" #rgb color (hex)
+    showgrid: false #show grid [true|false]
+    gridsize: 1 #grid size [number]
+    scale: 1 #pixels per pixel [number]
+    refresh: 16 #ms
+
+fonts:
+  - folder:
+    name: "standard"
+    files:
+      - name: "Roboto_20"
+        file: "data/fonts/Roboto-Medium.ttf"
+        size: 20
+        glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+      - name: "IBMPlexMono_big"
+        file: "data/fonts/Roboto-Medium.ttf"
+        size: 48
+        glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ↑'
+
+animations:
+  - folder:
+    name: "binary"
+    files:
+      - include: "data/animations/niels/writingpen.gif"
+        resize: 100x100
+        type: BINARY
+
+images:
+  - folder:
+    name: "backgrounds"
+    files:
+      - include: "data/images/niels/backgrounds/*.png"
+        resize: 320x240
+        type: RGB24
+  - folder:
+    name: "battery"
+    files:
+      - include: "data/images/niels/battery/*.png"
+  - folder:
+    name: "icons"
+    files:
+      - include: "data/images/niels/icons8/*.png"
+        type: TRANSPARENT_BINARY
