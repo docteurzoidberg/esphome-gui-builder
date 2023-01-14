@@ -12,6 +12,10 @@ import "my-image-list";
 import "my-animation-list";
 import "my-font-list";
 import "my-section";
+import { LibraryManager } from "classes/LibraryManager";
+import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
+import { EspHomeImageJSON } from "interfaces/esphome/EspHomeImageJSON";
+import { EspHomeAnimationJSON } from "interfaces/esphome/EspHomeAnimationJSON";
 
 registerIconLibrary("boxicons", {
   resolver: (name) => {
@@ -38,6 +42,8 @@ export class MyToolboxTree extends LitElement {
   animationsLoaded = false;
   imagesLoaded = false;
 
+  tree: any;
+
   handleFontsLoaded() {
     this.fontsLoaded = true;
     this.checkRaiseLoaded();
@@ -60,146 +66,204 @@ export class MyToolboxTree extends LitElement {
     }
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback();
+    LibraryManager.loadConfig().then(() => {
+      console.log("LibraryManager: config loaded", LibraryManager.getConfig());
+      LibraryManager.loadLibraries().then(() => {
+        console.log(
+          "LibraryManager: libraries loaded",
+          LibraryManager.getLibraries()
+        );
+
+        //construct tree from folders with library name as root
+        const tree = Object.create(null);
+
+        const types = ["images", "animations", "fonts"];
+        types.forEach((type) => {
+          const libs = LibraryManager.getLibraries(type);
+          libs.forEach((lib) => {
+            if (!lib.files) return;
+            if (!lib.manifest) return;
+            const files = lib.files;
+            files.forEach((_file) => {
+              if (_file.type !== type) return;
+              //split folder and file name
+              const folder = _file.path.split("/").slice(0, -1).join("/");
+              const json = _file.data;
+              const libname = lib.manifest!.name;
+              tree[_file.type] = tree[_file.type] || Object.create(null);
+              tree[_file.type][libname] =
+                tree[_file.type][libname] || Object.create(null);
+              tree[_file.type][libname][folder] = json;
+              console.log(type + " file", json);
+            });
+          });
+        });
+
+        console.dir(tree);
+        this.tree = tree;
+        this.dataLoaded = true;
+        this.fontsLoaded = true;
+        this.animationsLoaded = true;
+        this.imagesLoaded = true;
+        this.checkRaiseLoaded();
+      });
+    });
+  }
+
+  renderFonts(libname: string, foldername: string, fonts: EspHomeFontJSON[]) {
+    return fonts.map((font) => {
+      console.log("font/" + libname + "/" + foldername + "/" + font.name);
+      return html`<sl-tree-item>${font.name}</sl-tree-item>`;
+    });
+  }
+
+  renderImages(
+    libname: string,
+    foldername: string,
+    images: EspHomeImageJSON[]
+  ) {
+    return images.map((image) => {
+      console.log("image/" + libname + "/" + foldername + "/" + image.name);
+      return html`
+        <img
+          src="${image.dataurl}"
+          width="${image.width * this.displayScale}"
+          height="${image.height * this.displayScale}"
+          alt="${image.name}"
+        />
+      `;
+    });
+  }
+
+  renderAnimations(
+    libname: string,
+    foldername: string,
+    animations: EspHomeAnimationJSON[]
+  ) {
+    return animations.map((animation) => {
+      console.log(
+        "animation/" + libname + "/" + foldername + "/" + animation.name
+      );
+      return html`<sl-tree-item>${animation.name}</sl-tree-item>`;
+    });
+  }
+
+  renderAnimationLib(libname: string, lib: any) {
+    if (!lib) return html`no lib`;
+    return Object.keys(lib).map((folder) => {
+      console.log("font/" + libname + "/" + folder);
+      const json = lib[folder];
+      return html`
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-folder"></sl-icon>
+          ${folder} ${this.renderAnimations(libname, folder, json)}
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderImageLib(libname: string, lib: any) {
+    if (!lib) return html`no lib`;
+    return Object.keys(lib).map((folder) => {
+      console.log("font/" + libname + "/" + folder);
+      const json = lib[folder];
+      return html`
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-folder"></sl-icon>
+          ${folder}
+          <sl-tree-item>
+            <div class="image-container">
+              ${this.renderImages(libname, folder, json)}
+            </div>
+          </sl-tree-item>
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderFontLib(libname: string, lib: any) {
+    if (!lib) return html`no lib`;
+    return Object.keys(lib).map((folder) => {
+      console.log("font/" + libname + "/" + folder);
+      const json = lib[folder];
+      return html`
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-folder"></sl-icon>
+          ${folder} ${this.renderFonts(libname, folder, json)}
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderTreeFonts() {
+    if (!this.tree) return html`no tree`;
+    if (!this.tree.fonts) return html`no tree fonts`;
+    console.log("renderTree", this.tree.fonts);
+    return Object.keys(this.tree.fonts).map((libname) => {
+      console.log("font/" + libname);
+      const lib = this.tree.fonts[libname];
+      return html`
+        <sl-tree-item>
+          ${libname} ${this.renderFontLib(libname, lib)}
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderTreeImages() {
+    if (!this.tree) return html`no tree`;
+    if (!this.tree.images) return html`no tree images`;
+    console.log("renderTree", this.tree.images);
+    return Object.keys(this.tree.images).map((libname) => {
+      console.log("image/" + libname);
+      const lib = this.tree.images[libname];
+      return html`
+        <sl-tree-item>
+          ${libname} ${this.renderImageLib(libname, lib)}
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderTreeAnimations() {
+    if (!this.tree) return html`no tree`;
+    if (!this.tree.images) return html`no tree animations`;
+    console.log("renderTree", this.tree.images);
+    return Object.keys(this.tree.images).map((libname) => {
+      console.log("animation/" + libname);
+      const lib = this.tree.animations[libname];
+      return html`
+        <sl-tree-item>
+          ${libname} ${this.renderAnimationLib(libname, lib)}
+        </sl-tree-item>
+      `;
+    });
+  }
+
+  renderTree() {
+    if (!this.tree) return html`no tree`;
+    return html`
+      <sl-tree class="tree-with-icons" selection="leaf">
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-text"></sl-icon>
+          Fonts ${this.renderTreeFonts()}
+        </sl-tree-item>
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-image"></sl-icon>
+          Images ${this.renderTreeImages()}
+        </sl-tree-item>
+        <sl-tree-item>
+          <sl-icon library="boxicons" name="bx-movie"></sl-icon>
+          Animations ${this.renderTreeAnimations()}
+        </sl-tree-item>
+      </sl-tree>
+    `;
   }
 
   render() {
-    return html`
-      <div class="tools">
-        <sl-tree class="tree-with-icons" selection="leaf">
-          <sl-tree-item>
-            <sl-icon library="boxicons" name="bx-text"></sl-icon>
-            Fonts
-            <sl-tree-item>
-              Stock
-              <sl-tree-item>
-                Font1
-                <!-- TODO: insert render of the font here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                Font2
-                <!-- TODO: insert render of the font here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                Font3
-                <!-- TODO: insert render of the font here -->
-              </sl-tree-item>
-            </sl-tree-item>
-            <sl-tree-item>
-              Bigs screens
-              <sl-tree-item>
-                Font1
-                <!-- TODO: insert render of the font here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                Font2
-                <!-- TODO: insert render of the font here -->
-              </sl-tree-item>
-            </sl-tree-item>
-          </sl-tree-item>
-
-          <sl-tree-item>
-            <sl-icon library="boxicons" name="bx-image"></sl-icon>
-            Images
-            <sl-tree-item>
-              Stock
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder1
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder2
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder3
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-            </sl-tree-item>
-            <sl-tree-item>
-              Bigs screens
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder1
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder2
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder3
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-            </sl-tree-item>
-            <sl-tree-item>
-              Niel's switchplate sample
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder1
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder2
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder3
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-            </sl-tree-item>
-          </sl-tree-item>
-          <sl-tree-item>
-            <sl-icon library="boxicons" name="bx-movie"></sl-icon>
-            Animations
-            <sl-tree-item>
-              Stock
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder1
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder2
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder3
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-            </sl-tree-item>
-            <sl-tree-item>
-              Bigs screens
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder1
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder2
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-              <sl-tree-item>
-                <sl-icon library="boxicons" name="bx-folder"></sl-icon>
-                Folder3
-                <!-- TODO: insert render of the folder here -->
-              </sl-tree-item>
-            </sl-tree-item>
-          </sl-tree-item>
-        </sl-tree>
-      </div>
-    `;
+    return html`<div class="tools">${this.renderTree()}</div>`;
   }
 
   static styles = css`
@@ -221,6 +285,10 @@ export class MyToolboxTree extends LitElement {
     h2,
     h3 {
       text-decoration: underline;
+    }
+
+    .image-container img {
+      display: inline-block;
     }
   `;
 }

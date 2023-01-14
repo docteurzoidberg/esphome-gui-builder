@@ -8,7 +8,7 @@ import "@shoelace-style/shoelace/dist/components/icon/icon";
 import "@shoelace-style/shoelace/dist/components/input/input";
 import "@shoelace-style/shoelace/dist/components/button/button";
 import "@shoelace-style/shoelace/dist/components/checkbox/checkbox";
-
+import "@shoelace-style/shoelace/dist/components/split-panel/split-panel";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
 import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
@@ -593,8 +593,6 @@ export class MyApp extends LitElement {
                     TOOLBOX
                   </h2>
                   <section slot="panel">
-                    <my-toolbox-tree .displayScale="${this.toolboxScale}">
-                    </my-toolbox-tree>
                     <!--TOOLBOX -->
                     <my-toolbox
                       .displayScale="${this.toolboxScale}"

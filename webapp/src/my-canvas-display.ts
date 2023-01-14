@@ -175,9 +175,8 @@ export class MyCanvasDisplay extends LitElement {
   }
 
   _drawCanvas() {
-    console.info("draw canvas");
+    //console.info("draw canvas");
     //TODO: check if canvas size changed?
-    this._calcCanvasSize(this.displayWidth, this.displayHeight);
 
     //const ctx = this.ctx;
     if (!this.ctx) {
@@ -187,6 +186,7 @@ export class MyCanvasDisplay extends LitElement {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
+    this._calcCanvasSize(this.displayWidth, this.displayHeight);
 
     //fill with white backgound (for transparency)
     ctx.fillStyle = "white";

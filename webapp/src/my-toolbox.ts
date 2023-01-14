@@ -77,7 +77,7 @@ export class MyToolbox extends LitElement {
   static styles = css`
     .tools {
       //border: 2px solid;
-      max-height: 345px;
+      max-height: 340px;
       overflow: auto;
       background-color: #333;
       padding: 10px;
