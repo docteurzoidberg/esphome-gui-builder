@@ -75,17 +75,19 @@ export class MyToolbox extends LitElement {
   }
 
   static styles = css`
+    :host {
+      flex: 1;
+    }
     .tools {
       //border: 2px solid;
-      max-height: 340px;
-      overflow: auto;
+      max-height: 100%;
+      flex: 1;
+      overflow-y: scroll;
       background-color: #333;
-      padding: 10px;
     }
     h2 {
       margin-top: 0;
     }
-
     h2,
     h3 {
       text-decoration: underline;
