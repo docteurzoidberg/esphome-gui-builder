@@ -506,21 +506,21 @@ def validate_pillow_installed():
 def main():
     AssetsBuilder()
 
-    file_size = os.path.getsize('data/screen_presets.json')
+    file_size = os.path.getsize('build/library/legacy/screen_presets.json')
     print(f'screen_presets.json is {file_size/ (1024)} kB')
-    shutil.copy('data/screen_presets.json', 'webapp/public/screen_presets.json')
+    shutil.copy('build/library/legacy/screen_presets.json', 'webapp/public/library/legacy/screen_presets.json')
 
-    file_size = os.path.getsize('data/images.json')
+    file_size = os.path.getsize('build/library/legacy/images.json')
     print(f'images.json is {file_size/ (1024)} kB')
-    shutil.copy('data/images.json', 'webapp/public/images.json')
+    shutil.copy('build/library/legacy/images.json', 'webapp/public/library/legacy/images.json')
 
-    file_size = os.path.getsize('data/animations.json')
+    file_size = os.path.getsize('build/library/legacy/animations.json')
     print(f'animations.json is {file_size/ (1024)} kB')
-    shutil.copy('data/animations.json', 'webapp/public/animations.json')
+    shutil.copy('build/library/legacy/animations.json', 'webapp/public/library/legacy/animations.json')
 
-    file_size = os.path.getsize('data/fonts.json')
+    file_size = os.path.getsize('build/library/legacy/fonts.json')
     print(f'fonts.json is {file_size/ (1024)} kB')
-    shutil.copy('data/fonts.json', 'webapp/public/fonts.json')
+    shutil.copy('build/library/legacy/fonts.json', 'webapp/public/library/legacy/fonts.json')
 
 validate_pillow_installed()
 main()

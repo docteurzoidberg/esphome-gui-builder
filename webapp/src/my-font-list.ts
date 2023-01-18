@@ -53,7 +53,7 @@ export class MyFontList extends LitElement {
   }
 
   loadXhrData() {
-    fetch("./fonts.json")
+    fetch("./library/legacy/fonts.json")
       .then((response) => response.json())
       .then((json: EspHomeFontJSON[]) => {
         this.fonts = json.map((fontjson) => new EspHomeFont(fontjson));
@@ -79,7 +79,7 @@ export class MyFontList extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.dragImg.src = "drag_text.png";
+    this.dragImg.src = "img/drag_text.png";
     if (this.fontsLoaded) return;
     if (this.haveLocalData()) {
       this.loadLocalData();

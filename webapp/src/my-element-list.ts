@@ -97,11 +97,23 @@ export class MyElementList extends LitElement {
 
   renderTypeIcon(element: GuiElement) {
     if (element.type == "image")
-      return html`<img src="tag_png.png" class="type type-png" alt="png" />`;
+      return html`<img
+        src="img/tag_png.png"
+        class="type type-png"
+        alt="png"
+      />`;
     if (element.type == "animation")
-      return html`<img src="tag_gif.png" class="type type-gif" alt="gif" />`;
+      return html`<img
+        src="img/tag_gif.png"
+        class="type type-gif"
+        alt="gif"
+      />`;
     if (element.type == "text")
-      return html`<img src="tag_text.png" class="type type-text" alt="text" />`;
+      return html`<img
+        src="img/tag_text.png"
+        class="type type-text"
+        alt="text"
+      />`;
     return html`<span class="type type-unknown">[?]</span>`;
   }
 

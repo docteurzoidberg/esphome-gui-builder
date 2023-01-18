@@ -58,8 +58,8 @@ export class MyImageList extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.dragImg.src = "drag_png.png";
-    fetch("./images.json")
+    this.dragImg.src = "img/drag_png.png";
+    fetch("./library/legacy/images.json")
       .then((response) => response.json())
       .then((json: EspHomeImageJSON[]) => {
         this.images = json.map((imagejson) => {

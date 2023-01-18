@@ -17,7 +17,7 @@ export default defineConfig({
             __dirname,
             "node_modules/@shoelace-style/shoelace/dist/assets"
           ),
-          dest: resolve(__dirname, "./public/assets/shoelace"),
+          dest: resolve(__dirname, "./public/shoelace"),
         },
       ],
     }),

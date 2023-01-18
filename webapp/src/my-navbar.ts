@@ -40,7 +40,7 @@ export class MyNavbar extends LitElement {
   renderTitle(text: string) {
     return html`<span class="title">
       <sl-icon
-        src="esphome.svg"
+        src="svg/esphome.svg"
         style="font-size: 3rem; margin-top: 5px;"
       ></sl-icon>
       <div
