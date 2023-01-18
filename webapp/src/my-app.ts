@@ -21,7 +21,7 @@ import "@shoelace-style/shoelace/dist/components/tooltip/tooltip";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
 import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
-import "styles/theme.css";
+import "styles/my-theme.css"; //shoelace variables overides?
 
 registerIconLibrary("boxicons", {
   resolver: (name) => {
@@ -32,7 +32,7 @@ registerIconLibrary("boxicons", {
   },
   mutator: (svg) => svg.setAttribute("fill", "currentColor"),
 });
-setBasePath("/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
+setBasePath("/shoelace"); // Set the base path for Shoelace's assets (icons)
 //-
 
 import "my-loading-screen";
