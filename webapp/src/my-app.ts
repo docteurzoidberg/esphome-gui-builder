@@ -1,21 +1,27 @@
 import { LitElement, css, html, PropertyValueMap } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { COMMIT_ID, BRANCH } from "vite:my-plugin";
+//import { COMMIT_ID, BRANCH } from "vite:my-plugin";
 
 //Shoelace
-import "@shoelace-style/shoelace/dist/components/icon/icon";
-import "@shoelace-style/shoelace/dist/components/input/input";
 import "@shoelace-style/shoelace/dist/components/button/button";
 import "@shoelace-style/shoelace/dist/components/checkbox/checkbox";
-import "@shoelace-style/shoelace/dist/components/split-panel/split-panel";
+import "@shoelace-style/shoelace/dist/components/color-picker/color-picker";
+import "@shoelace-style/shoelace/dist/components/divider/divider";
 import "@shoelace-style/shoelace/dist/components/drawer/drawer";
+import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/components/icon-button/icon-button";
+import "@shoelace-style/shoelace/dist/components/input/input";
+import "@shoelace-style/shoelace/dist/components/split-panel/split-panel";
 import "@shoelace-style/shoelace/dist/components/tab/tab";
 import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel";
 import "@shoelace-style/shoelace/dist/components/tab-group/tab-group";
+import "@shoelace-style/shoelace/dist/components/tooltip/tooltip";
+
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
 import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+import "styles/theme.css";
 
 registerIconLibrary("boxicons", {
   resolver: (name) => {
@@ -26,34 +32,29 @@ registerIconLibrary("boxicons", {
   },
   mutator: (svg) => svg.setAttribute("fill", "currentColor"),
 });
-
-setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
+setBasePath("/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
 //-
 
-import "my-github-link";
-import "my-wip-logo";
+import "my-loading-screen";
 import "my-element-list";
 import "my-element-settings";
 import "my-canvas-display";
 import "my-toolbox";
 import "my-toolbox-tree";
 import "my-section";
-import "my-tabs";
 import "my-prism-code";
 import "my-navbar";
 import "drawer-settings";
 import "drawer-infos";
 import "drawer-presets";
 import "drawer-libraries";
-
 import "setting-text";
 import "setting-number";
 import "setting-boolean";
-
 import "dialog-load-preset";
 import "dialog-add-text";
 
-import { DialogLoadPreset } from "dialog-load-preset";
+import { DialogLoadPreset } from "./dialog-load-preset";
 import { DialogAddText } from "dialog-add-text";
 
 import { ScreenPreset } from "types/ScreenPreset";
@@ -80,6 +81,9 @@ import { MyFullScreenDrawer } from "my-fullscreen-drawer";
 export class MyApp extends LitElement {
   //app title
   title = "GUI Helper for ESPHome";
+
+  @property()
+  showLoadingScreen: boolean = true;
 
   @query("#screenpreset")
   selectScreenPreset?: HTMLSelectElement;
@@ -478,6 +482,9 @@ export class MyApp extends LitElement {
       );
       alert("Cheatcodes activated");
     });
+    setTimeout(() => {
+      this.showLoadingScreen = false;
+    }, 9000);
   }
 
   protected updated(
@@ -488,6 +495,11 @@ export class MyApp extends LitElement {
 
   render() {
     return html`
+      <my-loading-screen
+        id="loadingScreen"
+        .open=${this.showLoadingScreen}
+      ></my-loading-screen>
+
       <dialog-add-text
         id="addTextDialog"
         @close="${this.handleAddTextDialogClosed}"

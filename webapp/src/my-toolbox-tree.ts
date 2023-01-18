@@ -4,31 +4,15 @@ import { customElement, property } from "lit/decorators.js";
 import "@shoelace-style/shoelace/dist/components/tree/tree";
 import "@shoelace-style/shoelace/dist/components/tree-item/tree-item";
 
-import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
-import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
-import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
-
 import "my-image-list";
 import "my-animation-list";
 import "my-font-list";
 import "my-section";
+
 import { LibraryManager } from "classes/LibraryManager";
 import { EspHomeFontJSON } from "interfaces/esphome/EspHomeFontJSON";
 import { EspHomeImageJSON } from "interfaces/esphome/EspHomeImageJSON";
 import { EspHomeAnimationJSON } from "interfaces/esphome/EspHomeAnimationJSON";
-
-registerIconLibrary("boxicons", {
-  resolver: (name) => {
-    let folder = "regular";
-    if (name.substring(0, 4) === "bxs-") folder = "solid";
-    if (name.substring(0, 4) === "bxl-") folder = "logos";
-    return `https://cdn.jsdelivr.net/npm/boxicons@2.0.5/svg/${folder}/${name}.svg`;
-  },
-  mutator: (svg) => svg.setAttribute("fill", "currentColor"),
-});
-
-setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
-//-
 
 @customElement("my-toolbox-tree")
 export class MyToolboxTree extends LitElement {

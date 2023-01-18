@@ -2,7 +2,7 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { MyFullScreenDrawer } from "my-fullscreen-drawer";
-import { drawerCSS } from "my-fullscreen-drawer.styles";
+import { drawerCSS } from "styles/my-fullscreen-drawer.styles";
 
 @customElement("drawer-presets")
 export class DrawerPresets extends MyFullScreenDrawer {

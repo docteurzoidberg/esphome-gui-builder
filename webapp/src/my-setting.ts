@@ -1,8 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "my-section";
-
 @customElement("my-setting")
 export abstract class MySetting extends LitElement {
   @property({ type: String })

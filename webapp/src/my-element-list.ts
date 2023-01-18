@@ -1,33 +1,8 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import "@shoelace-style/shoelace/dist/components/icon/icon";
-import "@shoelace-style/shoelace/dist/components/button/button";
-import "@shoelace-style/shoelace/dist/components/icon-button/icon-button";
-import "@shoelace-style/shoelace/dist/components/tooltip/tooltip";
-
-import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
-import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
-
-import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
-
-registerIconLibrary("boxicons", {
-  resolver: (name) => {
-    let folder = "regular";
-    if (name.substring(0, 4) === "bxs-") folder = "solid";
-    if (name.substring(0, 4) === "bxl-") folder = "logos";
-    return `https://cdn.jsdelivr.net/npm/boxicons@2.0.5/svg/${folder}/${name}.svg`;
-  },
-  mutator: (svg) => svg.setAttribute("fill", "currentColor"),
-});
-
-// Set the base path to the folder you copied Shoelace's assets to
-setBasePath("/assets/shoelace");
-
 import { GuiElement } from "classes/gui/GuiElement";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
-
-import "my-icon-button";
 
 @customElement("my-element-list")
 export class MyElementList extends LitElement {

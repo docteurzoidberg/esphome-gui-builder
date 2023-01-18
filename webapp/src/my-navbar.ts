@@ -1,15 +1,7 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import "@shoelace-style/shoelace/dist/components/divider/divider";
-import "@shoelace-style/shoelace/dist/components/tab/tab";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group";
-import "@shoelace-style/shoelace/dist/components/icon/icon";
-import "@shoelace-style/shoelace/dist/themes/dark.css";
-
-import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import SlTabGroup from "@shoelace-style/shoelace/dist/components/tab-group/tab-group";
-setBasePath("/assets/shoelace"); // Set the base path to the folder you copied Shoelace's assets to
 
 @customElement("my-navbar")
 export class MyNavbar extends LitElement {
