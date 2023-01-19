@@ -30,27 +30,29 @@ export class MyNavbar extends LitElement {
     return html`<span class="label">${text}</span>`;
   }
   renderTitle(text: string) {
-    return html`<span class="title">
-      <sl-icon
-        src="svg/esphome.svg"
-        style="font-size: 3rem; margin-top: 5px;"
-      ></sl-icon>
-      <div
-        style="margin-left: 10px; padding-top: 12px; font-family: Teko; font-size: 2rem;"
-      >
-        ${text}
+    return html` <div class="title">
+      <div class="title__apptitle">${text}</div>
+      <div class="title__for">for</div>
+      <div class="title__esphome">
+        <sl-icon
+          src="svg/esphome.svg"
+          style="font-size: 6rem; padding-right: 20px;"
+        ></sl-icon>
       </div>
-    </span>`;
+    </div>`;
   }
   render() {
     return html`
       <div class="navbar">
         <div class="nav-header">
           <slot name="top"></slot>
-          <sl-tab>
-            <sl-icon name="list" @click="${this.handleClick}"></sl-icon>
-            ${this.expand ? this.renderTitle("GUI Helper") : nothing}
-          </sl-tab>
+
+          <sl-icon-button
+            size="small"
+            name="list"
+            @click="${this.handleClick}"
+          ></sl-icon-button>
+          ${this.expand ? this.renderTitle("GUI Helper") : nothing}
         </div>
         <sl-divider style="--spacing: 0;"></sl-divider>
         <div class="nav-content">
@@ -101,8 +103,13 @@ export class MyNavbar extends LitElement {
       flex-direction: column;
       height: 100vh;
     }
-    .nav-footer {
+    .nav-header {
       flex: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 1rem 0.8rem;
     }
     .nav-content {
       flex: 1;
@@ -120,14 +127,31 @@ export class MyNavbar extends LitElement {
       min-width: 150px;
     }
     .title {
+      flex: 1;
       font-size: 1.2rem;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .title__apptitle {
+      font-weight: bold;
+      color: var(--dracula-color-foreground-300);
+      font-size: 2rem;
+    }
+    .title__for {
+      color: var(--dracula-color-foreground-400);
+      font-size: 0.9rem;
+      line-height: 0.9rem;
+    }
+    .title__esphome {
+      color: var(--dracula-color-green-400);
     }
     #nav-tab-group {
       display: flex;
     }
     sl-tab::part(base) {
-      flex: 1;
+      //flex: 1;
       width: 100%;
       font-size: 1.4rem;
     }

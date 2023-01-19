@@ -1292,7 +1292,7 @@ export class StorageManager {
   //load screen presets
   static async loadScreenPresets(): Promise<ScreenPreset[]> {
     //TODO: load from file or localstorage
-    const jsonPresets = await fetch("/screen_presets.json");
+    const jsonPresets = await fetch("/library/legacy/screen_presets.json");
     return jsonPresets.json();
   }
 

@@ -47,29 +47,24 @@ export class MyToolbox extends LitElement {
   render() {
     return html`
       <div class="tools">
-        <div>
-          <my-section>
-            <span slot="title">Fonts</span>
-            <my-font-list
-              .displayScale="${this.displayScale}"
-              @fonts-loaded="${this.handleFontsLoaded}"
-            ></my-font-list>
-          </my-section>
-          <my-section>
-            <span slot="title">Images</span>
-            <my-image-list
-              .displayScale="${this.displayScale}"
-              @images-loaded="${this.handleImagesLoaded}"
-            ></my-image-list>
-          </my-section>
-          <my-section>
-            <span slot="title">Animations</span>
-            <my-animation-list
-              .displayScale="${this.displayScale}"
-              @animations-loaded="${this.handleAnimationsLoaded}"
-            ></my-animation-list>
-          </my-section>
-        </div>
+        <my-section title="Fonts">
+          <my-font-list
+            .displayScale="${this.displayScale}"
+            @fonts-loaded="${this.handleFontsLoaded}"
+          ></my-font-list>
+        </my-section>
+        <my-section title="Images">
+          <my-image-list
+            .displayScale="${this.displayScale}"
+            @images-loaded="${this.handleImagesLoaded}"
+          ></my-image-list>
+        </my-section>
+        <my-section title="Animations">
+          <my-animation-list
+            .displayScale="${this.displayScale}"
+            @animations-loaded="${this.handleAnimationsLoaded}"
+          ></my-animation-list>
+        </my-section>
       </div>
     `;
   }
@@ -77,6 +72,10 @@ export class MyToolbox extends LitElement {
   static styles = css`
     :host {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
     }
     .tools {
       //border: 2px solid;

@@ -48,7 +48,7 @@ export class MyAnimationList extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.dragImg.src = "img/drag_gif.png";
-    fetch("./animations.json")
+    fetch("./library/legacy/animations.json")
       .then((response) => response.json())
       .then((json: EspHomeAnimationJSON[]) => {
         this.animations = json.map((animationjson) => {

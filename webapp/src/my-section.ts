@@ -1,52 +1,119 @@
-import { LitElement, css, html, PropertyValueMap } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 @customElement("my-section")
 export class MySection extends LitElement {
-  @property()
-  open: boolean = true;
+  @property({ type: String })
+  title: string = "My section";
 
-  headerClick() {
-    this.open = !this.open;
-    this.requestUpdate();
+  @property({ type: Boolean })
+  flex: boolean = false;
+
+  @property({ type: Boolean })
+  expand: boolean = false;
+
+  @property({ type: Boolean })
+  closable: boolean = false;
+
+  @property({ type: Boolean })
+  show: boolean = true;
+
+  toggleExpand() {
+    this.expand = !this.expand;
   }
 
-  renderExpandCollapse() {
-    if (this.open) return html`<span @click="${this.headerClick}">-</span>`;
-    else return html`<span @click="${this.headerClick}">+</span>`;
+  close(ev: Event) {
+    ev.stopPropagation();
+    this.show = false;
   }
 
-  protected updated(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    super.updated(_changedProperties);
-    if (_changedProperties.has("open")) {
-      this.requestUpdate();
+  renderCloseButton() {
+    if (this.closable) {
+      return html`
+        <sl-icon-button
+          style="color: lightgray;"
+          library="boxicons"
+          name="bx-x"
+          @click="${(ev: Event) => this.close(ev)}"
+        ></sl-icon-button>
+      `;
     }
+    return nothing;
+  }
+
+  renderExpandButton() {
+    if (this.expand) {
+      return html`<sl-icon-button
+        style="color: lightgray;"
+        library="boxicons"
+        name="bxs-chevron-down"
+      ></sl-icon-button>`;
+    }
+    return html`<sl-icon-button
+      style="color: lightgray;"
+      library="boxicons"
+      name="bxs-chevron-up"
+    ></sl-icon-button>`;
+  }
+
+  renderContent() {
+    if (!this.expand) return nothing;
+    return html` <slot></slot> `;
+  }
+
+  renderTitle() {
+    return html`<div class="title">${this.title}</div>`;
   }
 
   render() {
+    if (!this.show) return nothing;
     return html`
-      <h3>
-        <slot name="title" @click="${this.headerClick}"></slot>
-        ${this.renderExpandCollapse()}
-      </h3>
-      <section id="container" is-visible="${this.open}">
-        <slot></slot>
-      </section>
+      <div class="section-container" flex="${this.flex}">
+        <div class="header" @click="${this.toggleExpand}">
+          ${this.renderExpandButton()} ${this.renderTitle()}
+          ${this.renderCloseButton()}
+        </div>
+        <div class="content" flex="${this.flex}">${this.renderContent()}</div>
+      </div>
     `;
   }
-
   static styles = css`
-    [is-visible="false"] {
-      display: none;
+    :host {
+      background-color: #333;
     }
-    h3 {
-      text-decoration: underline;
+
+    .section-container {
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      flex: 0;
+      background-color: var(--dracula-color-background-950);
+      color: var(--dracula-color-foreground-50);
+      font-family: "Teko";
+      //padding: 5px;
       cursor: pointer;
-      font-family: "Wendy";
-      margin-top: 5px;
-      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .content {
+      background-color: var(--dracula-color-background-900);
+      //color: black;
+    }
+    .title {
+      font-size: 1rem;
+      flex: 1;
+    }
+    .content[flex="false"] {
+      flex: 0;
+    }
+    .content[flex="true"] {
+      //background-color: orange;
+      color: black;
+      flex: 1;
+      height: 100%;
+      overflow-y: scroll;
     }
   `;
 }
