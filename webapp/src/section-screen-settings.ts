@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import "my-section";
 import { ScreenPreset } from "types/ScreenPreset";
-import { Settings } from "types/Settings";
+import { ScreenSettings } from "types/ScreenSettings";
 
 @customElement("section-screen-settings")
 export class SectionScreenSettings extends LitElement {
@@ -28,39 +28,46 @@ export class SectionScreenSettings extends LitElement {
   raiseSettingChangedEvent() {
     const event = new CustomEvent("screen-settings-changed", {
       detail: {
+        currentPresetIndex: -1,
         screenWidth: this.screenWidth,
         screenHeight: this.screenHeight,
         showGrid: this.showGrid,
-        canvasGridWidth: this.canvasGridWidth,
-        canvasScale: this.canvasScale,
+        gridSize: this.canvasGridWidth,
+        screenScale: this.canvasScale,
         guiScale: this.guiScale,
-      },
+      } as ScreenSettings,
     });
     this.dispatchEvent(event);
   }
 
   handleScreenWidthChanged(e: Event) {
     this.screenWidth = parseInt((e.target as HTMLInputElement).value, 10);
+    this.raiseSettingChangedEvent();
   }
 
   handleScreenHeightChanged(e: Event) {
     this.screenHeight = parseInt((e.target as HTMLInputElement).value, 10);
+    this.raiseSettingChangedEvent();
   }
 
   handleShowGridChanged(e: Event) {
     this.showGrid = (e.target as HTMLInputElement).checked;
+    this.raiseSettingChangedEvent();
   }
 
   handleCanvasGridWidthChanged(e: Event) {
     this.canvasGridWidth = parseInt((e.target as HTMLInputElement).value, 10);
+    this.raiseSettingChangedEvent();
   }
 
   handleCanvasScaleChanged(e: Event) {
     this.canvasScale = parseInt((e.target as HTMLInputElement).value, 10);
+    this.raiseSettingChangedEvent();
   }
 
   handleGuiScaleChanged(e: Event) {
     this.guiScale = parseInt((e.target as HTMLInputElement).value, 10);
+    this.raiseSettingChangedEvent();
   }
 
   firstUpdated() {

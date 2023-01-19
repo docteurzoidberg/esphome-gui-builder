@@ -10,12 +10,14 @@ import { AnimationGuiElementJSON } from "interfaces/gui/AnimationGuiElementJSON"
 import { ImageGuiElementJSON } from "interfaces/gui/ImageGuiElementJSON";
 import { FontGuiElementJSON } from "interfaces/gui/FontGuiElementJSON";
 
-import { Settings } from "types/Settings";
 import { ScreenPreset } from "types/ScreenPreset";
 import { SceneStorageData } from "types/SceneStorageData";
-import { SettingsStorageData } from "types/SettingsStorageData";
+import {
+  ScreenSettings,
+  ScreenSettingsStorageData,
+} from "types/ScreenSettings";
 
-export class StorageManager {
+export class MyStorageManager {
   static sceneVersion: string = "1.0.0";
   static presetsVersion: string = "1.0.0";
   static settingsVersion: string = "1.0.0";
@@ -35,8 +37,8 @@ export class StorageManager {
   }
 
   //default, hardcoded settings
-  static getDefaultSettings(): Settings {
-    const defaultScreenPreset = StorageManager.getDefaultScreenPreset();
+  static getDefaultSettings(): ScreenSettings {
+    const defaultScreenPreset = MyStorageManager.getDefaultScreenPreset();
     return {
       screenWidth: defaultScreenPreset.width,
       screenHeight: defaultScreenPreset.height,
@@ -1308,8 +1310,8 @@ export class StorageManager {
       //create local data if no data present
       if (!localStorageData) {
         console.info("No data in localstorage, loading hardcoded scene");
-        const guiElements = StorageManager.getDefaultScene();
-        StorageManager.saveScene(guiElements);
+        const guiElements = MyStorageManager.getDefaultScene();
+        MyStorageManager.saveScene(guiElements);
         return resolve(guiElements);
       }
 
@@ -1318,10 +1320,10 @@ export class StorageManager {
 
         //invalidate localStorageData if version is different
         //TODO: ask user to download old data?
-        if (parsedData.version !== StorageManager.sceneVersion) {
+        if (parsedData.version !== MyStorageManager.sceneVersion) {
           console.warn("Scene data version mismatch, loading hardcoded scene");
-          const guiElements = StorageManager.getDefaultScene();
-          StorageManager.saveScene(guiElements);
+          const guiElements = MyStorageManager.getDefaultScene();
+          MyStorageManager.saveScene(guiElements);
           return resolve(guiElements);
         }
 
@@ -1345,8 +1347,8 @@ export class StorageManager {
         console.warn("Data loading error, loading hardcoded scene");
         //console.error(e);
         //console.log(localStorageData);
-        const guiElements = StorageManager.getDefaultScene();
-        StorageManager.saveScene(guiElements);
+        const guiElements = MyStorageManager.getDefaultScene();
+        MyStorageManager.saveScene(guiElements);
         return resolve(guiElements);
       }
     });
@@ -1360,42 +1362,43 @@ export class StorageManager {
       jsonElements.push(elem.toGuiElementJSON());
     });
     const sceneData: SceneStorageData = {
-      version: StorageManager.sceneVersion,
+      version: MyStorageManager.sceneVersion,
       elements: jsonElements,
     };
     localStorage.setItem("scene", JSON.stringify(sceneData));
   }
 
   //load screen settings, gui scale, etc
-  static loadSettings(): Settings {
+  static loadSettings(): ScreenSettings {
     const localStorageData = localStorage.getItem("settings");
     if (!localStorageData) {
       console.log("No data in localstorage, loading default settings");
-      const settings = StorageManager.getDefaultSettings();
-      StorageManager.saveSettings(settings);
+      const settings = MyStorageManager.getDefaultSettings();
+      MyStorageManager.saveSettings(settings);
       return settings;
     }
     try {
-      const parsedData: SettingsStorageData = JSON.parse(localStorageData);
-      if (parsedData.version != StorageManager.settingsVersion) {
+      const parsedData: ScreenSettingsStorageData =
+        JSON.parse(localStorageData);
+      if (parsedData.version != MyStorageManager.settingsVersion) {
         console.log("Settings data version mismatch, loading default settings");
-        const settings = StorageManager.getDefaultSettings();
-        StorageManager.saveSettings(settings);
+        const settings = MyStorageManager.getDefaultSettings();
+        MyStorageManager.saveSettings(settings);
         return settings;
       }
       return parsedData.settings;
     } catch (error) {
       console.log("Error loading settings, loading default settings");
-      const settings = StorageManager.getDefaultSettings();
-      StorageManager.saveSettings(settings);
+      const settings = MyStorageManager.getDefaultSettings();
+      MyStorageManager.saveSettings(settings);
       return settings;
     }
   }
 
   //save screen settings, gui scale, etc
-  static async saveSettings(settings: Settings) {
-    const settingsData: SettingsStorageData = {
-      version: StorageManager.settingsVersion,
+  static async saveSettings(settings: ScreenSettings) {
+    const settingsData: ScreenSettingsStorageData = {
+      version: MyStorageManager.settingsVersion,
       settings: settings,
     };
     localStorage.setItem("settings", JSON.stringify(settingsData));

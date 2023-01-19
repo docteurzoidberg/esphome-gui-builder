@@ -7,7 +7,7 @@ import { FontGuiElement } from "classes/gui/FontGuiElement";
 import { GuiElement } from "classes/gui/GuiElement";
 import { ImageGuiElement } from "classes/gui/ImageGuiElement";
 
-import { StorageManager } from "classes/StorageManager";
+import { MyStorageManager } from "classes/MyStorageManager";
 import { YAMLGenerator } from "classes/YAMLGenerator";
 import { CPPLGenerator } from "classes/CPPGenerator";
 
@@ -17,14 +17,13 @@ import { GuiElementJSON } from "interfaces/gui/GuiElementJSON";
 
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 import { ScreenPreset } from "types/ScreenPreset";
+import { ScreenSettings } from "types/ScreenSettings";
 import { DialogAddText } from "dialog-add-text";
 import { DialogLoadPreset } from "dialog-load-preset";
 
 import "dialog-add-text";
 import "dialog-load-preset";
 import "my-canvas-display";
-import "my-element-list";
-import "my-element-settings";
 import "my-toolbox";
 import "my-toolbox-tree";
 import "my-section";
@@ -89,14 +88,14 @@ export class MyGuiEditor extends LitElement {
 
   async _loadScreenPresets() {
     //console.log("load screen presets");
-    return StorageManager.loadScreenPresets()
+    return MyStorageManager.loadScreenPresets()
       .then((presets) => {
         this.screenPresets = presets;
       })
       .catch((err) => {
         //fallbck if json not ok
         console.error(err);
-        this.screenPresets = [{ ...StorageManager.getDefaultScreenPreset() }];
+        this.screenPresets = [{ ...MyStorageManager.getDefaultScreenPreset() }];
       });
   }
 
@@ -117,7 +116,7 @@ export class MyGuiEditor extends LitElement {
 
   _loadScene() {
     console.log("load scene");
-    StorageManager.loadScene()
+    MyStorageManager.loadScene()
       .then((elements: GuiElement[]) => {
         this.guiElements = elements;
         this.yamlContent = this._getYamlContent();
@@ -132,7 +131,7 @@ export class MyGuiEditor extends LitElement {
 
   _loadSettings() {
     console.log("load settings");
-    const settings = StorageManager.loadSettings();
+    const settings = MyStorageManager.loadSettings();
     this.toolboxScale = settings.guiScale;
     this.screenWidth = settings.screenWidth;
     this.screenHeight = settings.screenHeight;
@@ -152,8 +151,8 @@ export class MyGuiEditor extends LitElement {
       gridSize: this.canvasGridWidth,
       guiScale: this.toolboxScale,
       currentPresetIndex: this.currentScreenPresetIndex,
-    };
-    StorageManager.saveSettings(settings);
+    } as ScreenSettings;
+    MyStorageManager.saveSettings(settings);
   }
 
   handleInitCanvas() {
@@ -225,7 +224,7 @@ export class MyGuiEditor extends LitElement {
     //this.requestUpdate();
     this.yamlContent = this._getYamlContent();
     this.cppContent = this._getCppContent();
-    StorageManager.saveScene(this.guiElements);
+    MyStorageManager.saveScene(this.guiElements);
   }
 
   handleElementRemoved(e: CustomEvent) {
@@ -237,7 +236,7 @@ export class MyGuiEditor extends LitElement {
     ];
     this.yamlContent = this._getYamlContent();
     this.cppContent = this._getCppContent();
-    StorageManager.saveScene(this.guiElements);
+    MyStorageManager.saveScene(this.guiElements);
   }
 
   handleElementDropped(e: CustomEvent) {
@@ -291,7 +290,7 @@ export class MyGuiEditor extends LitElement {
     this.guiElements = [...this.guiElements, newGuiElement];
     this.yamlContent = this._getYamlContent();
     this.cppContent = this._getCppContent();
-    StorageManager.saveScene(this.guiElements);
+    MyStorageManager.saveScene(this.guiElements);
   }
 
   handleToolboxLoaded(e: CustomEvent) {
@@ -299,26 +298,21 @@ export class MyGuiEditor extends LitElement {
     this._loadScene();
   }
 
-  handleScreenWidthChanged(e: Event) {
-    console.log("screen-width-changed", e.target);
-    this.screenWidth = parseInt((e.target as HTMLInputElement).value, 10);
-    if (this.currentScreenPresetIndex !== -1) {
-      this.currentScreenPresetIndex = -1;
-      this.currentScreenPreset = undefined;
-      //if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
-      this.requestUpdate();
-    }
-    this._saveSettings();
-  }
+  handleScreenSettingsChanged(e: CustomEvent) {
+    const screensettings = e.detail as ScreenSettings;
+    console.log("screen-settings-changed", screensettings);
 
-  handleScreenHeightChanged(e: Event) {
-    console.log("screen-height-changed", e.target);
-    this.screenHeight = parseInt((e.target as HTMLInputElement).value, 10);
+    this.screenWidth = screensettings.screenWidth;
+    this.screenHeight = screensettings.screenHeight;
+    this.showGrid = screensettings.showGrid;
+    this.canvasGridWidth = screensettings.gridSize;
+    this.canvasScale = screensettings.screenScale;
+    this.toolboxScale = screensettings.guiScale;
+
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
       this.currentScreenPreset = undefined;
-      //if (this.selectScreenPreset) this.selectScreenPreset.value = "-1";
-      this.requestUpdate();
+      //this.requestUpdate();
     }
     this._saveSettings();
   }
@@ -419,7 +413,18 @@ export class MyGuiEditor extends LitElement {
         <div class="second-col">
           <my-section-panel>
             <section-screen-preview></section-screen-preview>
-            <section-screen-settings></section-screen-settings>
+            <section-screen-settings
+              .screenWidth="${this.screenWidth}"
+              .screenHeight="${this.screenHeight}"
+              .screenPresets="${this.screenPresets}"
+              .currentScreenPresetIndex="${this.currentScreenPresetIndex}"
+              .currentScreenPreset="${this.currentScreenPreset}"
+              .canvasGridWidth="${this.canvasGridWidth}"
+              .canvasScale="${this.canvasScale}"
+              .showGrid="${this.showGrid}"
+              @screen-settings-changed="${this.handleScreenSettingsChanged}"
+            >
+            </section-screen-settings>
             <section-elem-settings
               .selectedElement="${this.selectedElement}"
             ></section-elem-settings>

@@ -1,7 +1,8 @@
-import { StorageManager } from "classes/StorageManager";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
+
 import { ScreenPreset } from "types/ScreenPreset";
+import { MyStorageManager } from "classes/MyStorageManager";
 
 @customElement("dialog-load-preset")
 export class DialogLoadPreset extends LitElement {
@@ -180,7 +181,7 @@ export class DialogLoadPreset extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    StorageManager.loadScreenPresets().then((presets) => {
+    MyStorageManager.loadScreenPresets().then((presets) => {
       this.presets = presets;
       if (this.presets.length > 0) this.selectedPreset = this.presets[0];
       this.requestUpdate();

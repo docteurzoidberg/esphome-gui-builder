@@ -153,6 +153,11 @@ export class MyApp extends LitElement {
     img.src = url;
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    //MyStorageManager.init();
+  }
+
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
