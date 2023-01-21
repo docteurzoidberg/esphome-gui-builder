@@ -1,0 +1,116 @@
+.app-theme-dracula code[class*="language-"],
+.app-theme-dracula pre[class*="language-"] {
+   font-size: 0.9em;
+   color: #f8f8f2;
+   background: none;
+   text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+   font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+   text-align: left;
+   white-space: pre;
+   word-spacing: normal;
+   word-break: normal;
+   word-wrap: normal;
+   line-height: 1.5;
+   -moz-tab-size: 2;
+   -o-tab-size: 2;
+   tab-size: 2;
+   -webkit-hyphens: none;
+   -moz-hyphens: none;
+   -ms-hyphens: none;
+   hyphens: none;
+ }
+
+ /* Code blocks */
+ .app-theme-dracula pre[class*="language-"] {
+   padding: 1em;
+   margin: 0.5em 0;
+   overflow: auto;
+   border-radius: 0.3em;
+ }
+
+ .app-theme-dracula :not(pre) > code[class*="language-"],
+ .app-theme-dracula pre[class*="language-"] {
+   background: #282a36;
+ }
+
+ /* Inline code */
+ .app-theme-dracula :not(pre) > code[class*="language-"] {
+   padding: 0.1em;
+   border-radius: 0.3em;
+   white-space: normal;
+ }
+
+ .app-theme-dracula .token.comment,
+ .app-theme-dracula .token.prolog,
+ .app-theme-dracula .token.doctype,
+ .app-theme-dracula .token.cdata {
+   color: #6272a4;
+ }
+
+ .app-theme-dracula .token.punctuation {
+   color: #f8f8f2;
+ }
+
+ .app-theme-dracula .namespace {
+   opacity: 0.7;
+ }
+
+ .app-theme-dracula .token.property,
+ .app-theme-dracula .token.tag,
+ .app-theme-dracula .token.constant,
+ .app-theme-dracula .token.symbol,
+ .app-theme-dracula .token.deleted {
+   color: #ff79c6;
+ }
+
+ .app-theme-dracula .token.boolean,
+ .app-theme-dracula .token.number {
+   color: #bd93f9;
+ }
+
+ .app-theme-dracula .token.selector,
+ .app-theme-dracula .token.attr-name,
+ .app-theme-dracula .token.string,
+ .app-theme-dracula .token.char,
+ .app-theme-dracula .token.builtin,
+ .app-theme-dracula .token.inserted {
+   color: #50fa7b;
+ }
+
+ .app-theme-dracula .token.operator,
+ .app-theme-dracula .token.entity,
+ .app-theme-dracula .token.url,
+ .app-theme-dracula .language-css .token.string,
+ .app-theme-dracula .style .token.string,
+ .app-theme-dracula .token.variable {
+   color: #f8f8f2;
+ }
+
+ .app-theme-dracula .token.atrule,
+ .app-theme-dracula .token.attr-value,
+ .app-theme-dracula .token.function,
+ .app-theme-dracula .token.class-name {
+   color: #f1fa8c;
+ }
+
+ .app-theme-dracula .token.keyword {
+   color: #8be9fd;
+ }
+
+ .app-theme-dracula .token.regex,
+ .app-theme-dracula .token.important {
+   color: #ffb86c;
+ }
+
+ .app-theme-dracula .token.important,
+ .app-theme-dracula .token.bold {
+   font-weight: bold;
+ }
+
+ .app-theme-dracula .token.italic {
+   font-style: italic;
+ }
+
+ .app-theme-dracula .token.entity {
+   cursor: help;
+ }

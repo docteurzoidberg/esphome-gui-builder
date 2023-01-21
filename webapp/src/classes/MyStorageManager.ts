@@ -47,7 +47,7 @@ export class MyStorageManager {
       showGrid: defaultScreenPreset.showgrid,
       gridSize: defaultScreenPreset.gridsize,
       currentPresetIndex: 0,
-    };
+    } as ScreenSettings;
   }
 
   //default, hardcoded gui elements

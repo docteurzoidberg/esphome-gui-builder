@@ -24,6 +24,7 @@ import { DialogLoadPreset } from "dialog-load-preset";
 import "dialog-add-text";
 import "dialog-load-preset";
 import "my-canvas-display";
+import "my-scene-elements";
 import "my-toolbox";
 import "my-toolbox-tree";
 import "my-section";
@@ -33,7 +34,7 @@ import "my-prism-code";
 import "section-elem-settings";
 import "section-screen-settings";
 import "section-screen-preview";
-import "section-scene-elements";
+import "section-scene";
 
 import "setting-text";
 import "setting-number";
@@ -41,6 +42,9 @@ import "setting-boolean";
 
 @customElement("my-gui-editor")
 export class MyGuiEditor extends LitElement {
+  @property()
+  theme: string = "sl-dark";
+
   @query("#addTextDialog")
   dialogAddText?: DialogAddText;
 
@@ -48,22 +52,22 @@ export class MyGuiEditor extends LitElement {
   dialogLoadPreset?: DialogLoadPreset;
 
   @property({ type: Number })
-  screenWidth: number = 128;
+  screenWidth: number = 1;
 
   @property({ type: Number })
-  screenHeight: number = 64;
+  screenHeight: number = 1;
 
   @property({ type: Boolean })
-  showGrid: boolean = true;
+  showGrid: boolean = false;
 
   @property({ type: Number })
-  canvasGridWidth: number = 2;
+  canvasGridWidth: number = 1;
 
   @property({ type: Number })
-  canvasScale: number = 5;
+  canvasScale: number = 1;
 
   @property({ type: Number })
-  toolboxScale: number = 3;
+  guiScale: number = 1;
 
   @property({ type: Object })
   currentScreenPreset?: ScreenPreset;
@@ -132,13 +136,15 @@ export class MyGuiEditor extends LitElement {
   _loadSettings() {
     console.log("load settings");
     const settings = MyStorageManager.loadSettings();
-    this.toolboxScale = settings.guiScale;
+    console.log(settings);
+    this.guiScale = settings.guiScale;
     this.screenWidth = settings.screenWidth;
     this.screenHeight = settings.screenHeight;
     this.canvasScale = settings.screenScale;
     this.showGrid = settings.showGrid;
     this.canvasGridWidth = settings.gridSize;
     this.currentScreenPresetIndex = settings.currentPresetIndex || 0;
+    //this.requestUpdate();
   }
 
   _saveSettings() {
@@ -149,7 +155,7 @@ export class MyGuiEditor extends LitElement {
       screenScale: this.canvasScale,
       showGrid: this.showGrid,
       gridSize: this.canvasGridWidth,
-      guiScale: this.toolboxScale,
+      guiScale: this.guiScale,
       currentPresetIndex: this.currentScreenPresetIndex,
     } as ScreenSettings;
     MyStorageManager.saveSettings(settings);
@@ -307,7 +313,7 @@ export class MyGuiEditor extends LitElement {
     this.showGrid = screensettings.showGrid;
     this.canvasGridWidth = screensettings.gridSize;
     this.canvasScale = screensettings.screenScale;
-    this.toolboxScale = screensettings.guiScale;
+    this.guiScale = screensettings.guiScale;
 
     if (this.currentScreenPresetIndex !== -1) {
       this.currentScreenPresetIndex = -1;
@@ -347,8 +353,9 @@ export class MyGuiEditor extends LitElement {
               name="grip-horizontal"
             ></sl-icon>
             <div
+              class="top-panel"
               slot="start"
-              style="height: 100%; background: #555; display: flex;"
+              style="height: 100%;  display: flex;"
             >
               <div class="screen-container">
                 <my-canvas-display
@@ -368,10 +375,15 @@ export class MyGuiEditor extends LitElement {
               </div>
             </div>
             <div
+              class="bottom-panel"
               slot="end"
-              style="height: 100%; background: var(--sl-color-neutral-50); display: flex;"
+              style="height: 100%; display: flex;"
             >
               <sl-tab-group>
+                <sl-tab sl-tab slot="nav" panel="scene" active>
+                  <sl-icon name="grid"></sl-icon>
+                  <span class="label">Scene elements</span>
+                </sl-tab>
                 <sl-tab slot="nav" panel="toolbox" active>
                   <sl-icon name="tools"></sl-icon>
                   <span class="label">Toolbox</span>
@@ -386,15 +398,27 @@ export class MyGuiEditor extends LitElement {
                   <span class="label">Code</span>
                 </sl-tab>
 
-                <sl-tab-panel name="toolbox" style="display: flex;">
+                <!-- SCENE ELEMENTS -->
+                <sl-tab-panel name="scene">
+                  <my-scene-elements
+                    .guiElements="${this.guiElements}"
+                    .selectedElement="${this.selectedElement}"
+                    @element-selected="${this.handleElementSelected}"
+                    @element-removed="${this.handleElementRemoved}"
+                  ></my-scene-elements>
+                </sl-tab-panel>
+
+                <sl-tab-panel name="toolbox">
+                  <!--<my-toolbox-tree> </my-toolbox-tree>-->
                   <my-toolbox
-                    .displayScale="${this.toolboxScale}"
+                    .displayScale="${this.guiScale}"
                     @toolbox-loaded="${this.handleToolboxLoaded}"
                   ></my-toolbox>
                 </sl-tab-panel>
                 <!-- YAML CODE OUTPUT -->
                 <sl-tab-panel name="yaml">
                   <my-prism-code
+                    theme="${this.theme}"
                     lang="yaml"
                     code="${this.yamlContent}"
                   ></my-prism-code>
@@ -402,6 +426,7 @@ export class MyGuiEditor extends LitElement {
                 <!-- CPP CODE OUTPUT -->
                 <sl-tab-panel name="cpp">
                   <my-prism-code
+                    theme="${this.theme}"
                     lang="cpp"
                     code="${this.cppContent}"
                   ></my-prism-code>
@@ -412,28 +437,27 @@ export class MyGuiEditor extends LitElement {
         </div>
         <div class="second-col">
           <my-section-panel>
+            <div slot="header">
+              <section-scene></section-scene>
+            </div>
+
             <section-screen-preview></section-screen-preview>
             <section-screen-settings
-              .screenWidth="${this.screenWidth}"
-              .screenHeight="${this.screenHeight}"
+              screenWidth="${this.screenWidth}"
+              screenHeight="${this.screenHeight}"
               .screenPresets="${this.screenPresets}"
               .currentScreenPresetIndex="${this.currentScreenPresetIndex}"
               .currentScreenPreset="${this.currentScreenPreset}"
-              .canvasGridWidth="${this.canvasGridWidth}"
-              .canvasScale="${this.canvasScale}"
-              .showGrid="${this.showGrid}"
+              canvasGridWidth="${this.canvasGridWidth}"
+              canvasScale="${this.canvasScale}"
+              showGrid="${this.showGrid}"
+              guiScale="${this.guiScale}"
               @screen-settings-changed="${this.handleScreenSettingsChanged}"
             >
             </section-screen-settings>
             <section-elem-settings
               .selectedElement="${this.selectedElement}"
             ></section-elem-settings>
-            <section-scene-elements
-              .guiElements="${this.guiElements}"
-              .selectedElement="${this.selectedElement}"
-              @element-selected="${this.handleElementSelected}"
-              @element-removed="${this.handleElementRemoved}"
-            ></section-scene-elements>
           </my-section-panel>
         </div>
       </div>
@@ -458,14 +482,14 @@ export class MyGuiEditor extends LitElement {
       width: 100%;
     }
     .gui-editor-container sl-split-panel::part(divider) {
-      background-color: var(--sl-color-primary-600);
+      background-color: var(--app-color-primary-600);
     }
     .gui-editor-container sl-icon.divider-icon {
       position: absolute;
       border-radius: var(--sl-border-radius-small);
-      background: var(--sl-color-primary-600);
-      color: var(--sl-color-neutral-0);
-      padding: 0.125rem 0.5rem;
+      background: var(--app-color-primary-600);
+      color: var(--app-color-neutral-500);
+      padding: 0.05rem 0.3rem;
     }
   `;
 }

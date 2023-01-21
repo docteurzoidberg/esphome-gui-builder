@@ -204,10 +204,10 @@ export class MyCanvasDisplay extends LitElement {
     newcanvas.width = this.displayWidth;
     newcanvas.height = this.displayHeight;
 
-    const sortedElements = [...this.elements];
+    //const sortedElements = [...this.elements];
 
     //draw each guielement
-    sortedElements.forEach((element) => {
+    this.elements.forEach((element) => {
       element.drawToCanvas(newctx);
     });
 

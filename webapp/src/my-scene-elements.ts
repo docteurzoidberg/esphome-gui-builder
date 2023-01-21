@@ -3,22 +3,8 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ElementRemovedEvent, ElementSelectedEvent } from "types/Events";
 
-import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
-
-registerIconLibrary("boxicons", {
-  resolver: (name) => {
-    let folder = "regular";
-    if (name.substring(0, 4) === "bxs-") folder = "solid";
-    if (name.substring(0, 4) === "bxl-") folder = "logos";
-    return `https://cdn.jsdelivr.net/npm/boxicons@2.1.4/svg/${folder}/${name}.svg`;
-  },
-  mutator: (svg) => svg.setAttribute("fill", "currentColor"),
-});
-
-import "./my-section";
-
-@customElement("section-scene-elements")
-export class SectionSceneElements extends LitElement {
+@customElement("my-scene-elements")
+export class MySceneElements extends LitElement {
   @property({ type: Object, reflect: true })
   selectedElement?: GuiElement;
 
@@ -181,20 +167,18 @@ export class SectionSceneElements extends LitElement {
 
   render() {
     return html`
-      <my-section title="Scene elements" flex scroll show>
-        <div class="elements" @click="${this.handleClick}">
-          ${this.renderElements()}
-        </div>
-      </my-section>
+      <div class="elements" @click="${this.handleClick}">
+        ${this.renderElements()}
+      </div>
     `;
   }
   static styles = css`
     [is-selected="true"] .element__type,
     [is-selected="true"] .element__name {
-      color: var(--sl-color-primary-600);
+      color: var(--app-color-primary-600);
     }
     [is-selected="true"] .element__type_icon {
-      color: var(--sl-color-primary-100);
+      color: var(--app-color-primary-100);
     }
     .element__name[is-selected] {
       text-decoration: none;
@@ -202,7 +186,7 @@ export class SectionSceneElements extends LitElement {
     .element {
       cursor: pointer;
       font-family: var(--sl-font-sans);
-      color: var(--dracula-color-foreground-100);
+      color: var(--app-color-foreground-100);
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
@@ -211,12 +195,12 @@ export class SectionSceneElements extends LitElement {
     .element__type {
       flex: 0;
       font-size: 1.4rem;
-      color: var(--dracula-color-foreground-50);
+      color: var(--app-color-foreground-50);
       display: flex;
     }
     .element__type_icon {
       flex: 1;
-      color: var(--dracula-color-foreground-500);
+      color: var(--app-color-foreground-500);
     }
     .element__name {
       flex: 1;
@@ -244,31 +228,30 @@ export class SectionSceneElements extends LitElement {
     }
 
     .delete-btn sl-icon-button::part(base) {
-      color: #b00052;
+      color: --app-color-red-500;
     }
     .delete-btn sl-icon-button::part(base):hover,
     .delete-btn sl-icon-button::part(base):focus {
-      color: #c91368;
-    }
+      color: --app-color-red-500;
     .delete-btn sl-icon-button::part(base):active {
-      color: #960032;
+      color:--app-color-red-500;
     }
 
     .move-btn sl-icon-button::part(base) {
-      color: #e6ca4f;
+      color: --app-color-yellow-500;
     }
     .move-btn sl-icon-button::part(base):hover,
     .move-btn sl-icon-button::part(base):focus {
-      color: #f3e73f;
+      color: --app-color-yellow-600;
     }
     .move sl-icon-button::part(base):active {
-      color: #cee21c;
+      color: --app-color-yellow-700;
     }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "section-scene-elements": SectionSceneElements;
+    "my-scene-elements": MySceneElements;
   }
 }

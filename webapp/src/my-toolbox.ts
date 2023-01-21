@@ -47,19 +47,22 @@ export class MyToolbox extends LitElement {
   render() {
     return html`
       <div class="tools">
-        <my-section title="Fonts">
+        <my-section title="Fonts" expand>
+          <sl-icon library="boxicons" name="bx-text" slot="icon"></sl-icon>
           <my-font-list
             .displayScale="${this.displayScale}"
             @fonts-loaded="${this.handleFontsLoaded}"
           ></my-font-list>
         </my-section>
         <my-section title="Images">
+          <sl-icon library="boxicons" name="bx-image" slot="icon"></sl-icon>
           <my-image-list
             .displayScale="${this.displayScale}"
             @images-loaded="${this.handleImagesLoaded}"
           ></my-image-list>
         </my-section>
         <my-section title="Animations">
+          <sl-icon library="boxicons" name="bx-movie" slot="icon"></sl-icon>
           <my-animation-list
             .displayScale="${this.displayScale}"
             @animations-loaded="${this.handleAnimationsLoaded}"
@@ -74,8 +77,8 @@ export class MyToolbox extends LitElement {
       flex: 1;
       display: flex;
       flex-direction: column;
-      height: 100%;
-      width: 100%;
+      align-items: stretch;
+      justify-content: stretch;
     }
     .tools {
       //border: 2px solid;
@@ -90,6 +93,12 @@ export class MyToolbox extends LitElement {
     h2,
     h3 {
       text-decoration: underline;
+    }
+    [expand] .title__icon {
+      color: var(--app-color-primary-800);
+    }
+    my-section {
+      color: cyan;
     }
   `;
 }

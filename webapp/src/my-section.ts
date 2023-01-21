@@ -10,7 +10,7 @@ export class MySection extends LitElement {
   flex: boolean = false;
 
   @property({ type: Boolean })
-  expand: boolean = false;
+  expand: boolean = true;
 
   @property({ type: Boolean })
   closable: boolean = false;
@@ -62,7 +62,12 @@ export class MySection extends LitElement {
   }
 
   renderTitle() {
-    return html`<div class="title">${this.title}</div>`;
+    return html`<div class="title">
+      <div class="title__icon">
+        <slot name="icon"></slot>
+      </div>
+      <div class="title__text">${this.title}</div>
+    </div>`;
   }
 
   render() {
@@ -72,6 +77,7 @@ export class MySection extends LitElement {
         <div class="header" @click="${this.toggleExpand}">
           ${this.renderExpandButton()} ${this.renderTitle()}
           ${this.renderCloseButton()}
+          <slot name="header"></slot>
         </div>
         <div class="content" flex="${this.flex}">${this.renderContent()}</div>
       </div>
@@ -79,18 +85,23 @@ export class MySection extends LitElement {
   }
   static styles = css`
     :host {
-      background-color: #333;
+      background-color: var(--app-color-background-150);
     }
-
+    /*
+    :host([expand]) .title__icon {
+      color: var(--sl-color-primary-800);
+    }
+    :host([expand]) .title__text {
+      color: var(--sl-color-primary-800);
+    }
+    */
     .section-container {
       display: flex;
       flex-direction: column;
     }
     .header {
       flex: 0;
-      background-color: var(--dracula-color-background-950);
-      color: var(--dracula-color-foreground-50);
-      font-family: "Teko";
+      background-color: var(--app-color-background-50);
       //padding: 5px;
       cursor: pointer;
       display: flex;
@@ -98,19 +109,34 @@ export class MySection extends LitElement {
       justify-content: center;
     }
     .content {
-      background-color: var(--dracula-color-background-900);
+      background-color: var(--app-color-background-100);
       //color: black;
     }
+
     .title {
       font-size: 1rem;
       flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .title__icon {
+      flex: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .title__text {
+      flex: 1;
+      font-size: 1rem;
+      padding: 0.5rem 4px;
+      font-family: "Roboto";
     }
     .content[flex="false"] {
       flex: 0;
     }
     .content[flex="true"] {
-      //background-color: orange;
-      color: black;
       flex: 1;
       height: 100%;
       overflow-y: scroll;

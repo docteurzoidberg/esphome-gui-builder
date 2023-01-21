@@ -7,8 +7,14 @@ import { customElement, property, query } from "lit/decorators.js";
 import "@shoelace-style/shoelace/dist/components/button/button";
 import "@shoelace-style/shoelace/dist/components/checkbox/checkbox";
 import "@shoelace-style/shoelace/dist/components/color-picker/color-picker";
+import "@shoelace-style/shoelace/dist/components/visually-hidden/visually-hidden";
+import "@shoelace-style/shoelace/dist/components/menu/menu";
+import "@shoelace-style/shoelace/dist/components/menu-item/menu-item";
 import "@shoelace-style/shoelace/dist/components/divider/divider";
 import "@shoelace-style/shoelace/dist/components/drawer/drawer";
+import "@shoelace-style/shoelace/dist/components/dropdown/dropdown";
+import "@shoelace-style/shoelace/dist/components/select/select";
+import "@shoelace-style/shoelace/dist/components/option/option";
 import "@shoelace-style/shoelace/dist/components/icon/icon";
 import "@shoelace-style/shoelace/dist/components/icon-button/icon-button";
 import "@shoelace-style/shoelace/dist/components/input/input";
@@ -20,8 +26,12 @@ import "@shoelace-style/shoelace/dist/components/tooltip/tooltip";
 
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { registerIconLibrary } from "@shoelace-style/shoelace/dist/utilities/icon-library.js";
-import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
-import "styles/my-theme.css"; //shoelace variables overides?
+
+//import "@shoelace-style/shoelace/dist/themes/dark.css"; //shoelace css
+//import "styles/my-theme-light.css"; //shoelace variables overides?
+import "styles/my-theme-dark.css";
+import "styles/my-theme-dracula.css";
+import "styles/my-theme-gruvbox.css";
 
 registerIconLibrary("boxicons", {
   resolver: (name) => {
@@ -51,6 +61,9 @@ import { MyFullScreenDrawer } from "my-fullscreen-drawer";
 export class MyApp extends LitElement {
   //app title
   title = "GUI Helper for ESPHome";
+
+  @property()
+  theme: string = "sl-dark";
 
   @property()
   showLoadingScreen: boolean = true;
@@ -153,9 +166,37 @@ export class MyApp extends LitElement {
     img.src = url;
   }
 
+  setTheme(theme: string) {
+    this.theme = theme;
+    this.saveTheme(theme);
+    const noTransitions = Object.assign(document.createElement("style"), {
+      textContent: "* { transition: none !important; }",
+    });
+    // Toggle the dark mode class without transitions
+    document.body.appendChild(noTransitions);
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove(
+        "app-theme-sl-dark",
+        "app-theme-gruvbox",
+        "app-theme-dracula"
+      );
+      document.documentElement.classList.add("app-theme-" + theme);
+      requestAnimationFrame(() => document.body.removeChild(noTransitions));
+    });
+  }
+
+  saveTheme(theme: string) {
+    localStorage.setItem("theme", theme);
+  }
+
+  handleThemeChange(ev: CustomEvent) {
+    const theme = ev.detail;
+    this.setTheme(theme);
+  }
   connectedCallback(): void {
     super.connectedCallback();
-    //MyStorageManager.init();
+    const theme = localStorage.getItem("theme") || "sl-dark";
+    this.setTheme(theme);
   }
 
   protected firstUpdated(
@@ -210,11 +251,13 @@ export class MyApp extends LitElement {
             @request-close="${this.handleDrawerRequestClose}"
           ></drawer-infos>
           <drawer-settings
+            theme=${this.theme}
             @request-close="${this.handleDrawerRequestClose}"
+            @theme-change="${this.handleThemeChange}"
           ></drawer-settings>
 
           <!-- CANVAS -->
-          <my-gui-editor></my-gui-editor>
+          <my-gui-editor theme="${this.theme}"></my-gui-editor>
         </div>
       </div>
     `;
@@ -260,11 +303,6 @@ export class MyApp extends LitElement {
         width: 60px;
         display: inline-block;
       }
-      @media (prefers-color-scheme: dark) {
-        .header {
-          background-color: #555555;
-        }
-      }
       #screenpreset {
         display: none;
       }
@@ -296,10 +334,6 @@ export class MyApp extends LitElement {
       }
       sl-tab-panel {
         flex: 1;
-      }
-
-      .gui-editor-container sl-split-panel::part(divider) {
-        background-color: var(--sl-color-yellow-600);
       }
     `,
   ];

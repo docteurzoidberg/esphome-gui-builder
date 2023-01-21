@@ -136,16 +136,16 @@ export class MyNavbar extends LitElement {
     }
     .title__apptitle {
       font-weight: bold;
-      color: var(--dracula-color-foreground-300);
+      color: var(--app-color-foreground-300);
       font-size: 2rem;
     }
     .title__for {
-      color: var(--dracula-color-foreground-400);
+      color: var(--app-color-foreground-400);
       font-size: 0.9rem;
       line-height: 0.9rem;
     }
     .title__esphome {
-      color: var(--dracula-color-green-400);
+      color: var(--app-color-primary-400);
     }
     #nav-tab-group {
       display: flex;

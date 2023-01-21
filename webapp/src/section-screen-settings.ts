@@ -8,22 +8,23 @@ import { ScreenSettings } from "types/ScreenSettings";
 
 @customElement("section-screen-settings")
 export class SectionScreenSettings extends LitElement {
-  @property()
+  @property({ type: Object })
   dialogLoadPreset?: DialogLoadPreset;
-  @property()
+  @property({ type: Object })
   currentScreenPreset?: ScreenPreset;
-  @property()
+  @property({ type: Number })
   screenWidth = 0;
-  @property()
+  @property({ type: Number })
   screenHeight = 0;
-  @property()
+  @property({ type: Boolean })
   showGrid = false;
-  @property()
+  @property({ type: Number })
   canvasGridWidth = 0;
-  @property()
+  @property({ type: Number })
   canvasScale = 0;
-  @property()
-  guiScale = 0;
+
+  @property({ type: Number })
+  guiScale = 90;
 
   raiseSettingChangedEvent() {
     const event = new CustomEvent("screen-settings-changed", {
@@ -50,8 +51,8 @@ export class SectionScreenSettings extends LitElement {
     this.raiseSettingChangedEvent();
   }
 
-  handleShowGridChanged(e: Event) {
-    this.showGrid = (e.target as HTMLInputElement).checked;
+  handleShowGridChanged(e: CustomEvent) {
+    this.showGrid = e.detail;
     this.raiseSettingChangedEvent();
   }
 
@@ -155,7 +156,7 @@ export class SectionScreenSettings extends LitElement {
           label="gui scale"
           value="${this.guiScale}"
           min="1"
-          min="5"
+          max="5"
           editable
           @change="${this.handleGuiScaleChanged}"
         ></my-number-setting>

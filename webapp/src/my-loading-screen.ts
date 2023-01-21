@@ -77,8 +77,8 @@ export class MyLoadingScreen extends LitElement {
     /* Ajoutez ici vos styles CSS pour l'animation de chargement */
     /* ex: */
     .loading-spinner {
-      border: 16px solid var(--dracula-color-foreground-600);
-      border-top: 16px solid var(--dracula-color-purple-600);
+      border: 16px solid var(--app-color-foreground-600);
+      border-top: 16px solid var(--app-color-primary-600);
       border-radius: 50%;
       width: 120px;
       height: 120px;
@@ -119,7 +119,7 @@ export class MyLoadingScreen extends LitElement {
       padding: 40px;
       border-radius: 6px;
       width: 480;
-      background-color: var(--dracula-color-background-900);
+      background-color: var(--app-color-background-50);
     }
 
     /* Styles pour le header */
@@ -138,7 +138,7 @@ export class MyLoadingScreen extends LitElement {
       font-family: "Roboto";
       font-size: 1rem;
       padding: 20px;
-      color: var(--dracula-color-foreground-200);
+      color: var(--app-color-foreground-200);
     }
   `;
 }
