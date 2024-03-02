@@ -1,6 +1,6 @@
 # GUI helper for ESPHome
 
-# /!\ WARNING: early POC / developpement stage !!!
+# /!\ WARNING: discontinued
 
 ## What is it ?
 
