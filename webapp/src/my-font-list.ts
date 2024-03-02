@@ -104,13 +104,14 @@ export class MyFontList extends LitElement {
 
   renderFonts() {
     return this.fonts.map((font: EspHomeFont) => {
-      return html`<div
+      return html` <div
         class="font"
         @click="${() => (this.selectedFont = font)}"
         is-selected="${this.selectedFont?.id === font.id}"
       >
-        <span class="font-name">${font.name}</span> &gt;
-        <span class="font-sample">${this.renderFontSample(font)}</span>
+        <div class="font-name">${font.name}</div>
+        <div class="font-sep">&gt;</div>
+        <div class="font-sample">${this.renderFontSample(font)}</div>
       </div>`;
     });
   }
@@ -125,6 +126,34 @@ export class MyFontList extends LitElement {
     }
     img {
       image-rendering: pixelated;
+    }
+    :host {
+      min-width: 0;
+    }
+    .fonts {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .font {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: stretch;
+      width: 100%;
+      background-color: cyan;
+    }
+    .font-name {
+      flex: 0;
+    }
+    .font-sep {
+      flex: 0;
+      margin: 0 5px;
+    }
+    .font-sample {
+      flex: 1;
+      overflow-x: auto;
+      background-color: yellow;
     }
   `;
 }

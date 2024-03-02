@@ -85,7 +85,7 @@ export class MyToolbox extends LitElement {
       max-height: 100%;
       flex: 1;
       overflow-y: scroll;
-      background-color: #333;
+      background-color: pink;
     }
     h2 {
       margin-top: 0;
@@ -96,9 +96,6 @@ export class MyToolbox extends LitElement {
     }
     [expand] .title__icon {
       color: var(--app-color-primary-800);
-    }
-    my-section {
-      color: cyan;
     }
   `;
 }

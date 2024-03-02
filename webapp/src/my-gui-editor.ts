@@ -481,6 +481,15 @@ export class MyGuiEditor extends LitElement {
     sl-tab-group {
       width: 100%;
     }
+
+    .top-panel {
+      background-color: var(--app-color-background-500);
+    }
+
+    .bottom-panel {
+      background-color: var(--app-color-background-100);
+    }
+
     .gui-editor-container sl-split-panel::part(divider) {
       background-color: var(--app-color-primary-600);
     }
